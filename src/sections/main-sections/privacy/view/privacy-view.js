@@ -144,7 +144,7 @@ const data = {
   
     privacy_policy: ` <h1>Privacy Policy</h1>
     <p>
-      At <strong>Sign In Online</strong>, your privacy is our top priority. This Privacy Policy outlines how we collect, use, and protect your information when you use our platform.
+      At <strong>Sign-In Online</strong>, your privacy is our top priority. This Privacy Policy outlines how we collect, use, and protect your information when you use our platform.
     </p>
 
     <h2>1. Information We Collect</h2>

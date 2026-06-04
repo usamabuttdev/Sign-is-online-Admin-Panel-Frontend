@@ -197,13 +197,13 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          Sign In Online
+          Sign-In Online
         </StyledTextGradient>
       </m.div>
 
       <m.div variants={varFade().in}>
         <Typography variant="body2" sx={{ textAlign: 'center' }}>
-         Sign In Online is a secure and user-friendly authentication platform designed to streamline the login and registration process for web applications. Built with modern web technologies, the project provides a flexible solution for handling user authentication, access control, and session management.
+         Sign-In Online is a secure and user-friendly authentication platform designed to streamline the login and registration process for web applications. Built with modern web technologies, the project provides a flexible solution for handling user authentication, access control, and session management.
         </Typography>
       </m.div>
 

@@ -149,8 +149,8 @@ const data = {
     about_us: `
    <h1>About Us</h1>
     <p>
-      Welcome to <strong>Sign In Online</strong>, your trusted platform for seamless and secure access management.
-      At Sign In Online, we are dedicated to simplifying your digital interactions by providing robust authentication solutions tailored to your needs.
+      Welcome to <strong>Sign-In Online</strong>, your trusted platform for seamless and secure access management.
+      At Sign-In Online, we are dedicated to simplifying your digital interactions by providing robust authentication solutions tailored to your needs.
     </p>
 
     <h2>Our Mission</h2>
@@ -168,7 +168,7 @@ const data = {
 
     <h2>Get Started Today!</h2>
     <p>
-      Join thousands who trust Sign In Online for their authentication needs.
+      Join thousands who trust Sign-In Online for their authentication needs.
       Whether you're managing a small business or a large enterprise, we've got you covered.
     </p>`
   }
