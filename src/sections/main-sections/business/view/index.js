@@ -1,0 +1,1 @@
+export {default as BusinessPage} from './business-list-page';
