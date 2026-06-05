@@ -14,9 +14,6 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import ProfileHome from '../profile-home';
 import { Avatar, Stack } from '@mui/material';
 
-
-// ----------------------------------------------------------------------
-
 // ----------------------------------------------------------------------
 
 export default function TransactionsProfileView() {
@@ -41,7 +38,7 @@ export default function TransactionsProfileView() {
       <Stack direction="row" spacing={2}>
       <Avatar
           alt={'John Doe'}
-          src={"https://borrowappbucket.s3.us-east-1.amazonaws.com/noimage.png"}
+          src={""}
           sx={{ marginTop: '.5rem', width: 56, height: 56 }}
         />
       <CustomBreadcrumbs

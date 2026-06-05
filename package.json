@@ -1,6 +1,6 @@
 {
-  "name": "sign-in-online",
-  "author": "Sign-In-Online",
+  "name": "this-sign-is-online",
+  "author": "This Sign Is Online",
   "version": "5.5.0",
   "description": "Cra & JavaScript",
   "private": true,
@@ -103,7 +103,7 @@
     "swr": "^2.2.2",
     "worker-loader": "^3.0.8",
     "yet-another-react-lightbox": "^3.12.1",
-    "yup": "^1.2.0"
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.11",

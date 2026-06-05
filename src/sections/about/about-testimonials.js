@@ -31,11 +31,7 @@ export default function AboutTestimonials() {
 
   const mdUp = useResponsive('up', 'md');
 
-  const renderLink = (
-    <Button color="primary" endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}>
-      Read more testimonials
-    </Button>
-  );
+
 
   const renderDescription = (
     <Box
@@ -52,28 +48,18 @@ export default function AboutTestimonials() {
 
       <m.div variants={varFade().inUp}>
         <Typography variant="h2" sx={{ my: 3, color: 'common.white' }}>
-          Who love <br />
-          my work
+          Who Trust  <br />
+          Love This Sign is Online
         </Typography>
       </m.div>
 
       <m.div variants={varFade().inUp}>
         <Typography sx={{ color: 'common.white' }}>
-          Our goal is to create a product and service that you’re satisfied with and use it every
-          day. This is why we’re constantly working on our services to make it better every day and
-          really listen to what our users has to say.
+          At This Sign is Online, our goal is to build a product you can rely on daily — one that’s fast, secure, and easy to use.
+          That’s why we continuously improve our platform, listening closely to your feedback to ensure it meets your evolving needs and exceeds your expectations.
         </Typography>
       </m.div>
 
-      {!mdUp && (
-        <Box
-          component={m.div}
-          variants={varFade().inUp}
-          sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}
-        >
-          {renderLink}
-        </Box>
-      )}
     </Box>
   );
 
@@ -133,16 +119,6 @@ export default function AboutTestimonials() {
             {renderContent}
           </Grid>
         </Grid>
-
-        {mdUp && (
-          <Box
-            component={m.div}
-            variants={varFade().inUp}
-            sx={{ bottom: 60, position: 'absolute' }}
-          >
-            {renderLink}
-          </Box>
-        )}
       </Container>
     </Box>
   );

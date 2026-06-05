@@ -1,25 +1,26 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
-import * as Yup from 'yup';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 // components
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { useUpdateFaqMutation } from 'src/store/Reducer/faqs';
+import { MenuItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function EditFaqForm({ row, open, onClose }) {
+export default function EditFaqForm({ row, open, onClose ,onSave }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [UpdateFaq, { isLoading: isUpdating }] = useUpdateFaqMutation();
@@ -50,6 +51,7 @@ export default function EditFaqForm({ row, open, onClose }) {
       reset({
         question: row?.question || '',
         answer: row?.answer || '',
+        public: row?.public !== undefined ? row.public : true,  
       });
     }
   }, [row, reset]);
@@ -62,24 +64,12 @@ export default function EditFaqForm({ row, open, onClose }) {
     }
 
     try {
-      const response = await UpdateFaq({ _id: row._id, data });
-      // console.log('response = ', response);
+      // const response = await UpdateFaq({ _id: row._id, data });
 
       // Handle errors from the backend
-      if (response.error) {
-        const errorMessage = response.error?.data?.message || 'An unexpected error occurred.';
-        enqueueSnackbar(errorMessage, { variant: 'error', autoHideDuration: 2000 });
-        return;
-      }
-
-      // Handle success
-      if (response.data?.message) {
-        enqueueSnackbar(response.data.message, { variant: 'success', autoHideDuration: 2000 });
-      } else {
-        enqueueSnackbar('Faq updated successfully!', { variant: 'success', autoHideDuration: 2000 });
-      }
 
       // Reset the form
+      onSave({ ...row, ...data }); // ✅ update in parent
       reset();
       onClose();
     } catch (error) {
@@ -100,7 +90,7 @@ export default function EditFaqForm({ row, open, onClose }) {
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Edit Faq</DialogTitle>
+        <DialogTitle>Edit Common Question</DialogTitle>
 
         <DialogContent>
           <Box
@@ -121,6 +111,11 @@ export default function EditFaqForm({ row, open, onClose }) {
               rows={3}
               multiline
             />
+
+          <RHFSelect name="public" label="Public">
+              <MenuItem value={true}>Yes (Public)</MenuItem>
+              <MenuItem value={false}>No (Private)</MenuItem>
+           </RHFSelect>
 
           </Box>
         </DialogContent>

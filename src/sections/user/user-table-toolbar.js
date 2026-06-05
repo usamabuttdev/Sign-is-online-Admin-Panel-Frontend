@@ -19,19 +19,9 @@ export default function UserTableToolbar({
 }) {
   const popover = usePopover();
 
-  const handleFilterName = useCallback(
+  const handleFilterKeyword = useCallback(
     (event) => {
-      onFilters('name', event.target.value);
-    },
-    [onFilters]
-  );
-
-  const handleFilterRole = useCallback(
-    (event) => {
-      onFilters(
-        'role',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
+      onFilters('keyword', event.target.value);
     },
     [onFilters]
   );
@@ -53,8 +43,8 @@ export default function UserTableToolbar({
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
-            value={filters.name}
-            onChange={handleFilterName}
+            value={filters.keyword}
+            onChange={handleFilterKeyword}
             placeholder="Search..."
             InputProps={{
               startAdornment: (

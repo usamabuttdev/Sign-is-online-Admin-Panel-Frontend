@@ -37,8 +37,6 @@ export default function JWTNewPasswordView() {
   const password = useBoolean();
 
   const NewPasswordSchema = Yup.object().shape({
-    otp: Yup.string().min(6, 'Code must be at least 6 characters').required('Code is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Password is required'),
@@ -68,11 +66,12 @@ export default function JWTNewPasswordView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      let obj=data;
-      obj.newPassword=obj.password;
-     let res= await newPasswordData(obj).unwrap();
-      toast.success(res?.message);
-      router.push(paths.auth.jwt.login)
+    //   let obj=data;
+    //   obj.newPassword=obj.password;
+    //  let res= await newPasswordData(obj).unwrap();
+    //   toast.success(res?.message);
+    console.log(paths.auth.login ,'paths.auth.login')
+      router.push(paths.auth.login)
     } catch (error) {
       toast.error(error?.data?.message);
       console.error(error);
@@ -87,14 +86,13 @@ export default function JWTNewPasswordView() {
 
   const renderForm = (
     <Stack spacing={3} alignItems="center">
-      <RHFTextField
+      {/* <RHFTextField
         name="email"
         label="Email"
         placeholder="example@gmail.com"
         InputLabelProps={{ shrink: true }}
       />
-
-      <RHFCode name="otp" />
+      <RHFCode name="otp" /> */}
 
       <RHFTextField
         name="password"
@@ -139,7 +137,7 @@ export default function JWTNewPasswordView() {
       <Typography variant="body2">
         {`Don’t have a code? `}
         <Link
-        onClick={()=>router.push(paths.auth.jwt.forgotPassword)}
+        onClick={()=>router.push(paths.auth.forgotPassword)}
           variant="subtitle2"
           sx={{
             cursor: 'pointer',

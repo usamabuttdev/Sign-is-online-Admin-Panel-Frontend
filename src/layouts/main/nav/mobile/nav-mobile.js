@@ -1,18 +1,19 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 // @mui
-import List from '@mui/material/List';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // routes
 import { usePathname } from 'src/routes/hooks';
 // components
 import Logo from 'src/components/logo';
-import SvgColor from 'src/components/svg-color';
 import Scrollbar from 'src/components/scrollbar';
+import SvgColor from 'src/components/svg-color';
 //
+import { LoginButtonSmall } from 'src/layouts/_common/login-button';
 import NavList from './nav-list';
 
 // ----------------------------------------------------------------------
@@ -61,6 +62,7 @@ export default function NavMobile({ offsetTop, data }) {
               <NavList key={link.title} item={link} />
             ))}
           </List>
+          <LoginButtonSmall/>
         </Scrollbar>
       </Drawer>
     </>

@@ -12,14 +12,8 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function UserTableFiltersResult({ filters, onFilters, onResetFilters, results, ...other }) {
-  
-  const handleRemoveStatus = () => {
-    onFilters('status', 'all');
-  };
-
-  const handleRemoveRole = (inputValue) => {
-    const newValue = filters.role.filter((item) => item !== inputValue);
-    onFilters('role', newValue);
+  const handleRemoveKeyword = () => {
+    onFilters('search', '');
   };
 
   return (
@@ -32,19 +26,12 @@ export default function UserTableFiltersResult({ filters, onFilters, onResetFilt
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.status !== 'all' && (
-          <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+         {filters.search && (
+          <Block label="Keyword:">
+            <Chip size="small" label={filters.search} onDelete={handleRemoveKeyword} />
           </Block>
         )}
 
-        {!!filters.role?.length && (
-          <Block label="Role:">
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
-          </Block>
-        )}
 
         <Button
           color="error"

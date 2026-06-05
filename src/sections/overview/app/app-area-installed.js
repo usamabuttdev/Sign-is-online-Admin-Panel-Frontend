@@ -66,7 +66,10 @@ export default function AppAreaInstalled({
           subheader={subheader}
           action={
             <ButtonBase
-              onClick={popover.onOpen}
+              onClick={(e)=>{
+                e.stopPropagation();
+                popover.onOpen(e);
+              }}
               sx={{
                 pl: 1,
                 py: 0.5,
@@ -99,7 +102,10 @@ export default function AppAreaInstalled({
           <MenuItem
             key={index}
             selected={option === seriesData}
-            onClick={() => handleChangeSeries(option)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleChangeSeries(option);
+            }}
           >
             {option}
           </MenuItem>

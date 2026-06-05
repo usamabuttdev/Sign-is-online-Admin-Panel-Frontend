@@ -152,11 +152,10 @@ export const _userList = [...Array(20)].map((_, index) => ({
   isVerified: _mock.boolean(index),
   company: _mock.companyName(index),
   country: countries[index + 1].label,
-  avatarUrl: _mock.image.avatar(index),
+  avatarUrl:'https://example.com/avatar.jpg',
   phoneNumber: _mock.phoneNumber(index),
   location: `${countries[index + 1].label}, ${_mock.firstName(index)} ${_mock.lastName(index)}`,
   createdAt: _mock.time(index),
-  businessAssociation: index % 2 === 0 ? 'Association A' : 'Association B',
   status:
     // (index % 2 && 'pending') || (index % 3 && 'banned') || (index % 4 && 'rejected') || 'active',
     (index % 3 && 'inactive') || 'active',

@@ -2,7 +2,6 @@ import { useGetAllProductQuery } from "../../store/Reducer/products";
 
 const AllProducts = () => {
   const { data, isError, isLoading } = useGetAllProductQuery();
-  console.log(data);
 
   if (isError) {
     return <h1>OOOhNoooo we got an error</h1>;

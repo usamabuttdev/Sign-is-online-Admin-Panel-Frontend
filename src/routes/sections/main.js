@@ -5,6 +5,7 @@ import MainLayout from 'src/layouts/main';
 import CompactLayout from 'src/layouts/compact';
 // components
 import { SplashScreen } from 'src/components/loading-screen';
+import PrivacyPolicy from 'src/pages/privacy-policy';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ export const mainRoutes = [
       { path: 'about-us', element: <AboutPage /> },
       { path: 'contact-us', element: <ContactPage /> },
       { path: 'faqs', element: <FaqsPage /> },
+      { path: 'privacy-policy', element: <PrivacyPolicy /> },
     ],
   },
   {

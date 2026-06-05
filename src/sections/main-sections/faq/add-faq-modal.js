@@ -1,24 +1,24 @@
-import PropTypes from 'prop-types';
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 // components
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { useLocales } from 'src/locales';
 import { useAddNewFaqMutation } from 'src/store/Reducer/faqs';
+import { MenuItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function AddFaqForm({ currentUser, open, onClose }) {
+export default function AddFaqForm({ currentUser, open, onClose ,onAddFaq }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [addFaq, { isLoading }] = useAddNewFaqMutation();
@@ -48,24 +48,13 @@ export default function AddFaqForm({ currentUser, open, onClose }) {
   // HANDLE SUBMIT
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const response = await addFaq(data);
-      // console.log('response = ', response);
-
-      // Handle errors from the backend
-      if (response.error) {
-        const errorMessage = response.error?.data?.message || 'An unexpected error occurred.';
-        enqueueSnackbar(errorMessage, { variant: 'error', autoHideDuration: 2000 });
-        return;
+     const payload =  {
+        question: data.question,
+        answer: data.answer,
+        public: data.public !== undefined ? data.public : true,
       }
-
-      // Handle success
-      if (response.data?.message) {
-        enqueueSnackbar(response.data.message, { variant: 'success', autoHideDuration: 2000 });
-      } else {
-        enqueueSnackbar('Faq added successfully!', { variant: 'success', autoHideDuration: 2000 });
-      }
-
-      // Reset the form
+      onAddFaq(payload); 
+    
       reset();
       onClose();
     } catch (error) {
@@ -87,7 +76,7 @@ export default function AddFaqForm({ currentUser, open, onClose }) {
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Add Faq</DialogTitle>
+        <DialogTitle>Add Common Question</DialogTitle>
 
         <DialogContent>
           <Box
@@ -108,6 +97,10 @@ export default function AddFaqForm({ currentUser, open, onClose }) {
               rows={3}
               multiline
             />
+           <RHFSelect name="public" label="Public">
+              <MenuItem value={true}>Yes (Public)</MenuItem>
+              <MenuItem value={false}>No (Private)</MenuItem>
+           </RHFSelect>
 
           </Box>
         </DialogContent>

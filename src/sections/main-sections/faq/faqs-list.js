@@ -1,19 +1,21 @@
+import { Button, IconButton, Tooltip } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
-import Typography from '@mui/material/Typography';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Iconify from 'src/components/iconify';
-import { Button } from '@mui/material';
-import { useBoolean } from 'src/hooks/use-boolean';
-import EditFaqForm from './edit-faq-modal';
-import { IconButton } from '@mui/material';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
-import { useDeleteFaqMutation } from 'src/store/Reducer/faqs';
-import { useSnackbar } from 'src/components/snackbar';
 import { useState } from 'react';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useDeleteFaqMutation } from 'src/store/Reducer/faqs';
+import EditFaqForm from './edit-faq-modal';
 
-export default function FaqsList({ allFaqs, setOpen, setIsEdit }) {
+export default function FaqsList({ allFaqs, setOpen, setIsEdit  ,          
+  onEditFaq,
+  onDeleteFaq
+}) {
   const { enqueueSnackbar } = useSnackbar();
 
   const quickEdit = useBoolean();
@@ -36,12 +38,12 @@ export default function FaqsList({ allFaqs, setOpen, setIsEdit }) {
 
   const handleDelete = async (_id) => {
     try {
-      const response = await deleteFaq(_id).unwrap();
-
-      // Handle success
-      if (!response?.error) {
-        enqueueSnackbar(response?.message || 'Deleted Successfully', { variant: 'success', autoHideDuration: 2000 });
-      } 
+      // const response = await deleteFaq(_id).unwrap();
+      if (setSelectedDeleteFaq) {
+        onDeleteFaq(selectedDeleteFaq);
+        enqueueSnackbar('Deleted successfully', { variant: 'success' });
+      }
+        confirm.onFalse();
     } catch (error) {
       console.error('Error deleting menu item:', error);
     }
@@ -61,29 +63,30 @@ export default function FaqsList({ allFaqs, setOpen, setIsEdit }) {
             <Typography>{faq.answer}</Typography>
 
             <Box>
-              <IconButton color="default" onClick={() => handleEdit(faq)}>
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
+              <Tooltip title="Edit" arrow placement="top">
+                <IconButton color="default" onClick={() => handleEdit(faq)}>
+                  <Iconify icon="solar:pen-bold" />
+                </IconButton>
+              </Tooltip>
 
-              <IconButton
-                color="error"
-                onClick={() => openDeleteModal(faq?._id)}
-              >
-                <Iconify icon="solar:trash-bin-trash-bold" />
-              </IconButton>
+              <Tooltip title="Delete" arrow placement="top">
+                <IconButton color="error" onClick={() => openDeleteModal(faq?.id)}>
+                  <Iconify icon="solar:trash-bin-trash-bold" />
+                </IconButton>
+              </Tooltip>
             </Box>
           </AccordionDetails>
         </Accordion >
       ))
       }
 
-      <EditFaqForm row={selectedFaq} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <EditFaqForm row={selectedFaq} open={quickEdit.value} onClose={quickEdit.onFalse} onSave={onEditFaq}/>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Confirm Action"
-        content="Are you sure you want to delete this faq?"
+        content="Are you sure you want to delete this common question?"
         action={
           <Button
             variant="contained"

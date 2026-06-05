@@ -1,20 +1,13 @@
 import { useScroll } from 'framer-motion';
 // @mui
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 // components
 import ScrollProgress from 'src/components/scroll-progress';
 //
+import FAQs from '../FAQs';
 import HomeHero from '../home-hero';
-import HomeMinimal from '../home-minimal';
-import HomePricing from '../home-pricing';
-import HomeDarkMode from '../home-dark-mode';
-import HomeLookingFor from '../home-looking-for';
-import HomeForDesigner from '../home-for-designer';
-import HomeColorPresets from '../home-color-presets';
-import HomeAdvertisement from '../home-advertisement';
-import HomeCleanInterfaces from '../home-clean-interfaces';
-import HomeHugePackElements from '../home-hugepack-elements';
+import TestimonialSection from '../testimonial';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +39,6 @@ export default function HomeView() {
   return (
     <>
       <ScrollProgress scrollYProgress={scrollYProgress} />
-
       <HomeHero />
 
       <Box
@@ -58,8 +50,8 @@ export default function HomeView() {
       >
         {/* <HomeMinimal /> */}
 
-        {/* {/* <HomeHugePackElements /> */}
-        {/* <Box sx={{ position: 'relative' }}>
+        {/* <HomeHugePackElements />
+        <Box sx={{ position: 'relative' }}>
           <StyledPolygon />
           <HomeForDesigner />
           <StyledPolygon anchor="bottom" />
@@ -75,7 +67,9 @@ export default function HomeView() {
 
         {/* <HomeLookingFor /> */}
 
-        {/* <HomeAdvertisement /> */} 
+        {/* <HomeAdvertisement />  */}
+        <TestimonialSection />
+        <FAQs />
       </Box>
     </>
   );

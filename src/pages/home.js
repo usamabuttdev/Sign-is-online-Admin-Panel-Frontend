@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title> Sign-In Online</title>
+        <title>This Sing Is Online</title>
       </Helmet>
 
       <HomeView />

@@ -1,26 +1,20 @@
 import { m, useScroll } from 'framer-motion';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 // @mui
-import { styled, alpha, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Unstable_Grid2';
+import Stack from '@mui/material/Stack';
+import { alpha, styled, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
 // routes
-import { paths } from 'src/routes/paths';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // theme
-import { textGradient, bgGradient, bgBlur } from 'src/theme/css';
+import { bgBlur, bgGradient, textGradient } from 'src/theme/css';
 // layouts
 import { HEADER } from 'src/layouts/config-layout';
 // components
-import Iconify from 'src/components/iconify';
-import { RouterLink } from 'src/routes/components';
 import { MotionContainer, varFade } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
@@ -55,7 +49,7 @@ const StyledTextGradient = styled(m.h1)(({ theme }) => ({
   ),
   padding: 0,
   marginTop: 8,
-  lineHeight: 1,
+  lineHeight: 1.2,
   marginBottom: 24,
   letterSpacing: 8,
   textAlign: 'center',
@@ -168,7 +162,6 @@ export default function HomeHero() {
       sx={{
         height: 1,
         mx: 'auto',
-        maxWidth: 480,
         opacity: opacity > 0 ? opacity : 0,
         mt: {
           md: `-${HEADER.H_DESKTOP + percent * 2.5}px`,
@@ -176,20 +169,12 @@ export default function HomeHero() {
       }}
     >
       <m.div variants={varFade().in}>
-        {/* <Typography
-          variant="h2"
-          sx={{
-            textAlign: 'center',
-          }}
-        >
-          Start a <br />
-          New Project with
-        </Typography> */}
+       
       </m.div>
 
       <m.div variants={varFade().in}>
         <StyledTextGradient
-          animate={{ backgroundPosition: '200% center' }}
+          animate={{ backgroundPosition: '200 center' }}
           transition={{
             repeatType: 'reverse',
             ease: 'linear',
@@ -197,13 +182,13 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          Sign-In Online
+          This Sign Is Online
         </StyledTextGradient>
       </m.div>
 
       <m.div variants={varFade().in}>
         <Typography variant="body2" sx={{ textAlign: 'center' }}>
-         Sign-In Online is a secure and user-friendly authentication platform designed to streamline the login and registration process for web applications. Built with modern web technologies, the project provides a flexible solution for handling user authentication, access control, and session management.
+         This Sign Is Online is a secure and user-friendly authentication platform designed to streamline the login and registration process for web applications. Built with modern web technologies, the project provides a flexible solution for handling user authentication, access control, and session management.
         </Typography>
       </m.div>
 

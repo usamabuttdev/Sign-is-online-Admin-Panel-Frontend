@@ -36,6 +36,7 @@ export const paths = {
   zoneUI: 'https://mui.com/store/items/zone-landing-page/',
   minimalUI: 'https://mui.com/store/items/minimal-dashboard/',
   freeUI: 'https://mui.com/store/items/minimal-dashboard-free/',
+
   figma:
     'https://www.figma.com/file/hjxMnGUJCjY7pX8lQbS7kn/%5BPreview%5D-Minimal-Web.v5.4.0?type=design&node-id=0-1&mode=design&t=2fxnS70DuiTLGzND-0',
   product: {
@@ -55,6 +56,11 @@ export const paths = {
   },
   // AUTH
   auth: {
+    login: `/login`,
+    register: `/register`,
+    verify: `/verify`,
+    newPassword: `/new-password`,
+    forgotPassword: `/forgot-password`,
     amplify: {
       login: `${ROOTS.AUTH}/amplify/login`,
       register: `${ROOTS.AUTH}/amplify/register`,
@@ -101,16 +107,29 @@ export const paths = {
     users:{
       root: `${ROOTS.DASHBOARD}/users`,
       sign: `${ROOTS.DASHBOARD}/users/sign`,
+      profile: `${ROOTS.DASHBOARD}/users/profile`,
       details: (id) => `${ROOTS.DASHBOARD}/users/${id}`,
     },
     business:{
       root: `${ROOTS.DASHBOARD}/business`,
       details: (id) => `${ROOTS.DASHBOARD}/business/${id}`,
     },
+    sales:{
+      root: `${ROOTS.DASHBOARD}/sales`,
+      details: (id) => `${ROOTS.DASHBOARD}/sales/${id}`,
+    },
+    transactions:{
+      root: `${ROOTS.DASHBOARD}/transactions`,
+      details: (id) => `${ROOTS.DASHBOARD}/transactions/${id}`,
+    },
+    history:{
+      root: `${ROOTS.DASHBOARD}/history`,
+      details: (id) => `${ROOTS.DASHBOARD}/history/${id}`,
+    },
     trainingModes: `${ROOTS.DASHBOARD}/training-modes`,
     specializations: `${ROOTS.DASHBOARD}/specializations`,
     languages: `${ROOTS.DASHBOARD}/languages`,
-    faqs: `${ROOTS.DASHBOARD}/faqs`,
+    faqs: `${ROOTS.DASHBOARD}/common-questions`,
     commonQuestions: `${ROOTS.DASHBOARD}/common-questions`,
     aboutUs: `${ROOTS.DASHBOARD}/about-us`,
     privacyPolicy: `${ROOTS.DASHBOARD}/privacy-policy`,
@@ -152,6 +171,62 @@ export const paths = {
       profile: `${ROOTS.DASHBOARD}/trainer/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/trainer/${id}/edit`,
     },
+    accounts:{
+      root: `${ROOTS.DASHBOARD}/accounts`,
+      list: `${ROOTS.DASHBOARD}/accounts/list`,
+      profile: `${ROOTS.DASHBOARD}/accounts/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/accounts/${id}/edit`,
+    },
+    apis:{
+      root: `${ROOTS.DASHBOARD}/apis`,
+      list: `${ROOTS.DASHBOARD}/apis/list`,
+      profile: `${ROOTS.DASHBOARD}/apis/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/apis/${id}/edit`,
+    },
+    locations:{
+      root: `${ROOTS.DASHBOARD}/locations`,
+      list: `${ROOTS.DASHBOARD}/locations/list`,
+      profile: `${ROOTS.DASHBOARD}/locations/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/locations/${id}/edit`,
+    },
+    charges:{
+      root: `${ROOTS.DASHBOARD}/charges`,
+      list: `${ROOTS.DASHBOARD}/charges/list`,
+      profile: `${ROOTS.DASHBOARD}/charges/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/charges/${id}/edit`,
+    },
+    metrics:{
+      root: `${ROOTS.DASHBOARD}/metrics`,
+      list: `${ROOTS.DASHBOARD}/metrics/list`,
+      profile: `${ROOTS.DASHBOARD}/metrics/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/metrics/${id}/edit`,
+    },
+
+    platforms:{
+      root: `${ROOTS.DASHBOARD}/platforms`,
+      list: `${ROOTS.DASHBOARD}/platforms/list`,
+      profile: `${ROOTS.DASHBOARD}/platforms/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/platforms/${id}/edit`,
+    },
+    products:{
+      root: `${ROOTS.DASHBOARD}/products`,
+      list: `${ROOTS.DASHBOARD}/products/list`,
+      profile: `${ROOTS.DASHBOARD}/products/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/products/${id}/edit`,
+    },
+    scripts:{
+      root: `${ROOTS.DASHBOARD}/scripts`,
+      list: `${ROOTS.DASHBOARD}/scripts/list`,
+      profile: `${ROOTS.DASHBOARD}/scripts/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/scripts/${id}/edit`,
+    },
+    signs:{
+      root: `${ROOTS.DASHBOARD}/signs`,
+      list: `${ROOTS.DASHBOARD}/signs/list`,
+      profile: `${ROOTS.DASHBOARD}/signs/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/signs/${id}/edit`,
+    },
+    
     customers:{
       root: `${ROOTS.DASHBOARD}/customers`,
       list: `${ROOTS.DASHBOARD}/customers/list`,

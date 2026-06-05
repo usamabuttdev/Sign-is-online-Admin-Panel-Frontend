@@ -1,15 +1,15 @@
 import { m } from 'framer-motion';
 // @mui
-import { useTheme, alpha } from '@mui/material/styles';
-import Fab from '@mui/material/Fab';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
+import Fab from '@mui/material/Fab';
+import Stack from '@mui/material/Stack';
+import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 // components
-import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
 import { MotionViewport, varFade } from 'src/components/animate';
+import Iconify from 'src/components/iconify';
+import Image from 'src/components/image';
 
 // ----------------------------------------------------------------------
 
@@ -60,6 +60,7 @@ export default function AboutVision() {
       sx={{
         pb: 10,
         position: 'relative',
+        mt: 5,
         bgcolor: 'background.neutral',
         '&:before': {
           top: 0,
@@ -86,7 +87,7 @@ export default function AboutVision() {
         >
           {renderImg}
 
-          {renderLogo}
+          {/* {renderLogo} */}
 
           <Fab sx={{ position: 'absolute', zIndex: 9 }}>
             <Iconify icon="solar:play-broken" width={24} />
@@ -95,8 +96,7 @@ export default function AboutVision() {
 
         <m.div variants={varFade().inUp}>
           <Typography variant="h3" sx={{ textAlign: 'center', maxWidth: 800, mx: 'auto' }}>
-            Our vision offering the best product nulla vehicula tortor scelerisque ultrices
-            malesuada.
+           We aim to deliver the most secure, simple, and reliable way to sign documents online.
           </Typography>
         </m.div>
       </Container>

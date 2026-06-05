@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types';
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 // components
-import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import {  MenuItem, TextField, Typography } from '@mui/material';
-import { useReplyContactUsQueryMutation } from 'src/store/Reducer/contact';
-import {  useState } from 'react';
+import { MenuItem, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { useState } from 'react';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { useSnackbar } from 'src/components/snackbar';
 import { useUpdateSupportQueryStatusMutation } from 'src/store/Reducer/adminSupport';
+import { useReplyContactUsQueryMutation } from 'src/store/Reducer/contact';
 
 // ----------------------------------------------------------------------
 
@@ -115,7 +115,7 @@ export default function SendReplyForm({ row, statusOptions, open, onClose }) {
           <Box sx={{ display: 'flex', justifyContent: "space-between", alignItems: "center" }}>
             <Typography variant="h5" noWrap>Reply</Typography>
 
-            <TextField
+            {/* <TextField
               fullWidth
               select
               size="small"
@@ -132,7 +132,7 @@ export default function SendReplyForm({ row, statusOptions, open, onClose }) {
                   {option}
                 </MenuItem>
               ))}
-            </TextField>
+            </TextField> */}
           </Box>
         </DialogTitle>
 

@@ -8,7 +8,7 @@ export default function FaqPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: FAQs</title>
+        <title> Dashboard: Common Questions</title>
       </Helmet>
 
       <DashboardFaqView />

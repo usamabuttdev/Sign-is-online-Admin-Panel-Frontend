@@ -26,13 +26,23 @@ export default function AuthGuard({ children }) {
   const {user}=useMockedUser(); 
   const {method } = useAuthContext();
   const [checked, setChecked] = useState(false);
-  const check = useCallback(() => {
-    if (!user?.token) {
-      router.replace('/');
+  // const check = useCallback(() => {
+  //   if (!user?.token) {
+  //     router.replace('/');
+  //   } else {
+  //     setChecked(true);
+  //   }
+  // }, [user, method, router]);
+
+   const check = useCallback(() => {
+    if (!user) {
+      const href = `${'/login'}`;
+      router.replace(href);
     } else {
       setChecked(true);
     }
   }, [user, method, router]);
+
 
 
   useEffect(() => {

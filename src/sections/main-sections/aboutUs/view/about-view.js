@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
+import { LoadingButton } from '@mui/lab';
 import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
+import { Box, Stack } from '@mui/system';
+import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { LoadingButton } from '@mui/lab';
-import { Box, Stack } from '@mui/system';
-import { useTheme } from '@mui/material/styles';
 import { LoadingScreen } from 'src/components/loading-screen';
 // import { useGetAboutUsQuery, useUpdateSettingMutation } from 'src/store/Reducer/adminSetting';
-import FaqsHero from 'src/sections/faqs/faqs-hero';
 import { enqueueSnackbar } from 'notistack';
+import FaqsHero from 'src/sections/faqs/faqs-hero';
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -126,7 +125,7 @@ export default function DashboardAboutUsView() {
               />
             </StyledPaper>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
               <LoadingButton
                 onClick={handleSave}
                 type="submit"
@@ -149,8 +148,8 @@ const data = {
     about_us: `
    <h1>About Us</h1>
     <p>
-      Welcome to <strong>Sign-In Online</strong>, your trusted platform for seamless and secure access management.
-      At Sign-In Online, we are dedicated to simplifying your digital interactions by providing robust authentication solutions tailored to your needs.
+      Welcome to <strong>Sign In Online</strong>, your trusted platform for seamless and secure access management.
+      At Sign In Online, we are dedicated to simplifying your digital interactions by providing robust authentication solutions tailored to your needs.
     </p>
 
     <h2>Our Mission</h2>
@@ -168,7 +167,7 @@ const data = {
 
     <h2>Get Started Today!</h2>
     <p>
-      Join thousands who trust Sign-In Online for their authentication needs.
+      Join thousands who trust Sign In Online for their authentication needs.
       Whether you're managing a small business or a large enterprise, we've got you covered.
     </p>`
   }

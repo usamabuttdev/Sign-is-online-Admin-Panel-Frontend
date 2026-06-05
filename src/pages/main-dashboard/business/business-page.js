@@ -1,6 +1,6 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
-import BusinessViewPage from 'src/sections/main-sections/business/view/business-list-page'
+import BusinessViewPage from 'src/sections/main-sections/business/view/business-list-view'
 
 const BusinessPage = () => {
     return (

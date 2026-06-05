@@ -64,7 +64,6 @@ export default function AmplifyLoginView() {
     try {
       await login?.(data.email, data.password);
       router.push( PATH_AFTER_LOGIN);
-      console.log("logined");
     } catch (error) {
       console.error(error);
       reset();

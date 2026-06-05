@@ -26,7 +26,7 @@ export default function ContactView() {
         >
           <ContactForm />
 
-          <ContactMap contacts={_mapContact} />
+          {/* <ContactMap contacts={_mapContact} /> */}
         </Box>
       </Container>
     </>

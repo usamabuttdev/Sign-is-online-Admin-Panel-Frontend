@@ -13,7 +13,7 @@ import FaqsCategory from '../faqs-category';
 export default function FaqsView() {
   return (
     <>
-      <FaqsHero />
+      <FaqsHero data={"FAQs"}/>
 
       <Container
         sx={{
@@ -22,7 +22,7 @@ export default function FaqsView() {
           position: 'relative',
         }}
       >
-        <FaqsCategory />
+        {/* <FaqsCategory /> */}
 
         <Typography
           variant="h3"

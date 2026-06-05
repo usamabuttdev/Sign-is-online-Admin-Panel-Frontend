@@ -1,134 +1,106 @@
-import { useState, useCallback } from 'react';
 // @mui
-import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
-import Tabs, { tabsClasses } from '@mui/material/Tabs';
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
 // components
-import Iconify from 'src/components/iconify';
-import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import { useSettingsContext } from 'src/components/settings';
 //
-import ProfileHome from '../profile-home';
+import { useTable } from 'src/components/table';
 import ProfileCover from '../profile-cover';
-import ProfileFriends from '../profile-friends';
-import ProfileGallery from '../profile-gallery';
-import ProfileFollowers from '../profile-followers';
+import AssociatedLocationTable from '../associated-location-table';
 
-// ----------------------------------------------------------------------
+const userDetail = {
+  fullName: 'John Doe',
+  photoURL: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg',
+  role: 'Administrator',
+  coverUrl: '/static/mock-images/covers/cover_1.jpg',
+  email: 'john.doe@example.com',
+  phone: '+1 (555) 123-4567',
+  associatedLocations : [
+    {
+      id: 1,
+      location_name: 'Tech Hub San Francisco',
+      address: '123 Tech Street, San Francisco, CA',
+      product: 'Cloud Hosting Platform',
+      loc_has_active_subscription: 'Y',
+      expiration: '2025-12-31T23:59:59Z',
+      account: "Account A"
+    },
+    {
+      id: 2,
+      location_name: 'Creative Loft New York',
+      address: '456 Creative Ave, New York, NY',
+      product: 'Creative Design Suite',
+      loc_has_active_subscription: 'N',
+      expiration: '2024-09-15T14:30:00Z',
+      account: "Account B"
+    },
+    {
+      id: 3,
+      location_name: 'Health Center Los Angeles',
+      address: '789 Health Blvd, Los Angeles, CA',
+      product: 'Healthcare Management Pro',
+      loc_has_active_subscription: 'Y',
+      expiration: '2026-03-20T08:00:00Z',
+      account: "Account C"
+    },
+    {
+      id: 4,
+      location_name: 'Finance Tower Chicago',
+      address: '101 Finance Rd, Chicago, IL',
+      product: 'FinTech Analytics Suite',
+      loc_has_active_subscription: 'Y',
+      expiration: '2025-07-01T10:15:00Z',
+      account: "Account D"
+    },
+  ]
+};
 
-const TABS = [
-  {
-    value: 'profile',
-    label: 'Profile',
-    icon: <Iconify icon="solar:user-id-bold" width={24} />,
-  },
-  {
-    value: 'followers',
-    label: 'Followers',
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-  },
-  {
-    value: 'friends',
-    label: 'Friends',
-    icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
-  },
-  {
-    value: 'gallery',
-    label: 'Gallery',
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
+
+const headLabels = [
+  { id: 'name', label: 'Location Name' },
+  { id: 'account', label: 'Account' },
+  { id: 'product', label: 'Product' },
+  { id: 'active', label: 'Active' , align:"center" },
+  { id: 'expiration', label: 'Expiration' },
+  { id: 'address', label: 'Address' },
+  { id: 'action' , label:'Action' , align:"center" }, // For actions column
 ];
-
 // ----------------------------------------------------------------------
 
 export default function UserProfileView() {
+
+  const table = useTable();
   const settings = useSettingsContext();
 
-  const { user } = useMockedUser();
-
-  const [searchFriends, setSearchFriends] = useState('');
-
-  const [currentTab, setCurrentTab] = useState('profile');
-
-  const handleChangeTab = useCallback((event, newValue) => {
-    setCurrentTab(newValue);
-  }, []);
-
-  const handleSearchFriends = useCallback((event) => {
-    setSearchFriends(event.target.value);
-  }, []);
-
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
         heading="Profile"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: user?.displayName },
+          { name: 'Users', href: paths.dashboard.users.root },
+          { name: 'John Doe' }
         ]}
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: { xs: 3, md: 3 },
         }}
       />
 
-      <Card
-        sx={{
-          mb: 3,
-          height: 290,
-        }}
-      >
+      <Card sx={{ mb: 2 }}>
         <ProfileCover
-          role={_userAbout.role}
-          name={user?.displayName}
-          avatarUrl={user?.photoURL}
-          coverUrl={_userAbout.coverUrl}
+          role={userDetail.role}
+          coverUrl={userDetail.coverUrl}
+          photoURL={userDetail.photoURL}
+          item={userDetail}
         />
 
-        <Tabs
-          value={currentTab}
-          onChange={handleChangeTab}
-          sx={{
-            width: 1,
-            bottom: 0,
-            zIndex: 9,
-            position: 'absolute',
-            bgcolor: 'background.paper',
-            [`& .${tabsClasses.flexContainer}`]: {
-              pr: { md: 3 },
-              justifyContent: {
-                sm: 'center',
-                md: 'flex-end',
-              },
-            },
-          }}
-        >
-          {TABS.map((tab) => (
-            <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-          ))}
-        </Tabs>
       </Card>
-
-      {currentTab === 'profile' && <ProfileHome info={_userAbout} posts={_userFeeds} />}
-
-      {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
-
-      {currentTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
-        />
-      )}
-
-      {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}
+      <AssociatedLocationTable userDetail={userDetail} table={table} headLabels={headLabels} />
     </Container>
   );
 }

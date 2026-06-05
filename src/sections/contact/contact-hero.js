@@ -71,7 +71,7 @@ export default function ContactHero() {
             <TextAnimate text="us?" />
           </Stack>
 
-          <Stack
+          {/* <Stack
             spacing={5}
             alignItems={{ xs: 'center', md: 'unset' }}
             direction={{ xs: 'column', md: 'row' }}
@@ -92,7 +92,7 @@ export default function ContactHero() {
                 </m.div>
               </Stack>
             ))}
-          </Stack>
+          </Stack> */}
         </Box>
       </Container>
     </Box>

@@ -13,11 +13,12 @@ import Label from 'src/components/label';
 export default function UserTableRow({ row, selected, counter }) {
   const {
     sender: { name: senderName, account_number: senderAccountNumber },
-    receiver: { name: receiverName,  account_number: receiverAccountNumber },
+    receiver: { name: receiverName, account_number: receiverAccountNumber },
     amount,
     date,
     status,
-    transaction_id
+    transaction_id,
+    transaction_type
   } = row;
 
   const confirm = useBoolean();
@@ -25,37 +26,26 @@ export default function UserTableRow({ row, selected, counter }) {
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell>{counter}</TableCell>
 
         <TableCell>
-          <Box sx={{display:'flex', alignItems:'center'}}>
-          <Avatar alt={senderName} sx={{ mr: 2 }} />
-          <ListItemText
-            primary={senderName}
-            secondary={senderAccountNumber}
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Avatar alt={senderName} sx={{ mr: 2 }} />
+            <ListItemText
+              primary={senderName}
+              secondary={senderAccountNumber}
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
           </Box>
-          
+
         </TableCell>
 
         <TableCell>
-        <Box sx={{display:'flex', alignItems:'center'}}>
-          <Avatar alt={receiverName} sx={{ mr: 2 }} />
-          <ListItemText
-            primary={receiverName}
-            secondary={receiverAccountNumber}
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-          </Box>
+          {senderAccountNumber}
+        
         </TableCell>
 
 
@@ -67,8 +57,19 @@ export default function UserTableRow({ row, selected, counter }) {
           {transaction_id}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {amount}
+        <TableCell  sx={{ whiteSpace: 'nowrap' }}>
+          <Label
+            variant="soft"
+            color={
+              (transaction_type === 'Credit Card' && 'success') ||
+              (transaction_type === 'Google Pay' && 'info') ||
+              (transaction_type === 'Apple Pay' && 'warning') ||
+              'default'
+            }
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {transaction_type}
+          </Label>
         </TableCell>
 
         <TableCell>

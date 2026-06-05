@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react';
+import { LoadingButton } from '@mui/lab';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
+import { Box, Stack } from '@mui/system';
+import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { LoadingButton } from '@mui/lab';
-import { Box, Stack } from '@mui/system';
 
 import { useTheme } from '@mui/material/styles';
-import { useGetPrivacyPolicyQuery, useUpdateSettingMutation } from 'src/store/Reducer/adminSetting';
-import { LoadingScreen } from 'src/components/loading-screen';
-import FaqsHero from 'src/sections/faqs/faqs-hero';
 import { enqueueSnackbar } from 'notistack';
+import FaqsHero from 'src/sections/faqs/faqs-hero';
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -121,7 +119,7 @@ export default function DashboardPrivacyView() {
               />
             </StyledPaper>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
               <LoadingButton
                 onClick={handleSave}
                 type="submit"
@@ -144,7 +142,7 @@ const data = {
   
     privacy_policy: ` <h1>Privacy Policy</h1>
     <p>
-      At <strong>Sign-In Online</strong>, your privacy is our top priority. This Privacy Policy outlines how we collect, use, and protect your information when you use our platform.
+      At <strong>Sign In Online</strong>, your privacy is our top priority. This Privacy Policy outlines how we collect, use, and protect your information when you use our platform.
     </p>
 
     <h2>1. Information We Collect</h2>

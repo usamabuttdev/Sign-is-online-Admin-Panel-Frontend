@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import Iconify from 'src/components/iconify';
-import IconButton from '@mui/material/IconButton';
+import { Tooltip } from "@mui/material";
 import Button from "@mui/material/Button";
+import IconButton from '@mui/material/IconButton';
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { ConfirmDialog } from "src/components/custom-dialog";
+import SuccessDialog from "src/components/custom-dialog/success-dialog";
+import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
-import { ConfirmDialog } from "src/components/custom-dialog";
 import { useBoolean } from "src/hooks/use-boolean";
-import SendReplyForm from "./send-reply-modal";
-import SuccessDialog from "src/components/custom-dialog/success-dialog";
 import { useDeleteSupportQueryMutation } from "src/store/Reducer/adminSupport";
+import SendReplyForm from "./send-reply-modal";
 
 export default function UserTableRow({ row, selected, counter, statusOptions }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -40,8 +41,8 @@ export default function UserTableRow({ row, selected, counter, statusOptions }) 
       const response = await deleteQuery(_id).unwrap();
       // Handle success
       if (!response?.error) {
-       return enqueueSnackbar(response?.message || 'Deleted Successfully !', { variant: 'success', autoHideDuration: 2000 });
-      } 
+        return enqueueSnackbar(response?.message || 'Deleted Successfully !', { variant: 'success', autoHideDuration: 2000 });
+      }
     } catch (error) {
       console.error('Error deleting menu item:', error);
     }
@@ -53,11 +54,11 @@ export default function UserTableRow({ row, selected, counter, statusOptions }) 
         <TableCell>{counter}</TableCell>
         <TableCell>{name}</TableCell>
         <TableCell >{email}</TableCell>
-        <TableCell onClick={success.onTrue} sx={{ cursor: 'pointer' }}>
-          {row?.message?.length > 20 ? `${row?.message.substring(0, 20)}...` : row?.message}
+        <TableCell onClick={() => row.message.length > 40 && success.onTrue()} sx={{ cursor: 'pointer' }}>
+          {row?.message?.length > 40 ? `${row?.message.substring(0, 40)}...` : row?.message}
         </TableCell>
 
-        <TableCell>
+        <TableCell align="center">
           <Label
             variant="soft"
             color={
@@ -76,17 +77,21 @@ export default function UserTableRow({ row, selected, counter, statusOptions }) 
           </Label>
         </TableCell>
 
-        <TableCell>
-          <IconButton onClick={handleDialogOpen}>
-            <Iconify icon="mdi:message-text-outline" width={22} />
-          </IconButton>
+        <TableCell align="right">
+          <Tooltip title="Reply" placement="top" arrow>
+            <IconButton onClick={handleDialogOpen}>
+              <Iconify icon="mdi:message-text-outline" width={22} />
+            </IconButton>
+          </Tooltip>
 
-          <IconButton
-            color="error"
-            onClick={() => openDeleteModal(row?._id)}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-          </IconButton>
+          <Tooltip title="Delete" placement="top" arrow>
+            <IconButton
+              color="error"
+              onClick={() => openDeleteModal(row?._id)}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
 

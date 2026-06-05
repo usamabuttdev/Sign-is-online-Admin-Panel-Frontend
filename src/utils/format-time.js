@@ -25,3 +25,14 @@ export function fToNow(date) {
       })
     : '';
 }
+
+export const formatDate = (dateString) => {
+  if(!dateString) {
+    return { display: '', full: '' };
+  }
+  const date = new Date(dateString);
+  return {
+    display: format(date, "MM/dd/yyyy"),           // what you see in table
+    full: format(date, "MMMM d, yyyy, hh:mm a"),   // what you see on hover
+  };
+};

@@ -43,7 +43,6 @@ export default function ContactUsForm() {
     const onSubmit = handleSubmit(async (formData) => {
         // try {
         //   const { data } = await loginData(formData)
-        //   console.log("data", data)
         //   if (data?.status === 200) {
         //     toast.success(data?.message)
         //     dispatch(setUser(data?.body));

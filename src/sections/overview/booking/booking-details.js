@@ -18,7 +18,7 @@ import TableContainer from '@mui/material/TableContainer';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { TableHeadCustom, useTable } from 'src/components/table';
+import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { paths } from 'src/routes/paths';
 
@@ -44,7 +44,7 @@ export default function BookingDetails({ title, subheader, tableLabels, tableDat
       </TableContainer>
 
       <Divider sx={{ borderStyle: 'dashed' }} />
-      
+
       <Box sx={{ p: 2, textAlign: 'right' }}>
         <Button
           size="small"
@@ -70,8 +70,6 @@ BookingDetails.propTypes = {
 
 function BookingDetailsRow({ row , index}) {
   const theme = useTheme();
-
-  const table = useTable();
 
   const isLight = theme.palette.mode === 'light';
 

@@ -7,84 +7,41 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useSettingsContext } from 'src/components/settings';
 // assets
 import { useMemo, useState } from 'react';
-import { useLocales } from 'src/locales';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-import { useGetDashboardDataQuery, useGetUserStatsQuery } from 'src/store/Reducer/dashboard';
 import BookingWidgetSummary from '../../booking/booking-widget-summary';
 import AppAreaInstalled from '../app-area-installed';
-import AppCurrentDownload from '../app-current-download';
+import { Card, CardContent, CardHeader, Tooltip, useTheme } from '@mui/material';
+import ChartLine from 'src/sections/_examples/extra/chart-view/chart-line';
+import { fNumber } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 
 
-  const bookingList = [ 
-    {
-      id:1,
-      trainer_name: 'William James',
-      customer_name: 'John Doe',
-      booking_type: "Immediate",
-      date: '2022-10-10',
-      slot_time: '30 minutes',
-      price: '$40',
-      location: 'New York',
-      status:'active'
-    },
-    {
-      id:2,
-      trainer_name: 'Sophia Smith',
-      customer_name: 'John Doe',
-      booking_type: "Scheduled",
-      date: '2022-10-15',
-      slot_time: '1 hour',
-      price: '$60',
-      location: 'Los Angeles',
-      status:'active'
-    },
-    {
-      id:3,
-      trainer_name: 'David Brown',
-      customer_name: 'John Doe',
-      booking_type: "Immediate",
-      date: '2022-10-12',
-      slot_time: '45 minutes',
-      price: '$50',
-      location: 'Chicago',
-      status:'inactive'
-    },
-    {
-      id:4,
-      trainer_name: 'Emma Johnson',
-      customer_name: 'John Doe',
-      booking_type: "Scheduled",
-      date: '2022-10-20',
-      slot_time: '1 hour',
-      price: '$55',
-      location: 'Miami',
-      status:'inactive'
-    },
-    {
-      id:5,
-      trainer_name: 'Oliver Lee',
-      customer_name: 'John Doe',
-      booking_type: "Immediate",
-      date: '2022-10-18',
-      slot_time: '30 minutes',
-      price: '$45',
-      location: 'San Francisco',
-      status:'active'
-    }
-  ];
-
-
 export default function OverviewAppView() {
-  const { t } = useLocales();
+
   const router = useRouter();
   const currentYear = new Date().getFullYear();
+  const theme = useTheme()
 
-  const {data , isLoading} = useGetDashboardDataQuery();
   const [seriesData, setSeriesData] = useState(currentYear);
-  const { data : userStats , isLoading: statsLoading} = useGetUserStatsQuery(seriesData);
+  const userStats = {
+    stats: [
+      {
+        region: "Active locations",
+        data: [30, 34, 38, 36, 42, 50, 55, 53, 60, 70, 68, 78],
+      },
+      {
+        region: "Active Accounts",
+        data: [20, 22, 25, 27, 30, 35, 40, 38, 45, 52, 50, 58],
+      },
+      {
+        region: "Active signs per month",
+        data: [10, 12, 14, 13, 17, 22, 25, 24, 30, 36, 34, 42],
+      },
+    ],
+    availableYears: [2021, 2022, currentYear],
+  };
 
   const chartData = useMemo(() => {
     return userStats?.stats?.map((item) => {
@@ -93,91 +50,145 @@ export default function OverviewAppView() {
         data: item.data,
       };
     }) || [];
-  },[userStats?.stats]);
+  }, [userStats?.stats]);
 
 
 
   const settings = useSettingsContext();
 
-  const handleClick = (path) => {
-    router.push(path);
+  const handleClick = (path, state) => {
+    router.push(path, state);
   };
 
-  // if(isLoading || statsLoading) return <LoadingScreen/>
+
+  const lastSixMonths = useMemo(() => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const result = [];
+    const today = new Date();
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      result.push(months[d.getMonth()]);
+    }
+
+    return result;
+  }, []);
+
+  const METRICS_DATA = {
+    "This Month": [
+      { id: 101, title: "Sales Growth", goal: 2000, value: 1850, icon: 'mdi:trending-up' },
+      { id: 102, title: "New Customers", goal: 100, value: 120, icon: 'mdi:account-plus' },
+      { id: 103, title: "Website Traffic", goal: 50000, value: 48000, icon: 'mdi:web' },
+    ],
+    "Last Month": [
+      { id: 201, title: "Revenue", goal: 50000, value: 47000, icon: 'mdi:currency-usd' },
+      { id: 202, title: "Expenses", goal: 30000, value: 29500, icon: 'mdi:cash-minus' },
+      { id: 203, title: "Customer Retention", goal: 85, value: 82, icon: 'mdi:account-check' },
+    ],
+    "Other": [
+    ],
+  };
+  
+  // ✅ Utility: Get background color based on percentage
+ 
+const getCircleColor = (pct) => {
+  if (pct >= 100) return theme.palette.success.main;
+  if (pct >= 80) return theme.palette.grey[400];
+  if (pct >= 60) return theme.palette.warning.main;
+  return theme.palette.error.main;
+};
+
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
 
-        {/* Top Boxes 1 */}
-        <Grid xs={12} md={4} onClick={() => handleClick(paths.dashboard.users)} style={{ cursor: 'pointer' }}>
-          <BookingWidgetSummary
-            title={t('Active User')}
-            total={166}
-            icon={'solar:users-group-rounded-bold-duotone'}
-          />
+        {Object.entries(METRICS_DATA).map(([group, items]) =>
+            items.length > 0 && (
+              <Grid xs={12} key={group}>
+                <Card>
+                  <CardHeader title={group} />
+                  <CardContent>
+                    <Grid container spacing={3}>
+                      {items.map((m) => {
+                        const pct = Math.round((m.value / m.goal) * 100);
+                        return (
+                        <Grid xs={12} md={4} key={m.id}>
+                          <BookingWidgetSummary
+                            // title={`${m.title} (Goal: ${fNumber(m.goal)})`}
+                            total={fNumber(m.value)}
+                            icon={m.icon}
+                            pct={pct}
+                            color={getCircleColor(pct)}
+                            goal={fNumber(m.goal)}
+                          />
+                        </Grid>
+                        )
+                        })}
+                    </Grid>
+                    
+                  </CardContent>
+                </Card>
+              </Grid>
+            )
+          )}
+
+        <Grid xs={12} md={6} lg={6} sx={{height:"500px"}}>
+         <Card>
+            <CardHeader title="Total Amount Charged Per Month" />
+            <CardContent>
+              <ChartLine
+                series={[
+                  {
+                    name: 'Amount',
+                    data: [100, 5000, 3000, 4000, 6000, 7000],
+                  },
+                ]}
+                categories={lastSixMonths}
+               sx={{ height: '100%' }}
+
+              />
+            </CardContent>
+          </Card>
         </Grid>
 
-        {/* Top Boxes 2 */}
-        <Grid xs={12} md={4} onClick={() => handleClick(paths.dashboard.users)} style={{ cursor: 'pointer' }}>
-          <BookingWidgetSummary
-            title={t('Inactive User')}
-            total={194}
-            icon={'solar:users-group-two-rounded-bold-duotone'}
-          />
-        </Grid>
-
-        {/* Top Boxes 3 */}
-        <Grid xs={12} md={4} onClick={() => handleClick(paths.dashboard.business.root)} style={{ cursor: 'pointer' }}>
-          <BookingWidgetSummary
-            title={t('Active Business')}
-            total={180}
-            icon={'ic:round-business-center'}
-          />
-        </Grid>
-
-        {/* Top Boxes 4 */}
-        <Grid xs={12} md={4} onClick={() => handleClick(paths.dashboard.business.root)} style={{ cursor: 'pointer' }}>
-          <BookingWidgetSummary
-            title={t('Inactive Business')}
-            total={11}
-            icon={'ic:round-business-center'}
-          />
-        </Grid>
-
-        <Grid xs={12} md={4} onClick={() => handleClick(paths.dashboard.specializations)} style={{ cursor: 'pointer' }}>
-         
-        </Grid>
-
-        <Grid xs={12} md={4} onClick={() => handleClick(paths.dashboard.support)} style={{ cursor: 'pointer' }}>
-          
-        </Grid>
-
-
-        <Grid xs={12} md={6} lg={4}>
-          <AppCurrentDownload
-            title="Active & Inactive Users"
-            chart={{
-              series: [
-                { label: 'Active', value: 194 },
-                { label: 'Inactive', value: 166 },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
+        <Grid xs={12} md={6} lg={6} sx={{ height: "500px", }}>
           <AppAreaInstalled
-            title="Usage Across Different Areas"
+            title="Locations Metrics Across the Year"
             seriesData={seriesData}
             setSeriesData={setSeriesData}
             years={userStats?.availableYears}
+            onClick={() => handleClick(paths.dashboard.locations.root)}
             chart={{
-              categories: userStats?.months || [],
-               series:[{data:chartData || []}],
+              categories: [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+              ],
+              series: [{ data: chartData || [] }],
             }}
+            sx={{ height: '100%' }}
           />
         </Grid>
+
+
+        {/* <Grid xs={12} md={6} lg={8} sx={{ height: "510px", }}>
+        <Card>
+            <CardHeader title="Total Amount Charged Per Month" />
+            <CardContent>
+              <ChartLine
+                series={[
+                  {
+                    name: 'Amount',
+                    data: [100, 5000, 3000, 4000, 6000, 7000],
+                  },
+                ]}
+                categories={lastSixMonths}
+              />
+            </CardContent>
+          </Card>
+        </Grid> */}
+
+
 
         {/* <Grid xs={12} lg={8}>
         <BookingDetails

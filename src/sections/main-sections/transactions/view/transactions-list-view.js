@@ -1,41 +1,42 @@
-import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { Tab, Tabs, useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
 import Container from '@mui/material/Container';
+import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
+import { alpha, Box } from '@mui/system';
+import isEqual from 'lodash/isEqual';
+import { useCallback, useEffect, useState } from 'react';
 import { _roles } from 'src/_mock';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Label from 'src/components/label';
+import { LoadingScreen } from 'src/components/loading-screen';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
-  useTable,
   emptyRows,
+  TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
-  TableEmptyRows,
+  useTable,
 } from 'src/components/table';
+import { paths } from 'src/routes/paths';
+import UserTableFiltersResult from '../user-table-filters-result';
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
-import { Box } from '@mui/system';
-import { paths } from 'src/routes/paths';
-import { LoadingScreen } from 'src/components/loading-screen';
-import UserTableFiltersResult from '../user-table-filters-result';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID', width: 40 },
   { id: 'sender', label: 'Sender' },
-  { id: 'receiver', label: 'Receiver' },
-  { id: 'date', label: 'Date' },
-  { id: 'transaction_id', label: 'Transaction Id' },
-  { id: 'amount', label: 'Amount' },
+  { id: 'cardNo', label: 'Card No' },
+  { id: 'expiryDate', label: 'Expiry Date' },
+  { id: 'cvc', label: 'CVC' },
+  { id: 'transactionType', label: 'Transaction Type' },
   { id: 'status', label: 'Status' },
 ];
 
 const defaultFilters = {
   name: '',
-  email: '',
   status: 'all',
 };
 
@@ -54,6 +55,7 @@ const transactionsList = [
     },
     amount: '$ 100',
     transaction_id: 'TX123456789',
+    transaction_type: 'Credit Card',
     date: '2022-10-10',
     status: 'completed',
   },
@@ -73,6 +75,7 @@ const transactionsList = [
     amount: '$ 150',
     date: '2022-11-15',
     status: 'pending',
+    transaction_type: 'Google Pay',
   },
   {
     id: 3,
@@ -90,6 +93,7 @@ const transactionsList = [
     amount: '$ 200',
     date: '2022-12-01',
     status: 'completed',
+    transaction_type: 'Apple Pay',
   },
   {
     id: 4,
@@ -108,6 +112,7 @@ const transactionsList = [
     amount: '$ 250',
     date: '2023-01-20',
     status: 'pending',
+    transaction_type: 'Credit Card',
   },
   {
     id: 5,
@@ -125,35 +130,48 @@ const transactionsList = [
     amount: '$ 50',
     date: '2023-02-25',
     status: 'completed',
+    transaction_type: 'Credit Card',
   }
 ];
 
 
 export default function TransactionsListView() {
-  const table = useTable();
 
+
+  const table = useTable();
+  const theme = useTheme();
   const settings = useSettingsContext();
 
   const [filters, setFilters] = useState(defaultFilters);
+
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state && state.type) {
+      handleFilters('status', state.type);
+      navigate(window.location.pathname);
+    }
+  }, [state, navigate]);
 
   const TABS = [
     {
       value: 'all',
       label: 'All',
       color: 'default',
-      count: 0,
+      count: transactionsList.length,
     },
     {
-      value: 'active',
-      label: 'Active',
+      value: 'completed',
+      label: 'Completed',
       color: 'success',
-      count: 0,
+      count: transactionsList.filter((transaction) => transaction.status === 'completed').length,
     },
     {
-      value: 'inactive',
-      label: 'Inactive',
+      value: 'pending',
+      label: 'Pending',
       color: 'warning',
-      count: 0,
+      count: transactionsList.filter((transaction) => transaction.status === 'pending').length,
     },
   ];
 
@@ -161,7 +179,7 @@ export default function TransactionsListView() {
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!total_length && canReset) || !total_length;
+
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -173,8 +191,9 @@ export default function TransactionsListView() {
     },
     [table]
   );
-
-
+  const handleFilterStatus = useCallback((event, newValue) => {
+    handleFilters('status', newValue);
+  }, []);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -204,15 +223,13 @@ export default function TransactionsListView() {
                 { name: 'Dashboard', href: paths.dashboard.root },
                 { name: 'Transactions', href: paths.dashboard.transactions.root },
               ]}
-              sx={{
-                mb: { xs: 3, md: 5 },
-              }}
+              sx={{ mb: 3}}
             />
           </Box>
 
           <Card>
             {/* TABS */}
-            {/* <Tabs
+            <Tabs
               value={filters.status}
               onChange={handleFilterStatus}
               sx={{
@@ -245,7 +262,7 @@ export default function TransactionsListView() {
                   }
                 />
               ))}
-            </Tabs> */}
+            </Tabs>
 
             <UserTableToolbar filters={filters} onFilters={handleFilters} roleOptions={_roles} />
 
@@ -298,8 +315,10 @@ export default function TransactionsListView() {
             <TablePaginationCustom
               count={total_length || 1}
               page={table.page}
+              dense={table.dense}
               rowsPerPage={table.rowsPerPage}
               onPageChange={table.onChangePage}
+              onChangeDense={table.onChangeDense}
               onRowsPerPageChange={table.onChangeRowsPerPage}
             />
           </Card>

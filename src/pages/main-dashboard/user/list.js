@@ -8,9 +8,8 @@ export default function UserListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: User </title>
+        <title> Dashboard: User List Page </title>
       </Helmet>
-
       <UserListView />
     </>
   );

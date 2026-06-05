@@ -1,43 +1,41 @@
-import React, { useState, useCallback } from 'react';
-import isEqual from 'lodash/isEqual';
-import { useTheme, alpha } from '@mui/material/styles';
-import {
-  useTable,
-  emptyRows,
-  TableNoData,
-  TableHeadCustom,
-  TablePaginationCustom,
-  TableEmptyRows,
-} from 'src/components/table';
-import { useSettingsContext } from 'src/components/settings';
 import {
   Box,
   Card,
   Container,
+  Tab,
   Table,
   TableBody,
-  Tab,
   TableContainer,
   Tabs,
 } from '@mui/material';
-import Label from 'src/components/label';
+import { alpha, useTheme } from '@mui/material/styles';
+import isEqual from 'lodash/isEqual';
+import { useCallback, useState } from 'react';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import Scrollbar from 'src/components/scrollbar';
-import { paths } from 'src/routes/paths';
+import Label from 'src/components/label';
 import { LoadingScreen } from 'src/components/loading-screen';
-import UserTableToolbar from './contact-toolbar';
+import Scrollbar from 'src/components/scrollbar';
+import { useSettingsContext } from 'src/components/settings';
+import {
+  emptyRows,
+  TableEmptyRows,
+  TableHeadCustom,
+  TableNoData,
+  TablePaginationCustom,
+  useTable,
+} from 'src/components/table';
+import { paths } from 'src/routes/paths';
 import UserTableFiltersResult from './contact-result';
 import UserTableRow from './contact-table-row';
-import { useGetAllSupportQueriesQuery } from 'src/store/Reducer/adminSupport';
-import { gridColumnLookupSelector } from '@mui/x-data-grid';
+import UserTableToolbar from './contact-toolbar';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', width: 100 },
   { id: 'name', label: 'Name', width: 150 },
   { id: 'email', label: 'Email', width: 150 },
-  { id: 'message', label: 'Message', width: 180 },
-  { id: 'status', label: 'Status', width: 180 },
-  { id: 'action', label: 'Action', width: 180 },
+  { id: 'message', label: 'Message', width: 300 },
+  { id: 'status', label: 'Status', width: 180,align:"center" },
+  { id: 'action', label: 'Action', width: 180 ,align:'right'},
 ];
 
 const defaultFilters = {
@@ -242,9 +240,12 @@ export default function ContactListView() {
             <TablePaginationCustom
               count={total_length || 1}
               page={table.page}
+              dense={table.dense}
+              rowsPerPageOptions={[5, 10, 25]}
               rowsPerPage={table.rowsPerPage}
               onPageChange={table.onChangePage}
               onRowsPerPageChange={table.onChangeRowsPerPage}
+              onChangeDense={table.onChangeDense}
             />
           </Card>
         </Container>

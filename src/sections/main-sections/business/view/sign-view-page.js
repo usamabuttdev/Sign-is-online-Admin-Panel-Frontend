@@ -1,12 +1,11 @@
-import { Box, Card, Container, Divider, Grid, MenuItem, Paper, Slider, Typography } from '@mui/material'
-import React, { useCallback, useMemo } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Button, Card, Container, Divider, Grid, MenuItem, Paper, Slider, Typography } from '@mui/material';
+import { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import FormProvider, { RHFSelect, RHFTextField, RHFUpload } from 'src/components/hook-form';
-import { useSettingsContext } from 'src/components/settings'
-import { useForm } from 'react-hook-form';
+import { useSettingsContext } from 'src/components/settings';
 import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { StyledProgressBar } from 'src/components/progress-bar';
 
 const defaultValues = {
     text: '',
@@ -32,7 +31,6 @@ const SignViewPage = () => {
         defaultValues,
     });
     const onSubmit = (data) => {
-        console.log(data);
     }
     const onDrop = useCallback((acceptedFiles) => {
         const file = acceptedFiles[0];
@@ -69,7 +67,7 @@ const SignViewPage = () => {
                     ]}
                     sx={{ mb: 2 }}
                 />
-                <Card sx={{ p: { md: 3, xs: 1 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <Card sx={{ p: { md: 3, xs: 1 }, display: 'flex', flexDirection: 'column', height: 'auto' }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={8}>
                             <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -97,12 +95,13 @@ const SignViewPage = () => {
                                         ))}
                                     </RHFSelect>
                                     <Box sx={{ mb: 1 }}>Select Text color</Box>
-                                    <Box sx={{ width: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                        {colors.map((row, rowIndex) => (
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: { md: 'start', xs: "center" }, flexWrap: 'wrap', gap: 1 }}>
+                                        {colors.map((row) => (
                                             <Paper
+                                                key={row}
                                                 sx={{
-                                                    width: 40,
-                                                    height: 40,
+                                                    width: { md: 40, xs: 30 },
+                                                    height: { md: 40, xs: 30 },
                                                     backgroundColor: row,
                                                     cursor: 'pointer',
                                                     border: methods.watch("textColor") === row ? '2px solid black' : 'none'
@@ -112,12 +111,14 @@ const SignViewPage = () => {
                                         ))}
                                     </Box>
                                     <Box sx={{ mb: 1 }}>Background color</Box>
-                                    <Box sx={{ width: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                        {colors.map((row, rowIndex) => (
+                                    <Box sx={{ width: 1, display: 'flex', justifyContent: { md: 'start', xs: "center" }, flexWrap: 'wrap', gap: 1 }}>
+
+                                        {colors.map((row) => (
                                             <Paper
+                                                key={row}
                                                 sx={{
-                                                    width: 40,
-                                                    height: 40,
+                                                    width: { md: 40, xs: 30 },
+                                                    height: { md: 40, xs: 30 },
                                                     backgroundColor: row,
                                                     cursor: 'pointer',
                                                     border: methods.watch("backgroundColor") === row ? '2px solid black' : 'none'
@@ -137,19 +138,19 @@ const SignViewPage = () => {
                                         valueLabelDisplay="auto"
                                         sx={{ width: '100%' }}
                                     />
-
                                 </Box>
+
                             </FormProvider>
                         </Grid>
-                        <Grid item xs={12} md={4} sx={{ p: 2, textAlign: 'center' }}>
+                        <Grid item xs={12} md={4} sx={{ p: { md: 2 }, textAlign: 'center', mb: 3 }}>
                             <Paper
                                 elevation={3}
                                 sx={{
-                                    p: 3,
+                                    p: { md: 3, xs: 1 },
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    height: '100%',
+                                    height: { md: "100%", xs: "90%" },
                                     overflow: 'hidden',
                                 }}
                             >
@@ -159,9 +160,9 @@ const SignViewPage = () => {
                                 <Box
                                     sx={{
                                         width: '100%',
-                                        height: 300,
+                                        height: { md: 300, xs: 200 },
                                         borderRadius: 2,
-                                        overflow: 'hidden',
+                                        overflow: 'auto',
                                         backgroundColor: methods.watch('backgroundColor') || '#ffffff',
                                         backgroundImage: methods.watch('backgroundImage')?.preview
                                             ? `url(${methods.watch('backgroundImage').preview})`
@@ -178,7 +179,7 @@ const SignViewPage = () => {
                                         sx={{
                                             color: methods.watch('textColor') || '#000000',
                                             fontFamily: methods.watch('fontStyle') || 'inherit',
-                                            fontSize: '24px',
+                                            fontSize: { md: '24px', xs: '20px' },
                                             textAlign: 'center',
                                             px: 2,
                                             wordBreak: 'break-word',
@@ -189,6 +190,11 @@ const SignViewPage = () => {
                                 </Box>
 
                             </Paper>
+                            <Box sx={{ mt: 2, textAlign: 'right' }}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Save Changes
+                                </Button>
+                            </Box>
                         </Grid>
                     </Grid>
                 </Card>

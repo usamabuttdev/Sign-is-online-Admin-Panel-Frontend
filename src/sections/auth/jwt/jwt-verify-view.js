@@ -16,7 +16,7 @@ import { RouterLink } from 'src/routes/components';
 import FormProvider, { RHFCode, RHFTextField } from 'src/components/hook-form';
 import { useVerifyEmailMutation } from "../../../store/Reducer/auth";
 import {toast } from 'react-toastify';
-import { useSearchParams } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
@@ -25,6 +25,7 @@ export default function JWTVerifyView() {
   const searchParams = useSearchParams();
   const email=searchParams.get('email');
   const code=searchParams.get('activation_code');
+  const router = useRouter();
   const [verifyData, ] =
   useVerifyEmailMutation();
   const VerifySchema = Yup.object().shape({
@@ -51,9 +52,10 @@ export default function JWTVerifyView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await verifyData(data).unwrap();
+      // await verifyData(data).unwrap();
       // await new Promise((resolve) => setTimeout(resolve, 500));
       // console.info('DATA', data);
+      router.push(paths.auth.newPassword);
     } catch (error) {
       toast.error(error.data.message);
       console.error(error);
@@ -100,7 +102,7 @@ export default function JWTVerifyView() {
 
       <Link
         component={RouterLink}
-        href={paths.auth.jwt.login}
+        href={paths.auth.login}
         color="inherit"
         variant="subtitle2"
         sx={{

@@ -44,9 +44,9 @@ export default function JWTForgotPasswordView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-    let res=  await forgotPasswordData(data).unwrap();
-      toast.success(res?.message);
-      router.push(paths.auth.jwt.login)
+    // let res=  await forgotPasswordData(data).unwrap();
+      // toast.success(res?.message);
+      router.push(paths.auth.verify)
     } catch (error) {
       toast.error(error?.data?.error);
       console.error(error);
@@ -69,7 +69,7 @@ export default function JWTForgotPasswordView() {
 
       <Link
         component={RouterLink}
-        href={paths.auth.jwt.login}
+        href={paths.auth.login}
         color="inherit"
         variant="subtitle2"
         sx={{

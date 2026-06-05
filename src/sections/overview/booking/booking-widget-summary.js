@@ -3,15 +3,11 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { useTheme } from '@mui/material/styles';
+import { Tooltip } from '@mui/material';
 // utils
-import { fShortenNumber } from 'src/utils/format-number';
-import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
-import { Button } from '@mui/material';
-
 // ----------------------------------------------------------------------
 
-export default function BookingWidgetSummary({ title, total, image, icon, sx, ...other }) {
+export default function BookingWidgetSummary({ title, total, image, icon, pct , color ,goal, sx, ...other }) {
   const theme = useTheme();
 
   const PRIMARY_LIGHT = theme.palette.primary.light;
@@ -21,6 +17,7 @@ export default function BookingWidgetSummary({ title, total, image, icon, sx, ..
   const PRIMARY_DARK = theme.palette.primary.dark;
 
   return (
+    <Tooltip title={`Goal : ${goal}`}>
     <Card
       sx={{
         display: 'flex',
@@ -38,6 +35,7 @@ export default function BookingWidgetSummary({ title, total, image, icon, sx, ..
       }}
       {...other}
     >
+  
       <Box>
         <Box sx={{ mb: 1, typography: 'h3' }}>{total}</Box>
         <Box sx={{ color: 'text.secondary', typography: 'subtitle2' }}>{title}</Box>
@@ -53,37 +51,13 @@ export default function BookingWidgetSummary({ title, total, image, icon, sx, ..
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          backgroundColor:color,          
         }}
       >
-        {image ? (
-          <Image
-            alt="image"
-            src={image}
-            sx={{
-              width: '70%',
-              height: '70%',
-              objectFit: 'cover',
-            }}
-          />
-        ) : (
-          <Button
-            variant='contained'
-            sx={{
-              borderRadius: "100%",
-              p: "12px",
-              bgcolor: PRIMARY_MAIN,
-              "&:hover": {
-                bgcolor: PRIMARY_MAIN,
-                boxShadow: "none",
-              },
-            }}
-          >
-            <Iconify icon={icon} width={40} height={40} sx={{ color: 'background.neutral' }} />
-          </Button>
-        )
-        }
+        {pct} %
       </Box>
-    </Card>
+     </Card>
+    </Tooltip>
   );
 }
 
@@ -91,6 +65,5 @@ BookingWidgetSummary.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   sx: PropTypes.object,
   title: PropTypes.string,
-  total: PropTypes.number,
   total: PropTypes.number,
 };

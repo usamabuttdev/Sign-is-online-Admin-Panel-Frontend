@@ -1,74 +1,63 @@
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
-import { FormControlLabel, Radio } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import { Controller } from 'react-hook-form';
-import FormLabel from '@mui/material/FormLabel';
-import RadioGroup from '@mui/material/RadioGroup';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 // routes
-import { paths } from 'src/routes/paths';
 
-import { RouterLink } from 'src/routes/components';
-import { useSearchParams, useRouter } from 'src/routes/hooks';
+import { useRouter } from 'src/routes/hooks';
 // config
 import {
-  PATH_AFTER_LOGIN,
-  PATH_AFTER_SUPERADMIN_LOGIN,
-  PATH_AFTER_ADMIN_LOGIN,
   FORGOT_PASSWORD,
+  // PATH_AFTER_ADMIN_LOGIN,
+  PATH_AFTER_LOGIN,
 } from 'src/config-global';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // auth
-import { useAuthContext } from 'src/auth/hooks';
 // components
-import Iconify from 'src/components/iconify';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { useLoginMutation } from '../../../store/Reducer/auth';
-import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import Iconify from 'src/components/iconify';
 import { setUser } from '../../../store/slices/userSlice';
-import { enqueueSnackbar } from 'notistack';
+import { paths } from 'src/routes/paths';
+import { Link } from '@mui/material';
+import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
   const dispatch = useDispatch();
 
-  const [loginData] = useLoginMutation();
+  // const [loginData] = useLoginMutation();
 
   const router = useRouter();
+  console.log((paths.auth.forgotPassword))
 
   const [errorMsg, setErrorMsg] = useState('');
-
-  const searchParams = useSearchParams();
-
-  const returnTo = searchParams.get('returnTo');
-
-  // console.log( process.env.REACT_APP_LOGIN_TOKEN  ,' process.env.REACT_APP_LOGIN_TOKEN ')
-
   const password = useBoolean();
+
+  const ADMIN_EMAIL = process.env.REACT_APP_ADMIN_EMAIL;
+  const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters long'),
   });
 
-  const defaultValues = {
-    email: '',
-    password: '',
-  };
+  const defaultValues =  useMemo(()=>{
+   return {
+    email: ADMIN_EMAIL || '',
+    password: ADMIN_PASSWORD || '',
+   }  
+  } ,[ADMIN_EMAIL,ADMIN_PASSWORD]);
 
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
@@ -80,25 +69,14 @@ export default function JwtLoginView() {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-  const goTo = (role) => {
-    switch (role) {
-      case 'Employee':
-        router.push(PATH_AFTER_LOGIN);
-        break;
-      case 'Admin':
-        router.push(PATH_AFTER_ADMIN_LOGIN);
-        break;
-      case 'SuperAdmin':
-        router.push(PATH_AFTER_SUPERADMIN_LOGIN);
-        break;
-      default:
-        router.push(PATH_AFTER_LOGIN);
-        break;
-    }
-  };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+
+      // if(data.email !== ADMIN_EMAIL || data.password !== ADMIN_PASSWORD){
+      //   setErrorMsg('Invalid email or password');
+      //   return;
+      // }
       const user_data = {
         email: data.email,
         password: data.password,
@@ -108,11 +86,6 @@ export default function JwtLoginView() {
         userType: 'admin',
         token:'1234567890',
       };
-      // const response = await loginData(user_data).unwrap();
-
-      // if (!response.error) {
-        // enqueueSnackbar(response?.message || 'Login successfully', { variant: 'success' });
-        // dispatch(setUser(response?.data));
         dispatch(setUser(user_data));
         router.push(PATH_AFTER_LOGIN);
         reset();
@@ -125,15 +98,7 @@ export default function JwtLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Sign-In Online</Typography>
-
-      {/* <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">New user?</Typography>
-
-        <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
-          Create an account
-        </Link>
-      </Stack> */}
+      <Typography variant="h4">Sign in to Sign Is Online</Typography>
     </Stack>
   );
 
@@ -164,28 +129,16 @@ export default function JwtLoginView() {
         InputLabelProps={{ shrink: true }}
       />
 
-      {/* <FormControl component="fieldset">
-        <FormLabel component="legend">User Type</FormLabel>
-        <Controller
-          name="user_type"
-          control={methods.control}
-          render={({ field }) => (
-            <RadioGroup
-              row
-              aria-label="user_type"
-              {...field}  // Pass the field props from Controller
-            >
-              <FormControlLabel value="1" control={<Radio />} label="Super Admin" />
-              <FormControlLabel value="2" control={<Radio />} label="Admin" />
-              <FormControlLabel value="3" control={<Radio />} label="User" />
-            </RadioGroup>
-          )}
-        />
-      </FormControl> */}
-
-      {/* <Link onClick={() => router.push(FORGOT_PASSWORD)} variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end', cursor: 'pointer' }}>
+      <Link
+        component={RouterLink}
+        to={paths.auth.forgotPassword}
+        variant="body2"
+        color="inherit"
+        underline="always"
+        sx={{ alignSelf: 'flex-end', cursor: 'pointer' }}
+      >
         Forgot password?
-      </Link> */}
+      </Link>
 
       <LoadingButton
         fullWidth
@@ -203,11 +156,6 @@ export default function JwtLoginView() {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
-      {/* 
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert> */}
-
       {renderForm}
     </FormProvider>
   );

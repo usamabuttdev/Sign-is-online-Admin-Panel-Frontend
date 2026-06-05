@@ -1,1 +1,1 @@
-export {default as BusinessPage} from './business-list-page';
+export {default as BusinessPage} from './business-list-view';

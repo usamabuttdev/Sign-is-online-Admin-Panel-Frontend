@@ -84,14 +84,17 @@ CustomBreadcrumbs.propTypes = {
 
 function Separator() {
   return (
-    <Box
-      component="span"
-      sx={{
-        width: 4,
-        height: 4,
-        borderRadius: '50%',
-        bgcolor: 'text.disabled',
-      }}
-    />
+    // <Box
+    //   component="span"
+    //   sx={{
+    //     width: 4,
+    //     height: 4,
+    //     borderRadius: '50%',
+    //     bgcolor: 'text.disabled',
+    //   }}
+    // />
+  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+    &gt;
+  </Typography>
   );
 }
