@@ -22,13 +22,12 @@ jobs:
           cache: "yarn"
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Build
         run: yarn build
         env:
           NODE_ENV: production
-          NODE_OPTIONS: --max_old_space_size=1536
           DISABLE_ESLINT_PLUGIN: true
 
       - name: Reload app with PM2
