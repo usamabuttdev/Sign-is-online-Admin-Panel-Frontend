@@ -34,7 +34,7 @@ const TestimonialSection = () => {
     <Box sx={{ py: 10, px: { md: 3 }, backgroundColor: 'background.default' }}  component={MotionViewport}>
       <m.div variants={varFade().inUp}>
         <Typography variant="h3" align="center" gutterBottom>
-        What Our Users Say
+        Hear From Our Customers
       </Typography>
 
       <Box sx={{ mx: 'auto', maxWidth: 1280 }}>
