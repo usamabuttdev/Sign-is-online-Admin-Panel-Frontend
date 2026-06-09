@@ -1,0 +1,42 @@
+name: Build & Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: sign-in-frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+        env:
+          NODE_ENV: production
+          NODE_OPTIONS: --max_old_space_size=1536
+
+      - name: Reload app with PM2
+        run: |
+          cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+          pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+          pm2 save
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl --fail http://localhost:3000 || (pm2 logs frontend --lines 50 && exit 1)
