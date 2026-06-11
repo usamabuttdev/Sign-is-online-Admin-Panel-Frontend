@@ -19,8 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "yarn"
-          cache-dependency-path: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend/yarn.lock
 
       - name: Install dependencies
         working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
@@ -43,13 +41,3 @@ jobs:
         run: |
           sleep 5
           curl --fail http://localhost:3000 || (pm2 logs frontend --lines 50 && exit 1)
-
-      - name: Rollback on failure
-        if: failure()
-        run: |
-          cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-          git reset --hard HEAD~1
-          yarn install
-          yarn build
-          pm2 reload ecosystem.config.js --update-env
-          echo "Rolled back to previous version"
