@@ -1,10 +1,14 @@
 import isEqual from "lodash/isEqual";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import Card from "@mui/material/Card";
 import Table from "@mui/material/Table";
 import Container from "@mui/material/Container";
 import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
+import TableRow from "@mui/material/TableRow";
+import LinearProgress from "@mui/material/LinearProgress";
+import Alert from "@mui/material/Alert";
 import { _roles } from "src/_mock";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
@@ -22,63 +26,46 @@ import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
+import { useGetAllusersListQuery } from "src/store/Reducer/users";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60 , align:"center" },
   { id: "name", label: "Name" },
-  { id: "account", label: "Account" },
-  { id: "phone", label: "Phone" },
   { id: "email", label: "Email" },
   { id: "role", label: "Role" , align:"center" },
-  { id: "created_at", label: "Date" , align:"center" },
+  { id: "createdat", label: "Date" , align:"center" },
   { id: "action", label: "Action", width: 88 , align:"center"},
 ];
 
 const defaultFilters = { keyword: "", };
 
-
-const TABLE_DATA = [
-  {
-    id: 1,
-    account: "Account A",
-    name: "John Doe",
-    phone: "123-456-7890",
-    email: "john@example.com",
-    role: "Owner",
-    created_at: "2025-08-01T10:15:00Z"
-  },
-  {
-    id: 2,
-    account: "Account B",
-    name: "Jane Smith",
-    phone: "987-654-3210",
-    email: "jane@example.com",
-    role: "Editor",
-    created_at: "2025-08-10T14:45:00Z"
-  },
-  {
-    id: 3,
-    account: "Account C",
-    name: "Mike Johnson",
-    phone: "555-123-4567",
-    email: "mike@example.com",
-    role: "Owner",
-    created_at: "2025-08-23T08:30:00Z"
-  },
-];
-
 export default function UsersListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 10 });
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedKeyword(filters.keyword);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [filters.keyword]);
+
+  const queryParams = useMemo(() => ({
+    page: table.page + 1,
+    limit: table.rowsPerPage,
+    keyword: debouncedKeyword,
+  }), [table.page, table.rowsPerPage, debouncedKeyword]);
+
+  const { data, isLoading, isFetching, isError } = useGetAllusersListQuery(queryParams);
+
+  const users = data?.data || [];
+  const totalCount = data?.total_length || 0;
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
-
-
-  const dataFiltered = applyFilter(TABLE_DATA, filters.keyword);
-  const notFound = !dataFiltered.length && canReset;
-
+  const notFound = !isLoading && !users.length && canReset;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -90,6 +77,7 @@ export default function UsersListView() {
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
+    setDebouncedKeyword("");
   }, []);
 
   return (
@@ -106,6 +94,8 @@ export default function UsersListView() {
       </Box>
 
       <Card>
+        {isFetching && <LinearProgress />}
+
         <UserTableToolbar filters={filters} onFilters={handleFilters} roleOptions={_roles} />
 
         {canReset && (
@@ -113,7 +103,7 @@ export default function UsersListView() {
             filters={filters}
             onFilters={handleFilters}
             onResetFilters={handleResetFilters}
-            results={dataFiltered.length}
+            results={totalCount}
             sx={{ p: 2.5, pt: 0 }}
           />
         )}
@@ -125,23 +115,42 @@ export default function UsersListView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={TABLE_DATA.length}
+                rowCount={users.length}
                 numSelected={table.selected?.length}
               />
 
               <TableBody>
-              {dataFiltered.map((row, index) => (
-                <UsersTableRow
-                  key={row.id || row._id || index}
-                  row={row}
-                  selected={table.selected.includes(row.id)}
-                  index={index + 1}
-                  counter={index + 1 + table.page * table.rowsPerPage}
-                />
-                ))}
+                {isError && (
+                  <TableRow>
+                    <TableCell colSpan={TABLE_HEAD.length}>
+                      <Alert severity="error" sx={{ m: 2 }}>
+                        Failed to load users. Please try again.
+                      </Alert>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={TABLE_HEAD.length} sx={{ textAlign: "center", py: 6 }}>
+                      Loading users...
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  users.map((row, index) => (
+                    <UsersTableRow
+                      key={row.id || row._id || index}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      index={index + 1}
+                      counter={index + 1 + table.page * table.rowsPerPage}
+                    />
+                  ))
+                )}
+
                 <TableEmptyRows
                   height={denseHeight}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)}
                 />
                 {notFound && <TableNoData notFound={notFound} />}
               </TableBody>
@@ -150,7 +159,7 @@ export default function UsersListView() {
         </TableContainer>
 
         <TablePaginationCustom
-          count={dataFiltered.length || 1}
+          count={totalCount || 0}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
@@ -158,15 +167,5 @@ export default function UsersListView() {
         />
       </Card>
     </Container>
-  );
-}
-
-function applyFilter(tableData, search) {
-  if (!search) return tableData;
-
-  return tableData.filter((row) =>
-    Object.values(row).some((value) =>
-      String(value).toLowerCase().includes(search.toLowerCase())
-    )
   );
 }

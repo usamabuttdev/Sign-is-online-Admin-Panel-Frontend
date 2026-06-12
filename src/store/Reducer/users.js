@@ -27,8 +27,8 @@ export const usersApi = createApi({
             },
             transformResponse: (res) => ({
                 data: res.data,
-                usersCount: res.meta.usersCount,
-                total_length: res.data.length > 0 ? res.meta.totalRecords : 0,
+                usersCount: res.total,
+                total_length: res.total,
             }),
             providesTags: ['users'],
         }),

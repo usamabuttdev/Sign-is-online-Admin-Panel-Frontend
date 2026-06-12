@@ -6,23 +6,15 @@ import { Link } from "react-router-dom";
 import { paths } from "src/routes/paths";
 import TableCellTooltip from "src/components/table/table-cell-tooltip";
 import { formatDate } from "src/utils/format-time";
-import { useRouter } from "src/routes/hooks";
 
 export default function UsersTableRow({ row, selected }) {
-  const { id, account, name, phone, email, role } = row;
-  const { display, full } = formatDate(row.created_at);
-  const router = useRouter();
+  const { id, name, email, role } = row;
+  const { display, full } = formatDate(row.createdat);
 
   return (
     <TableRow hover selected={selected}>
       <TableCell align="center">{id}</TableCell>
       <TableCellTooltip>{name}</TableCellTooltip>
-      <TableCell sx={{cursor:"pointer"}} onClick={()=>router.push( `${paths.dashboard.accounts.profile}/1`)}>
-        <Tooltip title={`View Account Profile`} arrow>
-          {account}
-        </Tooltip>
-        </TableCell>
-      <TableCellTooltip>{phone}</TableCellTooltip>
       <TableCellTooltip>{email}</TableCellTooltip>
       <TableCellTooltip align="center">{role}</TableCellTooltip>
       <TableCell key={row.id} align="center">
