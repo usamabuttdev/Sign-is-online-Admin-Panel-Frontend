@@ -2,10 +2,11 @@ module.exports = {
   apps: [{
     name: 'frontend',
     cwd: __dirname,
-    script: 'http-server',
-    args: 'build -p 3000 --push-state --silent --cache 3600',
+    script: 'server.js',
     env: {
       NODE_ENV: 'production',
+      PORT: 3000,
+      API_TARGET: 'http://localhost:5000',
     },
     instances: 1,
     autorestart: true,
