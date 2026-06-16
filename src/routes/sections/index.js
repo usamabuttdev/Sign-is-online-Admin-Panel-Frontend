@@ -1,11 +1,7 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-// layouts
-import MainLayout from 'src/layouts/main';
-// config
-// import { PATH_AFTER_LOGIN } from 'src/config-global';
 //
-import { mainRoutes, HomePage } from './main';
+import { mainRoutes } from './main';
 import { authRoutes } from './auth';
 import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
@@ -21,22 +17,10 @@ const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 
 export default function Router() {
   return useRoutes([
-    // SET INDEX PAGE WITH SKIP HOME PAGE
-    // {
-    //   path: '/',
-    //   element: <Navigate to={PATH_AFTER_LOGIN} replace />,
-    // },
-
-    // ----------------------------------------------------------------------
-
-    // SET INDEX PAGE WITH HOME PAGE
+    // Redirect root to login
     {
       path: '/',
-      element: (
-        <MainLayout>
-        <HomePage />
-        </MainLayout>
-      ),
+      element: <Navigate to="/login" replace />,
     }, {
       path: '/login',
       element: (
