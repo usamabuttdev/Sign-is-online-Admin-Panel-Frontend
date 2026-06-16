@@ -8,7 +8,7 @@ import TableCellTooltip from "src/components/table/table-cell-tooltip";
 import { formatDate } from "src/utils/format-time";
 
 export default function UsersTableRow({ row, selected }) {
-  const { id, name, email, role } = row;
+  const { id, name, email, phone, role } = row;
   const { display, full } = formatDate(row.createdat);
 
   return (
@@ -16,6 +16,7 @@ export default function UsersTableRow({ row, selected }) {
       <TableCell align="center">{id}</TableCell>
       <TableCellTooltip>{name}</TableCellTooltip>
       <TableCellTooltip>{email}</TableCellTooltip>
+      <TableCellTooltip>{phone || '—'}</TableCellTooltip>
       <TableCellTooltip align="center">{role}</TableCellTooltip>
       <TableCell key={row.id} align="center">
         <Tooltip title={full} arrow>
@@ -31,7 +32,7 @@ export default function UsersTableRow({ row, selected }) {
           </IconButton>
       </Tooltip> */}
       <Tooltip title={'View User Profile'}>
-        <Link style={{ color: "inherit", textDecoration: "none" }} to={`${paths.dashboard.users.profile}/${1}`}>
+        <Link style={{ color: "inherit", textDecoration: "none" }} to={`${paths.dashboard.users.profile}/${id}`}>
           <IconButton color="inherit">
             <Iconify icon="solar:eye-bold" width={24} />
           </IconButton>
