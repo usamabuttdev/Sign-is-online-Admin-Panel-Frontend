@@ -24,12 +24,31 @@ jobs:
         working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
         run: yarn install
 
+      - name: Backup existing build
+        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        run: |
+          if [ -d build ] && [ -f build/index.html ]; then
+            cp -a build build.bak
+          fi
+
       - name: Build
         working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
         run: yarn build
         env:
           NODE_ENV: production
           DISABLE_ESLINT_PLUGIN: true
+          GENERATE_SOURCEMAP: false
+          NODE_OPTIONS: --max-old-space-size=2048
+
+      - name: Restore build on failure
+        if: failure()
+        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        run: |
+          if [ -d build.bak ]; then
+            rm -rf build
+            mv build.bak build
+            echo "Restored previous build after failure"
+          fi
 
       - name: Reload app with PM2
         run: |
