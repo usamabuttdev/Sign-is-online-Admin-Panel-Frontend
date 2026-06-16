@@ -50,10 +50,15 @@ jobs:
             echo "Restored previous build after failure"
           fi
 
-      - name: Reload app with PM2
+      - name: Stop any old process on port 3000
+        run: |
+          kill $(lsof -t -i:3000) 2>/dev/null || true
+          pm2 delete all 2>/dev/null || true
+
+      - name: Start with PM2
         run: |
           cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-          pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+          pm2 start ecosystem.config.js --update-env
           pm2 save
 
       - name: Health check
