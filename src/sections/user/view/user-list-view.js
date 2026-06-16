@@ -59,10 +59,11 @@ export default function UsersListView() {
     keyword: debouncedKeyword,
   }), [table.page, table.rowsPerPage, debouncedKeyword]);
 
-  const { data, isLoading, isFetching, isError } = useGetAllusersListQuery(queryParams);
+  const { data, isLoading, isFetching, isError, error } = useGetAllusersListQuery(queryParams);
 
   const users = data?.data || [];
   const totalCount = data?.total_length || 0;
+  const errorMessage = error?.data?.message || error?.data?.error || error?.error || '';
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
@@ -125,7 +126,7 @@ export default function UsersListView() {
                   <TableRow>
                     <TableCell colSpan={TABLE_HEAD.length}>
                       <Alert severity="error" sx={{ m: 2 }}>
-                        Failed to load users. Please try again.
+                        {errorMessage ? `Failed to load users: ${errorMessage}` : 'Failed to load users. Please try again.'}
                       </Alert>
                     </TableCell>
                   </TableRow>
