@@ -51,15 +51,19 @@ jobs:
             echo "Restored previous build after failure"
           fi
 
+      - name: Ensure PM2 survives as a system service
+        run: |
+          sudo pm2 startup systemd -u ec2-user --hp /home/ec2-user 2>/dev/null || true
+
       - name: Stop any old process on port 3000
         run: |
           kill $(lsof -t -i:3000) 2>/dev/null || true
           pm2 delete all 2>/dev/null || true
 
-      - name: Start with PM2
+      - name: Start with PM2 (detached from runner)
         run: |
           cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-          pm2 start ecosystem.config.js --update-env
+          setsid pm2 start ecosystem.config.js --update-env
           pm2 save
 
       - name: Health check
