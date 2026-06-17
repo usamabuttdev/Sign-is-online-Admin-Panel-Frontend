@@ -32,18 +32,15 @@ export const createCustomFetchBaseQuery = () => {
     },
   }); 
 
-  // Return the custom base query with additional 401 handling logic
   return async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
     if (result?.error) {
-      enqueueSnackbar(result?.error?.data?.message ||  result?.error?.data?.error || 'Something went wrong', {
-        variant: 'error'
-      })
+      const isParseError = result.error.status === 'PARSING_ERROR';
+      const message = isParseError
+        ? 'Server returned an unexpected response. Please try again or contact support.'
+        : (result?.error?.data?.message || result?.error?.data?.error || 'Something went wrong');
+      enqueueSnackbar(message, { variant: 'error' });
     }
-    // if (result.error && result.error.status === 401) {
-    //   localStorage.clear()
-    //   window.location.replace('/')
-    // }
 
     return result;
   };

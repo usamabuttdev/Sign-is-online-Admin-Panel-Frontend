@@ -63,7 +63,10 @@ export default function UsersListView() {
 
   const users = data?.data || [];
   const totalCount = data?.total_length || 0;
-  const errorMessage = error?.data?.message || error?.data?.error || error?.error || '';
+  const isParseError = error?.status === 'PARSING_ERROR';
+  const errorMessage = isParseError
+    ? 'The server returned an unexpected response. Please try again.'
+    : (error?.data?.message || error?.data?.error || error?.error || '');
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
