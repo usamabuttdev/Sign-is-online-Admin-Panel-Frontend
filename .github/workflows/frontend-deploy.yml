@@ -8,11 +8,11 @@ on:
 jobs:
   deploy:
     name: Deploy to EC2
-    runs-on: sign-in-frontend
+    runs-on: storefront-frontend
     steps:
       - name: Pull latest code
         run: |
-          cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+          cd /home/ec2-user/Storefront-Admin-Panel-Frontend
           git fetch origin main
           git reset --hard origin/main
 
@@ -22,18 +22,18 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        working-directory: /home/ec2-user/Storefront-Admin-Panel-Frontend
         run: yarn install
 
       - name: Backup existing build
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        working-directory: /home/ec2-user/Storefront-Admin-Panel-Frontend
         run: |
           if [ -d build ] && [ -f build/index.html ]; then
             cp -a build build.bak
           fi
 
       - name: Build
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        working-directory: /home/ec2-user/Storefront-Admin-Panel-Frontend
         run: yarn build
         env:
           NODE_ENV: production
@@ -43,7 +43,7 @@ jobs:
 
       - name: Restore build on failure
         if: failure()
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        working-directory: /home/ec2-user/Storefront-Admin-Panel-Frontend
         run: |
           if [ -d build.bak ]; then
             rm -rf build
@@ -58,9 +58,9 @@ jobs:
 
       - name: Start frontend as systemd service (survives runner cleanup)
         run: |
-          cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+          cd /home/ec2-user/Storefront-Admin-Panel-Frontend
           sudo systemd-run --unit=frontend \
-            --working-directory=/home/ec2-user/Sign-is-online-Admin-Panel-Frontend \
+            --working-directory=/home/ec2-user/Storefront-Admin-Panel-Frontend \
             --setenv=NODE_ENV=production \
             --setenv=PORT=3000 \
             --setenv=API_TARGET=http://172.31.34.106:5000 \
