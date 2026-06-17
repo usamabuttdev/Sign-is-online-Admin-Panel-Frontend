@@ -1,5 +1,4 @@
 const express = require('express');
-const db = require('../db');
 const devDb = require('../services/dev-db');
 const { authenticateToken } = require('../middleware/auth');
 
@@ -35,8 +34,8 @@ router.get('/listings-by-user/:id', authenticateToken, async (req, res) => {
     const { page = 1 } = req.query;
     const limit = 10;
     const offset = (parseInt(page) - 1) * limit;
-    const result = await db.query('SELECT * FROM bookings WHERE userid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
-    const countResult = await db.query('SELECT COUNT(*) FROM bookings WHERE userid = $1', [req.params.id]);
+    const result = await devDb.query('SELECT * FROM bookings WHERE userid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
+    const countResult = await devDb.query('SELECT COUNT(*) FROM bookings WHERE userid = $1', [req.params.id]);
     res.json({ success: true, data: result.rows, total: parseInt(countResult.rows[0].count), page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -58,8 +57,8 @@ router.get('/user-bookings/:id', authenticateToken, async (req, res) => {
     const { page = 1 } = req.query;
     const limit = 10;
     const offset = (parseInt(page) - 1) * limit;
-    const result = await db.query('SELECT * FROM bookings WHERE userid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
-    const countResult = await db.query('SELECT COUNT(*) FROM bookings WHERE userid = $1', [req.params.id]);
+    const result = await devDb.query('SELECT * FROM bookings WHERE userid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
+    const countResult = await devDb.query('SELECT COUNT(*) FROM bookings WHERE userid = $1', [req.params.id]);
     res.json({ success: true, data: result.rows, total: parseInt(countResult.rows[0].count), page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -71,8 +70,8 @@ router.get('/user-rentals/:id', authenticateToken, async (req, res) => {
     const { page = 1 } = req.query;
     const limit = 10;
     const offset = (parseInt(page) - 1) * limit;
-    const result = await db.query('SELECT * FROM bookings WHERE userid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
-    const countResult = await db.query('SELECT COUNT(*) FROM bookings WHERE userid = $1', [req.params.id]);
+    const result = await devDb.query('SELECT * FROM bookings WHERE userid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
+    const countResult = await devDb.query('SELECT COUNT(*) FROM bookings WHERE userid = $1', [req.params.id]);
     res.json({ success: true, data: result.rows, total: parseInt(countResult.rows[0].count), page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -84,8 +83,8 @@ router.get('/user-earnings/:id', authenticateToken, async (req, res) => {
     const { page = 1 } = req.query;
     const limit = 10;
     const offset = (parseInt(page) - 1) * limit;
-    const result = await db.query('SELECT * FROM transactions WHERE customerid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
-    const countResult = await db.query('SELECT COUNT(*) FROM transactions WHERE customerid = $1', [req.params.id]);
+    const result = await devDb.query('SELECT * FROM transactions WHERE customerid = $1 ORDER BY id DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset]);
+    const countResult = await devDb.query('SELECT COUNT(*) FROM transactions WHERE customerid = $1', [req.params.id]);
     res.json({ success: true, data: result.rows, total: parseInt(countResult.rows[0].count), page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -101,8 +100,8 @@ router.get('/documents-verification', authenticateToken, async (req, res) => {
     let idx = 1;
     if (keyword) { where += ` AND name ILIKE $${idx++}`; params.push(`%${keyword}%`); }
     if (status) { where += ` AND status = $${idx++}`; params.push(status); }
-    const countResult = await db.query(`SELECT COUNT(*) FROM customers ${where}`, params);
-    const result = await db.query(`SELECT * FROM customers ${where} ORDER BY id DESC LIMIT $${idx} OFFSET $${idx+1}`, [...params, parseInt(limit), offset]);
+    const countResult = await devDb.query(`SELECT COUNT(*) FROM customers ${where}`, params);
+    const result = await devDb.query(`SELECT * FROM customers ${where} ORDER BY id DESC LIMIT $${idx} OFFSET $${idx+1}`, [...params, parseInt(limit), offset]);
     res.json({ success: true, data: result.rows, total: parseInt(countResult.rows[0].count), page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -112,7 +111,7 @@ router.get('/documents-verification', authenticateToken, async (req, res) => {
 router.patch('/documents/:id/status', authenticateToken, async (req, res) => {
   try {
     const { status } = req.body;
-    await db.query('UPDATE customers SET status = $1, updatedat = CURRENT_TIMESTAMP WHERE id = $2', [status, req.params.id]);
+    await devDb.query('UPDATE customers SET status = $1, updatedat = CURRENT_TIMESTAMP WHERE id = $2', [status, req.params.id]);
     res.json({ success: true, message: 'Document status updated' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

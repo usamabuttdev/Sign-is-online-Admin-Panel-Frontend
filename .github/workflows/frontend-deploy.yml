@@ -64,7 +64,6 @@ jobs:
             --working-directory=/home/ec2-user/Sign-is-online-Admin-Panel-Frontend \
             --setenv=NODE_ENV=production \
             --setenv=PORT=3000 \
-            --setenv=API_TARGET=http://172.31.34.106:5000 \
             node server.js
 
       - name: Health check

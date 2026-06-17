@@ -1,7 +1,5 @@
-require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const initializeSchema = require('./server/schema');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,7 +37,7 @@ app.use('/trainers', require('./server/routes/trainers'));
 
 // Diagnostics (no auth required)
 app.get('/diagnostics', async (req, res) => {
-  const results = { mssql: { connect: false, query: false }, postgres: { connect: false, query: false } };
+  const results = { mssql: { connect: false, query: false } };
   try {
     const devDb = require('./server/services/dev-db');
     await devDb.getPool();
@@ -52,14 +50,6 @@ app.get('/diagnostics', async (req, res) => {
     }
   } catch (e) {
     results.mssql.connectError = e.message;
-  }
-  try {
-    const pg = require('./server/db');
-    const q = await pg.query('SELECT 1 AS ok');
-    results.postgres.connect = true;
-    results.postgres.query = q.rows.length > 0;
-  } catch (e) {
-    results.postgres.connectError = e.message;
   }
   res.json({ success: true, data: results });
 });
@@ -76,17 +66,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(BUILD_DIR, 'index.html'));
 });
 
-async function start() {
-  try {
-    await initializeSchema();
-  } catch (err) {
-    console.warn('Schema init skipped:', err.message);
-  }
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-start();
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 module.exports = app;
