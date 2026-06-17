@@ -53,13 +53,13 @@ jobs:
 
       - name: Stop old frontend service
         run: |
-          sudo systemctl stop frontend 2>/dev/null || true
-          sudo systemctl kill frontend 2>/dev/null || true
+          sudo systemctl stop storefront-frontend 2>/dev/null || true
+          sudo systemctl kill storefront-frontend 2>/dev/null || true
 
       - name: Start frontend as systemd service (survives runner cleanup)
         run: |
           cd /home/ec2-user/Storefront-Admin-Panel-Frontend
-          sudo systemd-run --unit=frontend \
+          sudo systemd-run --unit=storefront-frontend \
             --working-directory=/home/ec2-user/Storefront-Admin-Panel-Frontend \
             --setenv=NODE_ENV=production \
             --setenv=PORT=3000 \
@@ -69,4 +69,4 @@ jobs:
       - name: Health check
         run: |
           sleep 5
-          curl --fail http://localhost:3000 || (sudo journalctl -u frontend --no-pager -n 50 && exit 1)
+          curl --fail http://localhost:3000 || (sudo journalctl -u storefront-frontend --no-pager -n 50 && exit 1)
