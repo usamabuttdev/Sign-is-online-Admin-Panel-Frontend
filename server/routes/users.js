@@ -29,6 +29,18 @@ router.get('/all-users', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/user/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await devDb.query('SELECT UserID as id, FullName as name, Email as email, Phone as phone, Role as role, CreatedAt as createdat FROM users WHERE UserID = $1', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 router.get('/listings-by-user/:id', authenticateToken, async (req, res) => {
   try {
     const { page = 1 } = req.query;
