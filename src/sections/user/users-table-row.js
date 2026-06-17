@@ -23,6 +23,7 @@ export default function UsersTableRow({ row, selected }) {
   return (
     <TableRow hover selected={selected}>
       <TableCellTooltip>{name}</TableCellTooltip>
+      <TableCellTooltip>—</TableCellTooltip>
       <TableCellTooltip>{email}</TableCellTooltip>
       <TableCellTooltip>{phone || '—'}</TableCellTooltip>
       <TableCellTooltip align="center">{role}</TableCellTooltip>
