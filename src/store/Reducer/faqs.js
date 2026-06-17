@@ -9,7 +9,7 @@ export const FaqsApi = createApi({
 
         getAllHomeFaqs: builder.query({
             query: () => ({
-                url: `settings/faqs`,
+                url: `/settings/faqs`,
                 method: "GET",
                 transformResponse: (res) => ({
                     data: res.data,
@@ -21,7 +21,7 @@ export const FaqsApi = createApi({
 
         getAllFaqs: builder.query({
             query: () => ({
-                url: `admin/faqs`,
+                url: `/admin/faqs`,
                 method: "GET",
                 transformResponse: (res) => ({
                     data: res.data,
@@ -33,7 +33,7 @@ export const FaqsApi = createApi({
 
         addNewFaq: builder.mutation({
             query: (newFaq) => ({
-                url: `admin/faqs`,
+                url: `/admin/faqs`,
                 method: "POST",
                 body: newFaq,
             }),

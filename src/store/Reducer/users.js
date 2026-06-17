@@ -10,7 +10,7 @@ export const usersApi = createApi({
         // ---------------------- USERS ----------------------
         getAllusersList: builder.query({
             query: ({  page, limit , keyword , isActive  , userType}) => {
-                let url = `admin/all-users?page=${page}&limit=${limit}`; 
+                let url = `/admin/all-users?page=${page}&limit=${limit}`; 
                 if (keyword) {
                   url += `&keyword=${keyword}`;
                 }
@@ -35,7 +35,7 @@ export const usersApi = createApi({
 
         getusersByListing: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `admin/listings-by-user/${_id}?&page=${pageno + 1}`,
+                url: `/admin/listings-by-user/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -55,7 +55,7 @@ export const usersApi = createApi({
 
         getusersBookings: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `admin/user-bookings/${_id}?&page=${pageno + 1}`,
+                url: `/admin/user-bookings/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -66,7 +66,7 @@ export const usersApi = createApi({
 
         getusersRentals: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `admin/user-rentals/${_id}?&page=${pageno + 1}`,
+                url: `/admin/user-rentals/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -77,7 +77,7 @@ export const usersApi = createApi({
 
         getusersEarnings: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `admin/user-earnings/${_id}?&page=${pageno + 1}`,
+                url: `/admin/user-earnings/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -90,7 +90,7 @@ export const usersApi = createApi({
 
         getAllDocumentsVerificationList: builder.query({
             query: ({ status, pageno, keyword }) => ({
-                url: `admin/documents-verification?status=${status}&page=${pageno + 1}&keyword=${keyword}`,
+                url: `/admin/documents-verification?status=${status}&page=${pageno + 1}&keyword=${keyword}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({

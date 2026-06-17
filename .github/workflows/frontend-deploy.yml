@@ -37,6 +37,7 @@ jobs:
         run: yarn build
         env:
           NODE_ENV: production
+          REACT_APP_HOST_API: /
           DISABLE_ESLINT_PLUGIN: true
           GENERATE_SOURCEMAP: false
           NODE_OPTIONS: --max-old-space-size=2048

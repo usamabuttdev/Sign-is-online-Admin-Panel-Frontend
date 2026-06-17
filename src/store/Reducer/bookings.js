@@ -7,7 +7,7 @@ export const bookingApi = createApi({
   endpoints: (builder) => ({
     getAllBookings: builder.query({
       query: ({ page , limit   , keyword ,isActive }) => {
-        let url = `admin/bookings?page=${page}&limit=${limit}`; 
+        let url = `/admin/bookings?page=${page}&limit=${limit}`; 
         if (keyword) {
           url += `&keyword=${keyword}`;
         }

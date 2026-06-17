@@ -9,7 +9,7 @@ export const adminSettingsApi = createApi({
 
         getPrivacyPolicy: builder.query({
             query: () => ({
-                url: `settings/privacy-policy`,
+                url: `/settings/privacy-policy`,
                 method: "GET",
             }),
             transformResponse: (res) => res.data,
@@ -18,7 +18,7 @@ export const adminSettingsApi = createApi({
 
         getAboutUs: builder.query({
             query: () => ({
-                url: `settings/about-us`,
+                url: `/settings/about-us`,
                 method: "GET",
                 transformResponse: (res) => res.data,
             }),
@@ -27,7 +27,7 @@ export const adminSettingsApi = createApi({
 
         getTermsConditions: builder.query({
             query: () => ({
-                url: `settings/terms-conditions`,
+                url: `/settings/terms-conditions`,
                 method: "GET",
             }),
             transformResponse: (res) => res.data,
@@ -36,7 +36,7 @@ export const adminSettingsApi = createApi({
 
         updateSetting: builder.mutation({
             query: ({ _id, data }) => ({
-                url: `settings/update/${_id}`,
+                url: `/settings/update/${_id}`,
                 method: 'PUT',
                 body: data,
             }),

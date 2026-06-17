@@ -11,7 +11,7 @@ export const fileApi = createApi({
         const formData = new FormData();
         formData.append("files", fileData);
         return {
-          url: "upload/s3", // Update the URL here
+          url: "/upload/s3",
           method: "POST",
           body: formData,
         };

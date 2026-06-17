@@ -8,7 +8,7 @@ export const contactApi = createApi({
     endpoints: (builder) => ({
         getAllContactUs: builder.query({
             query: ({ status, pageno, keyword, limit }) => ({
-                url: `admin/contact-us?${status ? `status=${status}&` : ''}page=${pageno + 1}&keyword=${keyword}&limit=${limit}`,
+                url: `/admin/contact-us?${status ? `status=${status}&` : ''}page=${pageno + 1}&keyword=${keyword}&limit=${limit}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({

@@ -7,7 +7,7 @@ export const trainerApi = createApi({
   endpoints: (builder) => ({
     getAllTrainers: builder.query({
       query: ({ pageno, search }) => ({
-        url: `api/admin/trainers?pageno=${pageno}&search=${search}`,
+        url: `/api/admin/trainers?pageno=${pageno}&search=${search}`,
         method: "GET",
         transformResponse: (res) => res,
       }),

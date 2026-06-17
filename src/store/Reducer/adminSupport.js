@@ -9,7 +9,7 @@ export const adminSupportApi = createApi({
 
         getAllSupportQueries: builder.query({
             query: ({ status, pageno, keyword, limit }) => ({
-                url: `admin/support-requests?${status ? `status=${status}&` : ''}page=${pageno + 1}&keyword=${keyword}&limit=${limit}`,
+                url: `/admin/support-requests?${status ? `status=${status}&` : ''}page=${pageno + 1}&keyword=${keyword}&limit=${limit}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({

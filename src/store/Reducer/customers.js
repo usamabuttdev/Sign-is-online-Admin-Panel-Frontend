@@ -9,7 +9,7 @@ export const  customersApi = createApi({
 
     getAllCustomers: builder.query({
       query: ({ pageno, search }) => ({
-        url: `api/admin/customers?pageno=${pageno}&search=${search}`,
+        url: `/api/admin/customers?pageno=${pageno}&search=${search}`,
         method: "GET",
         transformResponse: (res) => res,
       }),
@@ -17,7 +17,7 @@ export const  customersApi = createApi({
     }),
     updateCustomerStatus: builder.mutation({
       query: (id) => ({
-        url: `api/admin/customer/status/${id}`,
+        url: `/api/admin/customer/status/${id}`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       }),
@@ -26,19 +26,19 @@ export const  customersApi = createApi({
 
     updateCustomerApprovalStatus: builder.mutation({
       query: (id) => ({
-        url: `api/admin/customer/account/approve/${id}`,
+        url: `/api/admin/customer/account/approve/${id}`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       }),
     }),
 
     getCustomerById: builder.query({
-      query: (id) => `api/admin/customer/${id}`,
+      query: (id) => `/api/admin/customer/${id}`,
     }),
 
     addNewCustomer: builder.mutation({
       query: (newCustomer) => ({
-        url: `api/admin/customer`,
+        url: `/api/admin/customer`,
         method: "POST",
         body: newCustomer,
       }),
@@ -46,7 +46,7 @@ export const  customersApi = createApi({
 
     updateCustomer: builder.mutation({
       query: (updatedCustomer) => ({
-        url: `api/admin/customer/edit`,
+        url: `/api/admin/customer/edit`,
         method: "PUT",
         body: updatedCustomer,
       }),
@@ -55,7 +55,7 @@ export const  customersApi = createApi({
 
     customerWithdraw: builder.mutation({
       query: (data) => ({
-        url: `api/admin/customer/balance/topup_withdrawal`,
+        url: `/api/admin/customer/balance/topup_withdrawal`,
         method: "PUT",
         body: data,
       }),
@@ -64,7 +64,7 @@ export const  customersApi = createApi({
 
     customerTopUp: builder.mutation({
       query: (data) => ({
-        url: `api/admin/customer/balance/topup_withdrawal`,
+        url: `/api/admin/customer/balance/topup_withdrawal`,
         method: "PUT",
         body: data,
       }),
@@ -73,7 +73,7 @@ export const  customersApi = createApi({
 
     customerAccToAcc: builder.mutation({
       query: (data) => ({
-        url: `api/admin/customer/balance/topup_withdrawal`,
+        url: `/api/admin/customer/balance/topup_withdrawal`,
         method: "PUT",
         body: data,
       }),
@@ -82,7 +82,7 @@ export const  customersApi = createApi({
 
     getCustomerBookings: builder.query({
       query: ({ id, pageno }) => ({
-        url: `api/admin/customer/transactions/history/${id}?pageno=${pageno}`,
+        url: `/api/admin/customer/transactions/history/${id}?pageno=${pageno}`,
         method: "GET",
         transformResponse: (res) => res,
         providesTags: ['Customers']
