@@ -15,7 +15,6 @@ import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import {
   useTable,
-  emptyRows,
   TableHeadCustom,
   TablePaginationCustom,
   TableEmptyRows,
@@ -154,7 +153,7 @@ export default function UsersListView() {
 
                 <TableEmptyRows
                   height={denseHeight}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)}
+                  emptyRows={users.length < table.rowsPerPage ? table.rowsPerPage - users.length : 0}
                 />
                 {notFound && <TableNoData notFound={notFound} />}
               </TableBody>
