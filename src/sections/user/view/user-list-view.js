@@ -29,7 +29,7 @@ import { useGetAllusersListQuery } from "src/store/Reducer/users";
 
 const TABLE_HEAD = [
   { id: "name", label: "Name" },
-  { id: "email", label: "Account" },
+  { id: "email", label: "Email Address" },
   { id: "phone", label: "Phone" },
   { id: "role", label: "Role" , align:"center" },
   { id: "createdat", label: "Created" , align:"center" },
