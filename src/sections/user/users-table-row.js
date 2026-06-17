@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { TableRow, TableCell, IconButton, Tooltip } from "@mui/material";
+import { TableRow, TableCell, IconButton, Tooltip, ClickAwayListener } from "@mui/material";
 import Iconify from "src/components/iconify";
 import { Link } from "react-router-dom";
 import { paths } from "src/routes/paths";
@@ -10,6 +10,15 @@ import { formatDate } from "src/utils/format-time";
 export default function UsersTableRow({ row, selected }) {
   const { id, name, email, phone, role } = row;
   const { display, full } = formatDate(row.createdat);
+  const [dateTooltipOpen, setDateTooltipOpen] = useState(false);
+
+  const handleDateClick = useCallback(() => {
+    setDateTooltipOpen((prev) => !prev);
+  }, []);
+
+  const handleDateTooltipClose = useCallback(() => {
+    setDateTooltipOpen(false);
+  }, []);
 
   return (
     <TableRow hover selected={selected}>
@@ -18,9 +27,21 @@ export default function UsersTableRow({ row, selected }) {
       <TableCellTooltip>{phone || '—'}</TableCellTooltip>
       <TableCellTooltip align="center">{role}</TableCellTooltip>
       <TableCell key={row.id} align="center">
-        <Tooltip title={full} arrow>
-          <span>{display}</span>
-        </Tooltip>
+        <ClickAwayListener onClickAway={handleDateTooltipClose}>
+          <Tooltip
+            title={full}
+            arrow
+            open={dateTooltipOpen}
+            onClose={handleDateTooltipClose}
+            disableHoverListener
+            disableFocusListener
+            disableTouchListener
+          >
+            <span onClick={handleDateClick} style={{ cursor: "pointer" }}>
+              {display}
+            </span>
+          </Tooltip>
+        </ClickAwayListener>
     </TableCell>
 
       {/* Action Column */}
