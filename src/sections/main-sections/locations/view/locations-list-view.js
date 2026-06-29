@@ -121,7 +121,7 @@ export default function LocationsListView() {
                     <LocationsTableRow
                       key={row.id || row._id || index}
                       row={row}
-                      selected={table.selected.includes(row.id)}
+                      selected={table.selected?.includes(row.id)}
                       index={index + 1}
                       counter={index + 1 + table.page * table.rowsPerPage}
                     />
