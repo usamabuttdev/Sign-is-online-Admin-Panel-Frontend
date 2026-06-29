@@ -1,56 +1,33 @@
-// @mui
 import Container from '@mui/material/Container';
-// routes
 import { paths } from 'src/routes/paths';
-// hooks
-// _mock
-// components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-//
 import ProfileHome from '../profile-home';
 import { Stack } from '@mui/material';
-
-
-
-// ----------------------------------------------------------------------
-
-// ----------------------------------------------------------------------
+import { useParams } from 'react-router-dom';
+import { useGetLocationByIdQuery } from 'src/store/Reducer/locations';
 
 export default function LocationsProfileView() {
   const settings = useSettingsContext();
-  let data = {
-    id: 1,
-    title: "Location A",
-    account: "Account 1",
-    authenticated: "Yes",
-    sign_exists: "Yes",
-    platforms_count: 3,
-    product: "Product X",
-    city: "New York",
-    state: "NY",
-    created_at: "2025-08-01",
-    action: "View",
-  }
+  const { id } = useParams();
+  const { data: apiData, isFetching } = useGetLocationByIdQuery(id);
+  const location = apiData?.data || null;
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <Stack direction="row" spacing={2}>
-      <CustomBreadcrumbs
-        heading="Locations"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Locations', href: paths.dashboard.locations.root },
-          { name: 'John Doe' },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
+        <CustomBreadcrumbs
+          heading="Locations"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Locations', href: paths.dashboard.locations.root },
+            { name: location?.title || id || '' },
+          ]}
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
       </Stack>
 
-     <ProfileHome location={data}  />
-
+      {isFetching ? <div>Loading...</div> : <ProfileHome location={location} />}
     </Container>
   );
 }

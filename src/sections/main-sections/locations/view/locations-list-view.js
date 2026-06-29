@@ -22,6 +22,7 @@ import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
+import { useGetAllLocationsQuery } from "src/store/Reducer/locations";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60 , align:"center" },
@@ -41,61 +42,22 @@ const defaultFilters = {
   search: "",
 };
 
-const TABLE_DATA = [
-  {
-    id: 1,
-    title: "Location A",
-    account: "Account A",
-    authenticated: "Yes",
-    sign_exists: "Yes",
-    platforms_count: 3,
-    product: "Product X",
-    city: "New York",
-    state: "NY",
-    created_at: "2025-08-01T10:30:00Z", // ISO format
-    action: "View",
-    subscription:true
-  },
-  {
-    id: 2,
-    title: "Location B",
-    account: "Account B",
-    authenticated: "No",
-    sign_exists: "No",
-    platforms_count: 1,
-    product: "Product Y",
-    city: "Chicago",
-    state: "IL",
-    created_at: "2025-08-05T14:15:00Z",
-    action: "Edit",
-    subscription:false
-  },
-  {
-    id: 3,
-    title: "Location C",
-    account: "Account C",
-    authenticated: "Yes",
-    sign_exists: "Yes",
-    platforms_count: 2,
-    product: "Product Z",
-    city: "San Francisco",
-    state: "CA",
-    created_at: "2025-08-10T09:00:00Z",
-    action: "Delete",
-    subscription:true
-  },
-];
-
-
-
 export default function LocationsListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
 
+  const { data: apiData, isFetching } = useGetAllLocationsQuery({
+    pageno: table.page + 1,
+    search: filters.search,
+  });
+
+  const TABLE_DATA = apiData?.data || [];
+  const total = apiData?.total || 0;
+
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
-  
+
   const filteredData = applyFilter(TABLE_DATA, filters.search);
   const notFound = !filteredData.length && canReset;
 
@@ -113,7 +75,6 @@ export default function LocationsListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
@@ -153,8 +114,10 @@ export default function LocationsListView() {
               />
 
               <TableBody>
-                {filteredData.map((row, index) => (
-                  (
+                {isFetching ? (
+                  <tr><td colSpan={11} style={{ textAlign: "center", padding: "20px" }}>Loading...</td></tr>
+                ) : (
+                  filteredData.map((row, index) => (
                     <LocationsTableRow
                       key={row.id || row._id || index}
                       row={row}
@@ -162,8 +125,8 @@ export default function LocationsListView() {
                       index={index + 1}
                       counter={index + 1 + table.page * table.rowsPerPage}
                     />
-                  )
-                ))}
+                  ))
+                )}
 
                 <TableEmptyRows
                   height={denseHeight}
@@ -176,7 +139,7 @@ export default function LocationsListView() {
         </TableContainer>
 
         <TablePaginationCustom
-          count={filteredData.length || 1}
+          count={total || 1}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
@@ -187,13 +150,11 @@ export default function LocationsListView() {
   );
 }
 
-
 function applyFilter(tableData, search) {
   if (!search) return tableData;
-
   return tableData.filter((row) =>
     Object.values(row).some((value) =>
       String(value).toLowerCase().includes(search.toLowerCase())
     )
   );
-}
+};

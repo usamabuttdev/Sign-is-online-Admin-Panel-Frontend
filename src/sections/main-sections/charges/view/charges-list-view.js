@@ -22,6 +22,7 @@ import { paths } from "src/routes/paths";
 import ChargesTableRow from "../charges-table-row";
 import UserTableFiltersResult from "../user-table-filters-result";
 import UserTableToolbar from "../user-table-toolbar";
+import { useGetAllChargesQuery } from "src/store/Reducer/charges";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60 , align:"center" },
@@ -38,60 +39,18 @@ const defaultFilters = {
   documentStatus: "",
 };
 
-const TABLE_DATA = [
-  {
-    id: 1,
-    account: "Account A",
-    amount: "$120.00",
-    method: "Credit Card",
-    created_at: "2025-08-01T00:00:00Z",
-    action: "View",
-    status: "Attempted",
-  },
-  {
-    id: 2,
-    account: "Account B",
-    amount: "$75.50",
-    method: "PayPal",
-    created_at: "2025-08-05T00:00:00Z",
-    action: "Edit",
-    status: "Successful",
-  },
-  {
-    id: 3,
-    account: "Account C",
-    amount: "$300.00",
-    method: "Bank Transfer",
-    created_at: "2025-08-10T00:00:00Z",
-    action: "Delete",
-    status: "Successful",
-  },
-  {
-    id: 4,
-    account: "Account D",
-    amount: "$95.25",
-    method: "Credit Card",
-    created_at: "2025-08-15T00:00:00Z",
-    action: "View",
-    status: "Refunded",
-  },
-  {
-    id: 5,
-    account: "Account E",
-    amount: "$200.75",
-    method: "Stripe",
-    created_at: "2025-08-20T00:00:00Z",
-    action: "Edit",
-    status: "Attempted",
-  },
-];
-
-
-
 export default function ChargesListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+
+  const { data: apiData, isFetching } = useGetAllChargesQuery({
+    pageno: table.page + 1,
+    search: filters.search,
+  });
+
+  const TABLE_DATA = apiData?.data || [];
+  const total = apiData?.total || 0;
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
@@ -109,11 +68,9 @@ export default function ChargesListView() {
     [table]
   );
 
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
@@ -148,7 +105,7 @@ export default function ChargesListView() {
             filters={filters}
             onFilters={handleFilters}
             onResetFilters={handleResetFilters}
-            results={TABLE_DATA.length}
+            results={filteredData.length}
             sx={{ p: 2.5, pt: 0 }}
           />
         )}
@@ -170,8 +127,14 @@ export default function ChargesListView() {
               />
 
               <TableBody>
-                {filteredData.map((row, index) => (
-                  (
+                {isFetching ? (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredData.map((row, index) => (
                     <ChargesTableRow
                       key={row.id || row._id || index}
                       row={row}
@@ -179,8 +142,8 @@ export default function ChargesListView() {
                       index={index + 1}
                       counter={index + 1 + table.page * table.rowsPerPage}
                     />
-                  )
-                ))}
+                  ))
+                )}
 
                 <TableEmptyRows
                   height={denseHeight}
@@ -197,7 +160,7 @@ export default function ChargesListView() {
         </TableContainer>
 
         <TablePaginationCustom
-          count={filteredData.length || 1}
+          count={total || 1}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
@@ -208,10 +171,8 @@ export default function ChargesListView() {
   );
 }
 
-
-function applyFilter  (tableData, search) {
+function applyFilter(tableData, search) {
   if (!search) return tableData;
-
   return tableData.filter((row) =>
     Object.values(row).some((value) =>
       String(value).toLowerCase().includes(search.toLowerCase())

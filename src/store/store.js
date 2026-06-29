@@ -19,6 +19,8 @@ import { bookingApi } from "./Reducer/bookings";
 import { transactionApi } from "./Reducer/transactions";
 import { dashboardApi } from "./Reducer/dashboard";
 import { accountsApi } from "./Reducer/accounts";
+import { chargesApi } from "./Reducer/charges";
+import { locationsApi } from "./Reducer/locations";
 import { fileApi } from "./Reducer/file";
 
 // Define the persist configuration
@@ -51,6 +53,8 @@ export const store = configureStore({
     [transactionApi.reducerPath]: transactionApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [accountsApi.reducerPath]: accountsApi.reducer,
+    [chargesApi.reducerPath]: chargesApi.reducer,
+    [locationsApi.reducerPath]: locationsApi.reducer,
     [fileApi.reducerPath]: fileApi.reducer,
     user: persistedUserReducer,
   },
@@ -75,6 +79,8 @@ export const store = configureStore({
       transactionApi.middleware,
       dashboardApi.middleware,
       accountsApi.middleware,
+      chargesApi.middleware,
+      locationsApi.middleware,
       authApi.middleware, 
       fileApi.middleware,
     ),

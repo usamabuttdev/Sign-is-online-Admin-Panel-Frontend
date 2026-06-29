@@ -26,7 +26,7 @@ export default function ProfileHome({ location }) {
         <Stack direction="row" spacing={2}>
           <Iconify icon="mdi:shield-check" width={24} />
           <Box sx={{ typography: 'body2' }}>
-            {location.authenticated ? 'Authenticated' : 'Not Authenticated'}
+            {location.authenticated === 'Yes' ? 'Authenticated' : 'Not Authenticated'}
           </Box>
         </Stack>
 

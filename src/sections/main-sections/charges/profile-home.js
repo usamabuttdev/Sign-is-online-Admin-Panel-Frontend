@@ -17,6 +17,9 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 export default function ProfileHome({ info }) {
   const {full , display} = formatDate(info?.created_at)
+  const formattedAmount = info?.amount != null
+    ? `$${Number(info.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '$0.00';
   const COLORS = {
     Attempted:"warning",
     Successful:"success",
@@ -64,7 +67,7 @@ export default function ProfileHome({ info }) {
 
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="mdi:currency-usd" width={24} sx={{ mr: 2 }} />
-          {`Amount: ${info?.amount}`}
+          {`Amount: ${formattedAmount}`}
         </Stack>
 
         <Stack direction="row" sx={{ typography: 'body2' }}>
