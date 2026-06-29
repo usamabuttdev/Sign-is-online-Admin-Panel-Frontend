@@ -11,7 +11,7 @@ import { useBoolean } from "src/hooks/use-boolean";
 import { useRouter } from "src/routes/hooks";
 
 export default function ChargesTableRow({ row, selected }) {
-  const { id, account, amount, method, created_at , status} = row;
+  const { id, account_id, account, amount, method, created_at , status} = row;
   const formattedAmount = amount != null
     ? `$${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : '$0.00';
@@ -29,7 +29,7 @@ export default function ChargesTableRow({ row, selected }) {
     <>
     <TableRow hover selected={selected}>
       <TableCell align="center">{id}</TableCell>
-      <TableCell onClick={()=> router.push(`${paths.dashboard.accounts.profile}/${id}`)} sx={{ cursor:"pointer" }}>
+      <TableCell onClick={()=> router.push(`${paths.dashboard.accounts.profile}/${account_id || id}`)} sx={{ cursor:"pointer" }}>
         <Tooltip title="View Account Profile">
           {account}
         </Tooltip>

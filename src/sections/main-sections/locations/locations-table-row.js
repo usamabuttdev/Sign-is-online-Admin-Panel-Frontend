@@ -11,6 +11,7 @@ import { useRouter } from "src/routes/hooks";
 export default function LocationsTableRow({ row, selected }) {
   const {
     id,
+    account_id,
     title,
     account,
     authenticated,
@@ -29,7 +30,7 @@ export default function LocationsTableRow({ row, selected }) {
     <TableRow hover selected={selected}>
       <TableCell align="center">{id}</TableCell>
       <TableCell>{title}</TableCell>
-      <TableCell onClick={()=> router.push(`${paths.dashboard.accounts.profile}/${id}`)} sx={{ cursor:"pointer" }}>
+      <TableCell onClick={()=> router.push(`${paths.dashboard.accounts.profile}/${account_id || id}`)} sx={{ cursor:"pointer" }}>
         <Tooltip title="View Account Profile" >
           {account}
         </Tooltip>
