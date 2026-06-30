@@ -22,6 +22,7 @@ import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
+import { useGetAllPlatformsQuery } from "src/store/Reducer/platforms";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60 , align:"center" },
@@ -29,22 +30,22 @@ const TABLE_HEAD = [
   { id: "available", label: "Available" , align:"center" },
   { id: "locations", label: "Locations" , align:"right" },
   { id: "created_at", label: "Created" , align:"center" },
-  // { id: "action", label: "Action", width: 88 },
 ];
 
 const defaultFilters = { search: "", documentStatus: "" };
-
-const TABLE_DATA = [
-  { id: 1, title: "Platform A", available: "Yes", connected_count: 12000, created_at: "2025-08-01T10:30:00Z", action: "View" },
-  { id: 2, title: "Platform B", available: "No", connected_count: 5000, created_at: "2025-08-05T14:15:00Z", action: "Edit" },
-  { id: 3, title: "Platform C", available: "Yes", connected_count: 8000, created_at: "2025-08-10T09:00:00Z", action: "Delete" },
-];
-
 
 export default function PlatformsListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+
+  const { data: apiResponse, isLoading } = useGetAllPlatformsQuery({
+    pageno: table.page + 1,
+    search: filters.search,
+  });
+
+  const TABLE_DATA = apiResponse?.data || [];
+  const totalCount = apiResponse?.total || 0;
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
@@ -62,8 +63,6 @@ export default function PlatformsListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
-  let count = (table.page - 1) * table.rowsPerPage;
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
@@ -86,7 +85,7 @@ export default function PlatformsListView() {
             filters={filters}
             onFilters={handleFilters}
             onResetFilters={handleResetFilters}
-            results={TABLE_DATA.length}
+            results={totalCount}
             sx={{ p: 2.5, pt: 0 }}
           />
         )}
@@ -104,29 +103,27 @@ export default function PlatformsListView() {
 
               <TableBody>
                 {filteredData.map((row, index) => (
-                  (
-                    <PlatformsTableRow
-                      key={row.id || row._id || index}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      index={index + 1}
-                      counter={index + 1 + table.page * table.rowsPerPage}
-                    />
-                  )
+                  <PlatformsTableRow
+                    key={row.id || row._id || index}
+                    row={row}
+                    selected={table.selected.includes(row.id)}
+                    index={index + 1}
+                    counter={index + 1 + table.page * table.rowsPerPage}
+                  />
                 ))}
 
                 <TableEmptyRows
                   height={denseHeight}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, filteredData.length)}
                 />
-                {notFound && <TableNoData notFound={notFound} />}
+                {!isLoading && notFound && <TableNoData notFound={notFound} />}
               </TableBody>
             </Table>
           </Scrollbar>
         </TableContainer>
 
         <TablePaginationCustom
-          count={filteredData.length || 1}
+          count={totalCount || 1}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
