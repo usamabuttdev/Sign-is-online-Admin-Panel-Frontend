@@ -11,8 +11,6 @@ import ProfileCountsTable from './profile-counts-table';
 import ProfileLogsTable from './profile-logs-table';
 import Iconify from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
-
 export default function ScriptProfile({ script, logs, counts }) {
   const RUN_FREQUENCY_LABELS = {
     N: "Now",
@@ -92,8 +90,8 @@ export default function ScriptProfile({ script, logs, counts }) {
     </Card>
   );
 
-  const renderLogsTable = <ProfileLogsTable/>;
-  const renderCountsTable = script.track_counts === 'Y' ? <ProfileCountsTable /> : null;
+  const renderLogsTable = <ProfileLogsTable logs={logs} />;
+  const renderCountsTable = script.track_counts === 'Y' ? <ProfileCountsTable counts={counts} /> : null;
 
   return (
     <Grid container spacing={3}>
@@ -109,7 +107,7 @@ export default function ScriptProfile({ script, logs, counts }) {
 }
 
 ScriptProfile.propTypes = {
-  script: PropTypes.object.isRequired, // Script details
-  logs: PropTypes.array.isRequired, // Last 10 logs
-  counts: PropTypes.array.isRequired, // Last 10 counts
+  script: PropTypes.object.isRequired,
+  logs: PropTypes.array.isRequired,
+  counts: PropTypes.array.isRequired,
 };
