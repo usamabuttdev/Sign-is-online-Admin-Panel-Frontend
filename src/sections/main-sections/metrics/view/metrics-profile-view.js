@@ -22,7 +22,6 @@ import ProfileHome from '../profile-home';
 import MetricValuesTableRow from '../metric-values-table-row';
 
 const VALUES_TABLE_HEAD = [
-  { id: 'id', label: 'ID', width: 60, align: 'center' },
   { id: 'value', label: 'Value', align: 'right' },
   { id: 'percent_of_goal', label: '% of Goal', align: 'center' },
   { id: 'date', label: 'Date', align: 'center' },

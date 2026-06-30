@@ -87,8 +87,8 @@ const ProductsProfilePage = lazy(() => import('src/pages/main-dashboard/products
 const ScriptsListPage = lazy(() => import('src/pages/main-dashboard/scripts/list'));
 const ScriptsProfilePage = lazy(() => import('src/pages/main-dashboard/scripts/profile'));
 
-const SignsListPage = lazy(() => import('src/pages/main-dashboard/signs/list'));
-const SignsProfilePage = lazy(() => import('src/pages/main-dashboard/signs/profile'));
+const DevicesListPage = lazy(() => import('src/pages/main-dashboard/signs/list'));
+const DevicesProfilePage = lazy(() => import('src/pages/main-dashboard/signs/profile'));
 
 // ----------------------------------------------------------------------
 
@@ -232,14 +232,14 @@ export const dashboardRoutes = [
         ],
       },
 
-      // SIGNS
+      // DEVICES
       {
-        path: 'signs',
+        path: 'devices',
         children: [
-          { element: <SignsListPage />, index: true },
-          { path: 'profile/:id', element: <SignsProfilePage /> },
-          { path: 'list', element: <SignsListPage /> },
-          { path: ':id/edit', element: <SignsProfilePage /> },
+          { element: <DevicesListPage />, index: true },
+          { path: 'profile/:id', element: <DevicesProfilePage /> },
+          { path: 'list', element: <DevicesListPage /> },
+          { path: ':id/edit', element: <DevicesProfilePage /> },
         ],
       },
 

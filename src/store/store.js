@@ -25,6 +25,7 @@ import { fileApi } from "./Reducer/file";
 import { platformsApi } from "./Reducer/platforms";
 import { metricsApi } from "./Reducer/metrics";
 import { scriptsApi } from "./Reducer/scripts";
+import { devicesApi } from "./Reducer/devices";
 
 // Define the persist configuration
 const persistConfig = {
@@ -62,6 +63,7 @@ export const store = configureStore({
     [platformsApi.reducerPath]: platformsApi.reducer,
     [metricsApi.reducerPath]: metricsApi.reducer,
     [scriptsApi.reducerPath]: scriptsApi.reducer,
+    [devicesApi.reducerPath]: devicesApi.reducer,
     user: persistedUserReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -92,6 +94,7 @@ export const store = configureStore({
       platformsApi.middleware,
       metricsApi.middleware,
       scriptsApi.middleware,
+      devicesApi.middleware,
     ),
 });
 

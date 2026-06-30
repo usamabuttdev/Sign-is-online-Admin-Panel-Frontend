@@ -6,7 +6,7 @@ export default function SignsProfilePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Signs Profile</title>
+        <title> Dashboard: Devices Profile</title>
       </Helmet>
 
 

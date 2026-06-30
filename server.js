@@ -28,6 +28,7 @@ app.use('/api/admin', require('./server/routes/platforms'));
 app.use('/api/admin', require('./server/routes/admin-products'));
 app.use('/api/admin', require('./server/routes/metrics'));
 app.use('/api/admin', require('./server/routes/scripts'));
+app.use('/api/admin', require('./server/routes/devices'));
 
 app.use('/specializations', require('./server/routes/specializations'));
 app.use('/training-modes', require('./server/routes/trainingModes'));

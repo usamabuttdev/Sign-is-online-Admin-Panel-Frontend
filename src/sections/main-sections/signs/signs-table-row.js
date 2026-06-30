@@ -1,45 +1,37 @@
 import { TableCell, TableRow, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
-import { useRouter } from "src/routes/hooks";
-import { paths } from "src/routes/paths";
 import { formatDate } from "src/utils/format-time";
+import Label from "src/components/label";
 
-export default function SignsTableRow({ row, selected }) {
-  const { id, account, locations, created_at } = row;
-  const {display , full} = formatDate(created_at);
-  const router = useRouter();
+export default function DevicesTableRow({ row, selected }) {
+  const { id, device_id, location, hardware_type, firmware_version, status, last_heartbeat, created_at } = row;
+  const { display: createdDisplay, full: createdFull } = created_at ? formatDate(created_at) : { display: "-", full: "" };
+  const { display: heartbeatDisplay, full: heartbeatFull } = last_heartbeat ? formatDate(last_heartbeat) : { display: "-", full: "" };
 
   return (
     <TableRow hover selected={selected}>
       <TableCell align="center">{id}</TableCell>
-      <TableCell
-          onClick={() => router.push(`${paths.dashboard.accounts.profile}/${id}`)}
-          sx={{ cursor: "pointer" }}
-        >
-          <Tooltip title={"View Account Profile"} arrow>
-            <span>{account}</span>
-          </Tooltip>
-        </TableCell>
-
-        <TableCell
-          sx={{ cursor: "pointer" }}
-          onClick={() => router.push(`${paths.dashboard.locations.profile}/1`)}
-        >
-          <Tooltip title={"View Location Profile"} arrow>
-            <span>{locations}</span>
-          </Tooltip>
-        </TableCell>
+      <TableCell>{device_id}</TableCell>
+      <TableCell>{location || '-'}</TableCell>
+      <TableCell align="center">{hardware_type}</TableCell>
+      <TableCell align="center">{firmware_version || '-'}</TableCell>
       <TableCell align="center">
-        <Tooltip title={full} arrow>
-         {display}
-        </Tooltip>
+        <Label variant="soft" color={status === 'active' ? 'success' : status === 'inactive' ? 'warning' : 'error'}>
+          {status}
+        </Label>
+      </TableCell>
+      <TableCell align="center">
+        <Tooltip title={heartbeatFull} arrow>{heartbeatDisplay}</Tooltip>
+      </TableCell>
+      <TableCell align="center">
+        <Tooltip title={createdFull} arrow>{createdDisplay}</Tooltip>
       </TableCell>
       <TableCell align="center"> -- </TableCell>
     </TableRow>
   );
 }
 
-SignsTableRow.propTypes = {
+DevicesTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   selected: PropTypes.bool,
 };

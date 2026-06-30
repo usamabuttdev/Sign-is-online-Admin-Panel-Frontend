@@ -17,7 +17,6 @@ export default function MetricValuesTableRow({ row, selected }) {
 
   return (
     <TableRow hover selected={selected}>
-      <TableCell align="center">{id}</TableCell>
       <TableCell align="right">{fNumber(value)}</TableCell>
       <TableCell align="center">
         {percent_of_goal != null && (

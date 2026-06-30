@@ -126,9 +126,9 @@ export function useNavData() {
             icon: <Iconify icon="mdi:file-code-outline" size={24}/>,
           },
           {
-            title: t('Signs'),
+            title: t('Devices'),
             path: paths.dashboard.signs.root,
-            icon: <Iconify icon="mdi:login-variant" size={24}/>,
+            icon: <Iconify icon="mdi:devices" size={24}/>,
           },
           // {
           //   title: t('Sales'),

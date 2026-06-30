@@ -221,10 +221,10 @@ export const paths = {
       edit: (id) => `${ROOTS.DASHBOARD}/scripts/${id}/edit`,
     },
     signs:{
-      root: `${ROOTS.DASHBOARD}/signs`,
-      list: `${ROOTS.DASHBOARD}/signs/list`,
-      profile: `${ROOTS.DASHBOARD}/signs/profile`,
-      edit: (id) => `${ROOTS.DASHBOARD}/signs/${id}/edit`,
+      root: `${ROOTS.DASHBOARD}/devices`,
+      list: `${ROOTS.DASHBOARD}/devices/list`,
+      profile: `${ROOTS.DASHBOARD}/devices/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/devices/${id}/edit`,
     },
     
     customers:{
