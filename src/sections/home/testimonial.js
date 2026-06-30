@@ -104,7 +104,7 @@ const testimonials = [
     name: "Sarah Johnson",
     role: "Marketing Manager at BrightTech",
     avatar: "/assets/images/avatars/avatar_1.jpg",
-    quote: "Sign is Online made our document workflow incredibly smooth. It's user-friendly, fast, and legally compliant—everything we needed!",
+    quote: "Storefront made our document workflow incredibly smooth. It's user-friendly, fast, and legally compliant—everything we needed!",
     rating: 5
   },
   {
@@ -118,7 +118,7 @@ const testimonials = [
     name: "Priya Nair",
     role: "Operations Head at CloudNova",
     avatar: "/assets/images/avatars/avatar_3.jpg",
-    quote: "The security and ease of use with Sign is Online are top-notch. We’ve fully transitioned to digital signing thanks to them.",
+    quote: "The security and ease of use with Storefront are top-notch. We’ve fully transitioned to digital signing thanks to them.",
     rating: 5
   },
   {
@@ -132,7 +132,7 @@ const testimonials = [
     name: "Emily Davis",
     role: "HR Manager at Tech Solutions",
     avatar: "/assets/images/avatars/avatar_5.jpg",
-    quote: "Sign is Online has streamlined our hiring process. Getting new hires to sign documents is now a breeze!",
+    quote: "Storefront has streamlined our hiring process. Getting new hires to sign documents is now a breeze!",
     rating: 4
   }
 ];

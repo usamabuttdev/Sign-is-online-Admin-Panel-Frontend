@@ -49,13 +49,13 @@ export default function AboutTestimonials() {
       <m.div variants={varFade().inUp}>
         <Typography variant="h2" sx={{ my: 3, color: 'common.white' }}>
           Who Trust  <br />
-          Love This Sign is Online
+          Love Storefront
         </Typography>
       </m.div>
 
       <m.div variants={varFade().inUp}>
         <Typography sx={{ color: 'common.white' }}>
-          At This Sign is Online, our goal is to build a product you can rely on daily — one that’s fast, secure, and easy to use.
+          At Storefront, our goal is to build a product you can rely on daily — one that’s fast, secure, and easy to use.
           That’s why we continuously improve our platform, listening closely to your feedback to ensure it meets your evolving needs and exceeds your expectations.
         </Typography>
       </m.div>

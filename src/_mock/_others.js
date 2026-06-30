@@ -213,14 +213,14 @@ export const _testimonials = [
     postedDate: _mock.time(1),
     ratingNumber: _mock.number.rating(1),
     avatarUrl: _mock.image.avatar(1),
-    content: `This Sign Is Online has made it so easy for our team to manage document signing. The platform is fast, secure, and intuitive.`,
+    content: `Storefront has made it so easy for our team to manage document signing. The platform is fast, secure, and intuitive.`,
   },
   {
     name: _mock.fullName(2),
     postedDate: _mock.time(2),
     ratingNumber: _mock.number.rating(2),
     avatarUrl: _mock.image.avatar(2),
-    content: `We’ve switched from paper-based contracts to digital ones using This Sign Is Online. It's improved our workflow efficiency tremendously.`,
+    content: `We’ve switched from paper-based contracts to digital ones using Storefront. It's improved our workflow efficiency tremendously.`,
   },
   {
     name: _mock.fullName(3),
@@ -241,7 +241,7 @@ export const _testimonials = [
     postedDate: _mock.time(5),
     ratingNumber: _mock.number.rating(5),
     avatarUrl: _mock.image.avatar(5),
-    content: `This Sign Is Online helped us close deals faster by reducing back-and-forth emails. Highly recommended!`,
+    content: `Storefront helped us close deals faster by reducing back-and-forth emails. Highly recommended!`,
   },
   {
     name: _mock.fullName(6),

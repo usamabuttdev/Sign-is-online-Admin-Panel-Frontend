@@ -100,11 +100,11 @@ export default function AccountPopover() {
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
             {/* {user?.displayName || 'Dummy User'} */}
-          {"Sign is online Admin"}
+          {"Storefront Admin"}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {"admin@signisonline.com"}
+            {"admin@storefrontworks.com"}
           </Typography>
         </Box>
 

@@ -22,7 +22,7 @@ import Logo from 'src/components/logo';
 
 const LINKS = [
   {
-    headline: 'Sign is Online',
+    headline: 'Storefront',
     children: [
       { name: 'About us', href: paths.about },
       { name: 'Contact us', href: paths.contact },
@@ -104,7 +104,7 @@ export default function Footer() {
                 mx: { xs: 'auto', md: 'unset' },
               }}
             >
-              The fastest way to sign documents online — with the Sign is Online platform, built on the latest technologies and designed for speed, security, and simplicity. Fully customizable to fit your business needs.
+              The fastest way to sign documents online — with the Storefront platform, built on the latest technologies and designed for speed, security, and simplicity. Fully customizable to fit your business needs.
             </Typography>
 
             <Stack
