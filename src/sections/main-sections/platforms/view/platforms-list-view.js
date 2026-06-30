@@ -128,6 +128,7 @@ export default function PlatformsListView() {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
+          loading={isLoading}
         />
       </Card>
     </Container>

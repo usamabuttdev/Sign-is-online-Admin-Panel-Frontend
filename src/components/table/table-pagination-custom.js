@@ -12,6 +12,7 @@ export default function TablePaginationCustom({
   onChangeDense,
   rowsPerPageOptions = [10],
   sx,
+  loading,
   ...other
 }) {
   return (
@@ -20,6 +21,7 @@ export default function TablePaginationCustom({
         rowsPerPageOptions={rowsPerPageOptions}
         component="div"
         {...other}
+        labelDisplayedRows={loading ? () => 'Loading\u2026' : undefined}
         sx={{
           borderTopColor: 'transparent',
         }}
@@ -48,4 +50,5 @@ TablePaginationCustom.propTypes = {
   onChangeDense: PropTypes.func,
   rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
   sx: PropTypes.object,
+  loading: PropTypes.bool,
 };
