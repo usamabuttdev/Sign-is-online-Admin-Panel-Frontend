@@ -3,48 +3,20 @@ import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const productsApi = createApi({
   reducerPath: "products",
-  baseQuery: createCustomFetchBaseQuery({ baseUrl: "https://dummyjson.com" }),
+  tagTypes: ['Products'],
+  baseQuery: createCustomFetchBaseQuery(),
   endpoints: (builder) => ({
-    getAllProduct: builder.query({
-      query: () => "/products",
-      transformResponse: (res) => res.data.data,
-    }),
-
-    getProductById: builder.query({
-      query: (id) => `/products/${id}`,
-    }),
-
-    addNewProduct: builder.mutation({
-      query: (newProduct) => ({
-        url: `/products/add`,
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: newProduct,
+    getAllProducts: builder.query({
+      query: ({ pageno, search }) => ({
+        url: `/api/admin/products?pageno=${pageno}&search=${search}`,
+        method: "GET",
       }),
-    }),
-
-    updateProduct: builder.mutation({
-      query: ({ id, updatedProduct }) => ({
-        url: `/products/${id}`,
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: updatedProduct,
-      }),
-    }),
-
-    deleteProduct: builder.mutation({
-      query: (id) => ({
-        url: `/products/${id}`,
-        method: "DELETE",
-      }),
+      providesTags: ['Products'],
+      transformResponse: (res) => res,
     }),
   }),
 });
 
 export const {
-  useGetAllProductQuery,
-  useGetProductByIdQuery,
-  useAddNewProductMutation,
-  useUpdateProductMutation,
-  useDeleteProductMutation,
+  useGetAllProductsQuery,
 } = productsApi;

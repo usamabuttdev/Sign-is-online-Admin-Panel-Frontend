@@ -66,7 +66,7 @@ export const store = configureStore({
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/REGISTER'],
       },
     }).concat(
-      // productsApi.middleware,
+      productsApi.middleware,
       FaqsApi.middleware,
       contactApi.middleware,
       customersApi.middleware,
