@@ -75,8 +75,8 @@ const ChargesProfilePage = lazy(() => import('src/pages/main-dashboard/charges/p
 const LocationListPage = lazy(() => import('src/pages/main-dashboard/locations/list'));
 const LocationProfilePage = lazy(() => import('src/pages/main-dashboard/locations/profile'));
 
-const MetricsListPage = lazy(() => import('src/pages/main-dashboard/matrics/list'));
-const MetricsProfilePage = lazy(() => import('src/pages/main-dashboard/matrics/profile'));
+const MetricsListPage = lazy(() => import('src/pages/main-dashboard/metrics/list'));
+const MetricsProfilePage = lazy(() => import('src/pages/main-dashboard/metrics/profile'));
 
 const PlatformsListPage = lazy(() => import('src/pages/main-dashboard/platforms/list'));
 const PlatformsProfilePage = lazy(() => import('src/pages/main-dashboard/platforms/profile'));
