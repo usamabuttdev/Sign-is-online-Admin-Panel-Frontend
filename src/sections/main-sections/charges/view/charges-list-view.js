@@ -167,6 +167,7 @@ export default function ChargesListView() {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
+          loading={isFetching}
         />
       </Card>
     </Container>

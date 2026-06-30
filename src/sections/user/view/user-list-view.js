@@ -168,6 +168,7 @@ export default function UsersListView() {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
+          loading={isLoading}
         />
       </Card>
     </Container>

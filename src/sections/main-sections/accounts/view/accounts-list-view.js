@@ -152,6 +152,7 @@ export default function AccountsListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+            loading={isLoading}
           />
         </Card>
       </Container>

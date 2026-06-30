@@ -144,6 +144,7 @@ export default function LocationsListView() {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
+          loading={isFetching}
         />
       </Card>
     </Container>
