@@ -42,6 +42,24 @@ export const adminSettingsApi = createApi({
             }),
             invalidatesTags: ['adminSettings'],
         }),
+
+        getContent: builder.query({
+            query: (title) => ({
+                url: `/api/admin/content/${title}`,
+                method: "GET",
+            }),
+            transformResponse: (res) => res.data,
+            providesTags: ['adminSettings']
+        }),
+
+        updateContent: builder.mutation({
+            query: ({ title, html }) => ({
+                url: `/api/admin/content/${title}`,
+                method: 'PUT',
+                body: { html },
+            }),
+            invalidatesTags: ['adminSettings'],
+        }),
     }),
 });
 
@@ -49,5 +67,8 @@ export const {
     useGetPrivacyPolicyQuery,
     useGetAboutUsQuery,
     useGetTermsConditionsQuery,
-    useUpdateSettingMutation
+    useUpdateSettingMutation,
+    useGetContentQuery,
+    useUpdateContentMutation,
+    useLazyGetContentQuery,
 } = adminSettingsApi;

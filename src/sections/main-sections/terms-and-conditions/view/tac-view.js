@@ -7,7 +7,7 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/system';
 
 import { useTheme } from '@mui/material/styles';
-import {  useGetTermsConditionsQuery, useUpdateSettingMutation } from 'src/store/Reducer/adminSetting';
+import { useGetContentQuery, useUpdateContentMutation } from 'src/store/Reducer/adminSetting';
 import { LoadingScreen } from 'src/components/loading-screen';
 import FaqsHero from 'src/sections/faqs/faqs-hero';
 import { enqueueSnackbar } from 'notistack';
@@ -18,51 +18,55 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
 }));
 
+const DEFAULT_HTML = `<h1>Terms & Conditions</h1>
+<p>
+  Welcome to <strong>Sign In Online</strong>. By using our platform, you agree to the following terms and conditions.
+</p>
+
+<h2>1. Acceptance of Terms</h2>
+<p>
+  By accessing or using Sign In Online, you agree to be bound by these Terms & Conditions. If you do not agree, please do not use our services.
+</p>
+
+<h2>2. Use of Service</h2>
+<p>
+  You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.
+</p>
+
+<h2>3. Limitation of Liability</h2>
+<p>
+  Sign In Online shall not be liable for any indirect, incidental, or consequential damages arising from your use of the platform.
+</p>`;
+
 export default function DashboardTacView() {
   const theme = useTheme();
   const [text, setText] = useState('');
 
-  const [updateSetting, { isLoading: isUpdating }] = useUpdateSettingMutation();
-  const { data, isLoading } = useGetTermsConditionsQuery();
-  let settingId = data?._id
+  const [updateContent, { isLoading: isUpdating }] = useUpdateContentMutation();
+  const { data, isLoading } = useGetContentQuery('terms-conditions');
 
   const handleChange = (value) => {
     setText(value);
   };
 
-
-  const applyWhiteTextColor = (html) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    const elements = doc.body.querySelectorAll("*");
-    elements.forEach((el) => {
-      el.style.color = "white";
-    });
-    return doc.body.innerHTML;
-  };
-
-
   const handleSave = async () => {
     if (!text) {
-      return  enqueueSnackbar('Please enter content.', { variant: 'error' });
+      return enqueueSnackbar('Please enter content.', { variant: 'error' });
     }
-    // const processedText = applyWhiteTextColor(text);
+
     try {
-      const payload = {
-        terms_and_conditions: text,
-      };
-      const response = await updateSetting({ _id: settingId, data: payload }).unwrap();
-      if (!response.error) {
-        enqueueSnackbar(response?.message || 'updated successfully', { variant: "success" });
-      } 
+      const response = await updateContent({ title: 'terms-conditions', html: text }).unwrap();
+      if (response.success) {
+        enqueueSnackbar('Content updated successfully', { variant: "success" });
+      }
     } catch (error) {
-      console.error("Unexpected Error:", error);
+      enqueueSnackbar(error?.data?.message || 'Failed to update content', { variant: "error" });
     }
   };
 
   useEffect(() => {
     if (data) {
-      setText(data?.terms_and_conditions || '');
+      setText(data?.html || DEFAULT_HTML);
     }
   }, [data]);
 
