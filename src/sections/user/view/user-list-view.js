@@ -28,6 +28,7 @@ import UserTableFiltersResult from "../user-table-filters-result";
 import { useGetAllusersListQuery } from "src/store/Reducer/users";
 
 const TABLE_HEAD = [
+  { id: "id", label: "USR_ID", width: 100 },
   { id: "name", label: "Name" },
   { id: "account", label: "Account" },
   { id: "email", label: "Email Address" },

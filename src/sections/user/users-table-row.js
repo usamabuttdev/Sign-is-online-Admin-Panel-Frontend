@@ -22,6 +22,7 @@ export default function UsersTableRow({ row, selected }) {
 
   return (
     <TableRow hover selected={selected}>
+      <TableCellTooltip>{id}</TableCellTooltip>
       <TableCellTooltip>{name}</TableCellTooltip>
       <TableCellTooltip>—</TableCellTooltip>
       <TableCellTooltip>{email}</TableCellTooltip>
