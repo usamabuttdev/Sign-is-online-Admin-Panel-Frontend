@@ -171,7 +171,7 @@ export const dashboardRoutes = [
         path: 'locations',
         children: [
           { element: <LocationListPage />, index: true },
-          { path: 'profile/:id', element: <BusinessDetailPage /> },
+          { path: 'profile/:id', element: <LocationProfilePage /> },
           { path: 'list', element: <LocationListPage /> },
           { path: ':id/edit', element: <LocationProfilePage /> },
         ],

@@ -8,6 +8,15 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function ProfileHome({ location }) {
+  if (!location) {
+    return (
+      <Card>
+        <CardHeader title="Location Details" />
+        <Box sx={{ p: 3, typography: 'body2' }}>No location data available.</Box>
+      </Card>
+    );
+  }
+
   const renderLocation = (
     <Card>
       <CardHeader title="Location Details" />

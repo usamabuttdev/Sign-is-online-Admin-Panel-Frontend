@@ -10,8 +10,11 @@ import { useGetLocationByIdQuery } from 'src/store/Reducer/locations';
 export default function LocationsProfileView() {
   const settings = useSettingsContext();
   const { id } = useParams();
-  const { data: apiData, isFetching } = useGetLocationByIdQuery(id);
-  const location = apiData?.data || null;
+
+  const { data: apiResponse, isLoading } = useGetLocationByIdQuery(id);
+  const location = apiResponse?.data ?? null;
+
+  if (isLoading) return null;
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -27,7 +30,7 @@ export default function LocationsProfileView() {
         />
       </Stack>
 
-      {isFetching ? <div>Loading...</div> : <ProfileHome location={location} />}
+      {location ? <ProfileHome location={location} /> : <div>Location not found</div>}
     </Container>
   );
 }
