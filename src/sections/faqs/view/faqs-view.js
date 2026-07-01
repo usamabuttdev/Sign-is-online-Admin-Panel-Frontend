@@ -3,6 +3,7 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 //
+import { useGetAllHomeFaqsQuery } from 'src/store/Reducer/faqs';
 import FaqsHero from '../faqs-hero';
 import FaqsList from '../faqs-list';
 import FaqsForm from '../faqs-form';
@@ -11,6 +12,8 @@ import FaqsCategory from '../faqs-category';
 // ----------------------------------------------------------------------
 
 export default function FaqsView() {
+  const { data } = useGetAllHomeFaqsQuery();
+
   return (
     <>
       <FaqsHero data={"FAQs"}/>
@@ -41,7 +44,7 @@ export default function FaqsView() {
             md: 'repeat(2, 1fr)',
           }}
         >
-          <FaqsList />
+          <FaqsList faqs={data?.data} />
 
           <FaqsForm />
         </Box>

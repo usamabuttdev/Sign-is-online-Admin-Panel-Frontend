@@ -20,7 +20,7 @@ import { MenuItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function EditFaqForm({ row, open, onClose ,onSave }) {
+export default function EditFaqForm({ row, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [UpdateFaq, { isLoading: isUpdating }] = useUpdateFaqMutation();
@@ -33,6 +33,7 @@ export default function EditFaqForm({ row, open, onClose ,onSave }) {
   const defaultValues = {
     question: '',
     answer: '',
+    public: true,
   }
 
   const methods = useForm({
@@ -43,7 +44,7 @@ export default function EditFaqForm({ row, open, onClose ,onSave }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting, dirtyFields },
+    formState: { isSubmitting },
   } = methods;
 
   useEffect(() => {
@@ -51,25 +52,21 @@ export default function EditFaqForm({ row, open, onClose ,onSave }) {
       reset({
         question: row?.question || '',
         answer: row?.answer || '',
-        public: row?.public !== undefined ? row.public : true,  
+        public: row?.isactive !== undefined ? row.isactive : true,
       });
     }
   }, [row, reset]);
 
   // HANDLE SUBMIT
   const onSubmit = handleSubmit(async (data) => {
-    if (Object.keys(dirtyFields).length === 0) {
-      enqueueSnackbar('No changes detected!', { variant: 'warning', autoHideDuration: 2000 });
-      return;
-    }
-
     try {
-      // const response = await UpdateFaq({ _id: row._id, data });
-
-      // Handle errors from the backend
-
-      // Reset the form
-      onSave({ ...row, ...data }); // ✅ update in parent
+      const payload = {
+        question: data.question,
+        answer: data.answer,
+        isActive: data.public !== undefined ? data.public : true,
+      }
+      await UpdateFaq({ _id: row.id, data: payload }).unwrap();
+      enqueueSnackbar('FAQ updated successfully', { variant: 'success' });
       reset();
       onClose();
     } catch (error) {
@@ -135,7 +132,7 @@ export default function EditFaqForm({ row, open, onClose ,onSave }) {
 }
 
 EditFaqForm.propTypes = {
-  currentUser: PropTypes.object,
+  row: PropTypes.object,
   onClose: PropTypes.func,
   open: PropTypes.bool,
 };

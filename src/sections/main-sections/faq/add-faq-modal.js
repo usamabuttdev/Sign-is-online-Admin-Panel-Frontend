@@ -18,7 +18,7 @@ import { MenuItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function AddFaqForm({ currentUser, open, onClose ,onAddFaq }) {
+export default function AddFaqForm({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [addFaq, { isLoading }] = useAddNewFaqMutation();
@@ -31,6 +31,7 @@ export default function AddFaqForm({ currentUser, open, onClose ,onAddFaq }) {
   const defaultValues = {
     question: '',
     answer: '',
+    public: true,
   }
 
   const methods = useForm({
@@ -48,13 +49,13 @@ export default function AddFaqForm({ currentUser, open, onClose ,onAddFaq }) {
   // HANDLE SUBMIT
   const onSubmit = handleSubmit(async (data) => {
     try {
-     const payload =  {
+      const payload = {
         question: data.question,
         answer: data.answer,
-        public: data.public !== undefined ? data.public : true,
+        isActive: data.public !== undefined ? data.public : true,
       }
-      onAddFaq(payload); 
-    
+      await addFaq(payload).unwrap();
+      enqueueSnackbar('FAQ added successfully', { variant: 'success' });
       reset();
       onClose();
     } catch (error) {

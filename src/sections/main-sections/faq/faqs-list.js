@@ -12,10 +12,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useDeleteFaqMutation } from 'src/store/Reducer/faqs';
 import EditFaqForm from './edit-faq-modal';
 
-export default function FaqsList({ allFaqs, setOpen, setIsEdit  ,          
-  onEditFaq,
-  onDeleteFaq
-}) {
+export default function FaqsList({ allFaqs }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const quickEdit = useBoolean();
@@ -38,14 +35,13 @@ export default function FaqsList({ allFaqs, setOpen, setIsEdit  ,
 
   const handleDelete = async (_id) => {
     try {
-      // const response = await deleteFaq(_id).unwrap();
-      if (setSelectedDeleteFaq) {
-        onDeleteFaq(selectedDeleteFaq);
-        enqueueSnackbar('Deleted successfully', { variant: 'success' });
-      }
-        confirm.onFalse();
+      await deleteFaq(_id).unwrap();
+      enqueueSnackbar('Deleted successfully', { variant: 'success' });
+      confirm.onFalse();
     } catch (error) {
-      console.error('Error deleting menu item:', error);
+      const errorMessage = error?.response?.data?.message || error.message || 'An error occurred.';
+      enqueueSnackbar(errorMessage, { variant: 'error', autoHideDuration: 2000 });
+      console.error('Error deleting FAQ:', error);
     }
   };
 
@@ -80,7 +76,7 @@ export default function FaqsList({ allFaqs, setOpen, setIsEdit  ,
       ))
       }
 
-      <EditFaqForm row={selectedFaq} open={quickEdit.value} onClose={quickEdit.onFalse} onSave={onEditFaq}/>
+      <EditFaqForm row={selectedFaq} open={quickEdit.value} onClose={quickEdit.onFalse} />
 
       <ConfirmDialog
         open={confirm.value}
