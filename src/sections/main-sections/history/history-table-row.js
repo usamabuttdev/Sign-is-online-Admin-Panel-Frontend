@@ -4,12 +4,13 @@ import { formatDate } from 'src/utils/format-time';
 import { Tooltip } from '@mui/material';
 
 export default function HistoryTableRow({ row, selected, index ,counter }) {
-  const {object, message , date} = row 
+  const {object, user, message , date} = row 
   const {full , display} = formatDate(date)
   return (
     <TableRow hover selected={selected}>
       <TableCell align="center">{counter}</TableCell>
       <TableCell>{object}</TableCell>
+      <TableCell>{user}</TableCell>
       <TableCell>{message}</TableCell>
       <TableCell align="center">
         <Tooltip title={full} arrow>

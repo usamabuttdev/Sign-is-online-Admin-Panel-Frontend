@@ -130,6 +130,11 @@ export function useNavData() {
             path: paths.dashboard.signs.root,
             icon: <Iconify icon="mdi:devices" size={24}/>,
           },
+          {
+            title: t('Devices'),
+            path: paths.dashboard.devices.root,
+            icon: <Iconify icon="mdi:devices" size={24}/>,
+          },
           // {
           //   title: t('Sales'),
           //   path: paths.dashboard.sales.root,

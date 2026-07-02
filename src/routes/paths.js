@@ -226,6 +226,12 @@ export const paths = {
       profile: `${ROOTS.DASHBOARD}/devices/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/devices/${id}/edit`,
     },
+    devices:{
+      root: `${ROOTS.DASHBOARD}/devices`,
+      list: `${ROOTS.DASHBOARD}/devices/list`,
+      profile: `${ROOTS.DASHBOARD}/devices/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/devices/${id}/edit`,
+    },
     
     customers:{
       root: `${ROOTS.DASHBOARD}/customers`,

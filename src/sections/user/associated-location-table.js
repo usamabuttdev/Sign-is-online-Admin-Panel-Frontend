@@ -4,10 +4,9 @@ import TableHeadCustom from 'src/components/table/table-head-custom';
 import TablePaginationCustom from 'src/components/table/table-pagination-custom';
 import AssociatedLocationTableRow from './assocated-location-table-row';
 
-const AssociatedLocationTable = ({ userDetail, table, headLabels }) => {
+const AssociatedLocationTable = ({ locations, table, headLabels }) => {
   return (
     <Card>
-      {/* Header */}
       <CardHeader
         title={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -17,34 +16,29 @@ const AssociatedLocationTable = ({ userDetail, table, headLabels }) => {
         sx={{ mb: 3 }}
       />
 
-      {/* Table */}
       <TableContainer sx={{ overflow: 'unset' }}>
         <Scrollbar>
-          <Table sx={{ minWidth: 1100 }} size={table.dense ? 'small' : 'medium'}>
+          <Table sx={{ minWidth: 650 }} size={table.dense ? 'small' : 'medium'}>
             <TableHeadCustom headLabel={headLabels} />
             <TableBody>
-              {userDetail?.associatedLocations?.map((location, index) => (
-                <AssociatedLocationTableRow key={index} location={location} />
+              {locations?.map((location, index) => (
+                <AssociatedLocationTableRow key={location.id || index} location={location} />
               ))}
             </TableBody>
           </Table>
         </Scrollbar>
       </TableContainer>
 
-      {/* Divider */}
       <Divider sx={{ borderStyle: 'dashed' }} />
 
-      {/* Pagination */}
-        <TablePaginationCustom
-          count={userDetail?.associatedLocations?.length}
-          page={table.page}
-          dense={table.dense}
-          // rowsPerPageOptions={[5, 10, 25]}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          // onChangeDense={table.onChangeDense}
-        />
+      <TablePaginationCustom
+        count={locations?.length || 0}
+        page={table.page}
+        dense={table.dense}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+      />
     </Card>
   );
 };

@@ -90,6 +90,8 @@ const ScriptsProfilePage = lazy(() => import('src/pages/main-dashboard/scripts/p
 const DevicesListPage = lazy(() => import('src/pages/main-dashboard/signs/list'));
 const DevicesProfilePage = lazy(() => import('src/pages/main-dashboard/signs/profile'));
 
+const DevicesListPage = lazy(() => import('src/pages/main-dashboard/devices/list'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -240,6 +242,15 @@ export const dashboardRoutes = [
           { path: 'profile/:id', element: <DevicesProfilePage /> },
           { path: 'list', element: <DevicesListPage /> },
           { path: ':id/edit', element: <DevicesProfilePage /> },
+        ],
+      },
+
+      // DEVICES
+      {
+        path: 'devices',
+        children: [
+          { element: <DevicesListPage />, index: true },
+          { path: 'list', element: <DevicesListPage /> },
         ],
       },
 
