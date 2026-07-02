@@ -2,107 +2,146 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+// _mock
+// utils
+// components
 import Iconify from 'src/components/iconify';
 import { Tooltip } from '@mui/material';
 import { formatDate } from 'src/utils/format-time';
+//
+
+// ----------------------------------------------------------------------
 
 export default function ProfileHome({ info }) {
-  const { display, full } = formatDate(info.created_at);
 
-  const formattedCharge = info.total_charged != null
-    ? `$${Number(info.total_charged).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : '$0.00';
+const {display , full} = formatDate(info.created_at);
+ 
 
-  const tzOffsetStr = (() => {
-    if (info.tz_offset == null) return '+00:00';
-    const abs = Math.abs(Number(info.tz_offset));
-    const hours = Math.floor(abs);
-    const minutes = Math.round((abs - hours) * 60);
-    const sign = Number(info.tz_offset) >= 0 ? '+' : '-';
-    return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  })();
-
-  const observesDaylight = info.observes_daylight === 1 || info.observes_daylight === true;
-
-  function getLocalTime() {
-    const utcNow = new Date();
-    let offsetMinutes = 0;
-    if (info.tz_offset != null) {
-      offsetMinutes = Number(info.tz_offset) * 60;
+function getLocalTime() {
+  const utcNow = new Date();
+  // Parse offset string (e.g., "-05:00" -> -300 minutes)
+  let offsetMinutes = 0;
+  if (info.tz_offset) {
+    const match = info.tz_offset.match(/([+-]?)(\d{2}):(\d{2})/);
+    if (match) {
+      const sign = match[1] === "-" ? -1 : 1;
+      const hours = parseInt(match[2], 10);
+      const minutes = parseInt(match[3], 10);
+      offsetMinutes = sign * (hours * 60 + minutes);
     }
-    const localNow = new Date(
-      utcNow.getTime() + (offsetMinutes + (observesDaylight ? 60 : 0)) * 60000
-    );
-    return localNow.toLocaleString();
   }
+  const observesDaylight = info.acc_observes_daylight ?? false;
+  // Apply offset + daylight saving adjustment
+  const localNow = new Date(
+    utcNow.getTime() + (offsetMinutes + (observesDaylight ? 60 : 0)) * 60000
+  );
+  return localNow.toLocaleString();
+}
+
+  const renderLocationsTable = info.locationsList && info.locationsList.length > 0 ? (
+    <Card>
+      <CardHeader title="Locations" />
+      <TableContainer sx={{ p: 2 }}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold' }}>Location</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Created</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {info.locationsList.map((loc, index) => {
+              const { display } = formatDate(loc.loc_date_inserted);
+              return (
+                <TableRow key={index}>
+                  <TableCell>{loc.loc_title}</TableCell>
+                  <TableCell>{display}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Card>
+  ) : null;
 
   const renderAbout = (
     <Card>
-      <CardHeader title={info.title} />
+    <CardHeader title={info.title} />
+  
+    <Stack spacing={2} sx={{ p: 3 }}>
+  
+      {/* Locations */}
+      <Stack direction="row" spacing={2}>
+        <Iconify icon="mingcute:location-fill" width={24} />
+        <Box sx={{ typography: 'body2' }}>
+          Location:{" "}
+          <Link variant="subtitle2" color="inherit">
+            {info.locations}
+          </Link>
+        </Box>
+      </Stack>
+  
+      <Stack direction="row" spacing={2}>
+        <Iconify icon="bxs:checkbox" width={24} />
+        <Box sx={{ typography: 'body2' }}>Total Signs: {info.signs}</Box>
+      </Stack>
+  
+      {/* Total Users */}
+      <Stack direction="row" spacing={2}>
+        <Iconify icon="bxs:user" width={24} />
+        <Box sx={{ typography: 'body2' }}>Total Users: {info.users}</Box>
+      </Stack>
+  
+      {/* Total Charged */}
+      <Stack direction="row" spacing={2}>
+        <Iconify icon="fluent:money-16-filled" width={24} />
+        <Box sx={{ typography: 'body2' }}>Total Charged: {info.total_charged}</Box>
+      </Stack>
+  
+      {/* Created At */}
+      <Stack direction="row" spacing={2}>
+        <Iconify icon="material-symbols-light:schedule" width={24} />
+        <Box sx={{ typography: 'body2' }}>
+          Created:{"   "}	
+          <Tooltip title={full} arrow>
+            {display}
+          </Tooltip>
+        </Box>
+      </Stack>
 
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="mingcute:location-fill" width={24} />
-          <Box sx={{ typography: 'body2' }}>
-            Location:{' '}
-            <Link variant="subtitle2" color="inherit">
-              {info.locations || 'N/A'}
-            </Link>
-          </Box>
-        </Stack>
+         {/* Created By */}
+      <Stack direction="row" spacing={2}>
+        <Iconify icon="mdi:account-circle" width={24} />
+        <Box sx={{ typography: 'body2' }}>
+          Created By: {info.created_by_name ?? "Hamza"}
+        </Box>
+      </Stack>
 
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="bxs:checkbox" width={24} />
-          <Box sx={{ typography: 'body2' }}>Total Signs: {info.signs ?? 0}</Box>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="fluent:money-16-filled" width={24} />
-          <Box sx={{ typography: 'body2' }}>Total Charged: {formattedCharge}</Box>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="material-symbols-light:schedule" width={24} />
-          <Box sx={{ typography: 'body2' }}>
-            Created:{'   '}
-            <Tooltip title={full} arrow>
-              {display}
-            </Tooltip>
-          </Box>
-        </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="mdi:account-circle" width={24} />
-          <Box sx={{ typography: 'body2' }}>
-            Created By: {info.created_by_name || 'N/A'}
-          </Box>
-        </Stack>
-
+        {/* Time Zone */}
         <Stack direction="row" spacing={2}>
           <Iconify icon="mdi:earth" width={24} />
-          <Box sx={{ typography: 'body2' }}>
-            Time Zone: {info.tz_title || 'N/A'} ({tzOffsetStr})
-          </Box>
+          <Box sx={{ typography: 'body2' }}>Time Zone: {info.tz_title ?? 'N/A'}</Box>
         </Stack>
 
+        {/* Current Time */}
         <Stack direction="row" spacing={2}>
           <Iconify icon="mdi:clock-time-four-outline" width={24} />
           <Box sx={{ typography: 'body2' }}>
-            Current Time: {getLocalTime()}
+           Current Time: {getLocalTime()}
           </Box>
         </Stack>
-
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="mdi:theme-light-dark" width={24} />
-          <Box sx={{ typography: 'body2' }}>
-            Observes Daylight Saving: {observesDaylight ? 'Yes' : 'No'}
-          </Box>
-        </Stack>
-      </Stack>
-    </Card>
+    </Stack>
+  </Card>
   );
 
   return (
@@ -110,6 +149,7 @@ export default function ProfileHome({ info }) {
       <Grid xs={12} md={12}>
         <Stack spacing={3}>
           {renderAbout}
+          {renderLocationsTable}
         </Stack>
       </Grid>
     </Grid>
@@ -118,4 +158,5 @@ export default function ProfileHome({ info }) {
 
 ProfileHome.propTypes = {
   info: PropTypes.object,
+  posts: PropTypes.array,
 };
