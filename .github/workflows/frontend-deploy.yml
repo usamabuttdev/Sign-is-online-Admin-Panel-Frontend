@@ -4,7 +4,9 @@ on:
     branches:
       - main
   workflow_dispatch:
-
+concurrency:
+  group: frontend-deploy-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   deploy:
     name: Deploy to EC2
@@ -37,7 +39,7 @@ jobs:
         run: yarn build
         env:
           NODE_ENV: production
-          REACT_APP_HOST_API: /
+          REACT_APP_HOST_API: https://api.storefrontworks.com/
           DISABLE_ESLINT_PLUGIN: true
           GENERATE_SOURCEMAP: false
           NODE_OPTIONS: --max-old-space-size=2048
@@ -52,21 +54,17 @@ jobs:
             echo "Restored previous build after failure"
           fi
 
-      - name: Stop old frontend service
+      - name: Deploy with pm2
+        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
         run: |
-          sudo systemctl stop frontend 2>/dev/null || true
-          sudo systemctl kill frontend 2>/dev/null || true
-
-      - name: Start frontend as systemd service (survives runner cleanup)
-        run: |
-          cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-          sudo systemd-run --unit=frontend \
-            --working-directory=/home/ec2-user/Sign-is-online-Admin-Panel-Frontend \
-            --setenv=NODE_ENV=production \
-            --setenv=PORT=3000 \
-            node server.js
+          pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+          pm2 save
 
       - name: Health check
         run: |
           sleep 5
-          curl --fail http://localhost:3000 || (sudo journalctl -u frontend --no-pager -n 50 && exit 1)
+          curl --fail http://localhost:3000 || (pm2 logs frontend --lines 50 --nostream && exit 1)
+
+      - name: Clean up backup on success
+        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+        run: rm -rf build.bak
