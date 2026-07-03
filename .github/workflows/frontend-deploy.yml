@@ -37,12 +37,6 @@ jobs:
       - name: Build
         working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
         run: yarn build
-        env:
-          NODE_ENV: production
-          REACT_APP_HOST_API: https://api.storefrontworks.com/
-          DISABLE_ESLINT_PLUGIN: true
-          GENERATE_SOURCEMAP: false
-          NODE_OPTIONS: --max-old-space-size=2048
 
       - name: Restore build on failure
         if: failure()
