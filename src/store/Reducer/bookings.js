@@ -3,7 +3,7 @@ import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const bookingApi = createApi({
   reducerPath: "bookings",
-  baseQuery: createCustomFetchBaseQuery({ baseUrl: "https://dummyjson.com" }),
+  baseQuery: createCustomFetchBaseQuery(),
   endpoints: (builder) => ({
     getAllBookings: builder.query({
       query: ({ page , limit   , keyword ,isActive }) => {

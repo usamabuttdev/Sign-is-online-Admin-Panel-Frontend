@@ -3,7 +3,7 @@ import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const trainerApi = createApi({
   reducerPath: "trainers",
-  baseQuery: createCustomFetchBaseQuery({ baseUrl: "https://dummyjson.com" }),
+  baseQuery: createCustomFetchBaseQuery(),
   endpoints: (builder) => ({
     getAllTrainers: builder.query({
       query: ({ pageno, search }) => ({

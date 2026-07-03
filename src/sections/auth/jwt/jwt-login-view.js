@@ -27,6 +27,7 @@ import { useDispatch } from 'react-redux';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import Iconify from 'src/components/iconify';
 import { setUser } from '../../../store/slices/userSlice';
+import { useLoginMutation } from '../../../store/Reducer/auth';
 import { paths } from 'src/routes/paths';
 import { Link } from '@mui/material';
 import { RouterLink } from 'src/routes/components';
@@ -36,10 +37,9 @@ import { RouterLink } from 'src/routes/components';
 export default function JwtLoginView() {
   const dispatch = useDispatch();
 
-  // const [loginData] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   const router = useRouter();
-  console.log((paths.auth.forgotPassword))
 
   const [errorMsg, setErrorMsg] = useState('');
   const password = useBoolean();
@@ -49,7 +49,7 @@ export default function JwtLoginView() {
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters long'),
+    password: Yup.string().required('Password is required'),
   });
 
   const defaultValues =  useMemo(()=>{
@@ -72,27 +72,15 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-
-      // if(data.email !== ADMIN_EMAIL || data.password !== ADMIN_PASSWORD){
-      //   setErrorMsg('Invalid email or password');
-      //   return;
-      // }
-      const user_data = {
-        email: data.email,
-        password: data.password,
-        deviceType: 'android',
-        timezone: 'Asia/Karachi',
-        deviceId: '123',
-        userType: 'admin',
-        token:'1234567890',
-      };
-        dispatch(setUser(user_data));
-        router.push(PATH_AFTER_LOGIN);
-        reset();
-      // }
-    } catch (error) {
+      const result = await login({ email: data.email, password: data.password }).unwrap();
+      dispatch(setUser({
+        ...result.data.user,
+        token: result.data.accessToken,
+      }));
+      router.push(PATH_AFTER_LOGIN);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+    } catch (error) {
+      setErrorMsg(error?.data?.message || 'Invalid email or password');
     }
   });
 
