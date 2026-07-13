@@ -2,13 +2,15 @@ import isEqual from "lodash/isEqual";
 import { useState, useCallback } from "react";
 import Card from "@mui/material/Card";
 import Table from "@mui/material/Table";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import { _roles } from "src/_mock";
+import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
+import { useBoolean } from "src/hooks/use-boolean";
 import {
   useTable,
   emptyRows,
@@ -18,10 +20,13 @@ import {
   TableNoData,
 } from "src/components/table";
 import DevicesTableRow from "../devices-table-row";
-import UserTableToolbar from "../../signs/user-table-toolbar";
+import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
-import UserTableFiltersResult from "../../signs/user-table-filters-result";
+import UserTableFiltersResult from "../user-table-filters-result";
+import { useGetAllDevicesQuery } from "src/store/Reducer/devices";
+import AddDeviceForm from "../add-device-modal";
+import EditDeviceForm from "../edit-device-modal";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60, align: "center" },
@@ -32,63 +37,36 @@ const TABLE_HEAD = [
   { id: "status", label: "Status" },
   { id: "last_heartbeat", label: "Last Heartbeat", align: "center" },
   { id: "created_at", label: "Created", align: "center" },
+  { id: "action", label: "Action", width: 88 },
 ];
 
 const defaultFilters = { search: "" };
 
-const TABLE_DATA = [
-  {
-    id: 1,
-    device_id: "TAB-001",
-    location: "New York",
-    location_id: 1,
-    hardware_type: "Tablet",
-    firmware_version: "v2.1.0",
-    status: "active",
-    last_heartbeat: "2025-08-01T10:30:00Z",
-    created_at: "2025-08-01T10:30:00Z",
-  },
-  {
-    id: 2,
-    device_id: "KIO-002",
-    location: "Chicago",
-    location_id: 2,
-    hardware_type: "Kiosk",
-    firmware_version: "v1.4.3",
-    status: "active",
-    last_heartbeat: "2025-08-05T14:15:00Z",
-    created_at: "2025-08-05T14:15:00Z",
-  },
-  {
-    id: 3,
-    device_id: "DSP-003",
-    location: "San Francisco",
-    location_id: 3,
-    hardware_type: "Digital Sign",
-    firmware_version: "v3.0.1",
-    status: "inactive",
-    last_heartbeat: "2025-08-10T09:00:00Z",
-    created_at: "2025-08-10T09:00:00Z",
-  },
-];
-
 export default function DevicesListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 10 });
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
 
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedDevice, setSelectedDevice] = useState(null);
+
+  const { data, isLoading } = useGetAllDevicesQuery({
+    pageno: table.page + 1,
+    search: filters.search,
+  });
+
+  const devices = data?.data || [];
+  const totalCount = data?.total || 0;
+
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
-  const filteredData = applyFilter(TABLE_DATA, filters.search);
-  const notFound = !filteredData.length && canReset;
+  const notFound = !isLoading && devices.length === 0 && canReset;
 
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
+      setFilters((prevState) => ({ ...prevState, [name]: value }));
     },
     [table]
   );
@@ -96,6 +74,16 @@ export default function DevicesListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
+  const handleEditDevice = useCallback((row) => {
+    setSelectedDevice(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedDevice(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
@@ -108,46 +96,57 @@ export default function DevicesListView() {
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={quickAdd.onTrue}
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          sx={{ mb: { xs: 3, md: 5 } }}
+        >
+          Add Device
+        </Button>
       </Box>
 
       <Card>
-        <UserTableToolbar filters={filters} onFilters={handleFilters} roleOptions={_roles} />
+        <UserTableToolbar filters={filters} onFilters={handleFilters} />
 
         {canReset && (
           <UserTableFiltersResult
             filters={filters}
             onFilters={handleFilters}
             onResetFilters={handleResetFilters}
-            results={filteredData.length}
+            results={totalCount}
             sx={{ p: 2.5, pt: 0 }}
           />
         )}
 
-        <TableContainer sx={{ position: "relative", overflow: "unset", zIndex: 100 }}>
+        <TableContainer sx={{ position: "relative", overflow: "unset" }}>
           <Scrollbar>
-            <Table size={table.dense ? "small" : "medium"} sx={{ minWidth: 1200 }}>
+            <Table size={table.dense ? "small" : "medium"} sx={{ minWidth: 960 }}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={filteredData.length}
+                rowCount={devices.length}
                 numSelected={table.selected?.length}
               />
 
               <TableBody>
-                {filteredData.map((row, index) => (
+                {devices.map((row, index) => (
                   <DevicesTableRow
                     key={row.id || row._id || index}
                     row={row}
                     selected={table.selected.includes(row.id)}
                     index={index + 1}
                     counter={index + 1 + table.page * table.rowsPerPage}
+                    onEdit={() => handleEditDevice(row)}
                   />
                 ))}
 
                 <TableEmptyRows
                   height={denseHeight}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, filteredData.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, devices.length)}
                 />
                 {notFound && <TableNoData notFound={notFound} />}
               </TableBody>
@@ -156,23 +155,21 @@ export default function DevicesListView() {
         </TableContainer>
 
         <TablePaginationCustom
-          count={filteredData.length || 1}
+          count={totalCount}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <AddDeviceForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+      <EditDeviceForm
+        row={selectedDevice}
+        open={quickEdit.value}
+        onClose={handleCloseEdit}
+      />
     </Container>
-  );
-}
-
-function applyFilter(tableData, search) {
-  if (!search) return tableData;
-
-  return tableData.filter((row) =>
-    Object.values(row).some((value) =>
-      String(value).toLowerCase().includes(search.toLowerCase())
-    )
   );
 }

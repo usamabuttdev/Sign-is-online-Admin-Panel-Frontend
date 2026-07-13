@@ -8,7 +8,7 @@ import Label from "src/components/label";
 import { formatDate } from "src/utils/format-time";
 import { useRouter } from "src/routes/hooks";
 
-export default function LocationsTableRow({ row, selected }) {
+export default function LocationsTableRow({ row, selected, onEdit }) {
   const {
     id,
     account_id,
@@ -58,13 +58,12 @@ export default function LocationsTableRow({ row, selected }) {
           {display}
         </Tooltip>
       </TableCell>
-      {/* Action Column */}
-      <TableCell sx={{  whiteSpace: "nowrap" , textAlign:"center" }}>
-        {/* <Tooltip title="Quick Edit" placement="top" arrow>
-          <IconButton>
+      <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>
+        <Tooltip title="Edit" placement="top" arrow>
+          <IconButton onClick={onEdit}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
         <Link style={{ color: "inherit", textDecoration: "none" }} to={`${paths.dashboard.locations.profile}/${id}`}>
         <Tooltip title="View Location Profile">
           <IconButton color="inherit">
@@ -80,4 +79,5 @@ export default function LocationsTableRow({ row, selected }) {
 LocationsTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   selected: PropTypes.bool,
+  onEdit: PropTypes.func,
 };

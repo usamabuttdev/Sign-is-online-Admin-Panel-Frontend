@@ -5,7 +5,8 @@ import Table from "@mui/material/Table";
 import Container from "@mui/material/Container";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import { _roles } from "src/_mock";
+import Button from "@mui/material/Button";
+import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
@@ -42,18 +43,17 @@ export default function MetricsListView() {
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { data: apiResponse, isLoading } = useGetAllMetricsQuery({
+  const { data, isLoading } = useGetAllMetricsQuery({
     pageno: table.page + 1,
     search: filters.search,
   });
 
-  const TABLE_DATA = apiResponse?.data || [];
-  const totalCount = apiResponse?.total || 0;
+  const metricsData = data?.data || [];
+  const totalCount = data?.total || 0;
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
-  const filteredData = applyFilter(TABLE_DATA, filters.search);
-  const notFound = !filteredData.length && canReset;
+  const notFound = !isLoading && metricsData.length === 0 && canReset;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -78,10 +78,19 @@ export default function MetricsListView() {
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
+        <Button
+          component="a"
+          href={`${paths.dashboard.metrics.root}/new`}
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          sx={{ mb: { xs: 3, md: 5 } }}
+        >
+          Add Metric
+        </Button>
       </Box>
 
       <Card>
-        <UserTableToolbar filters={filters} onFilters={handleFilters} roleOptions={_roles} />
+        <UserTableToolbar filters={filters} onFilters={handleFilters} roleOptions={[]} />
 
         {canReset && (
           <UserTableFiltersResult
@@ -100,12 +109,12 @@ export default function MetricsListView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={filteredData.length}
+                rowCount={metricsData.length}
                 numSelected={table.selected?.length}
               />
 
               <TableBody>
-                {filteredData.map((row, index) => (
+                {metricsData.map((row, index) => (
                   <MetricsTableRow
                     key={row.id || row._id || index}
                     row={row}
@@ -117,9 +126,9 @@ export default function MetricsListView() {
 
                 <TableEmptyRows
                   height={denseHeight}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, filteredData.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, metricsData.length)}
                 />
-                {!isLoading && notFound && <TableNoData notFound={notFound} />}
+                {notFound && <TableNoData notFound={notFound} />}
               </TableBody>
             </Table>
           </Scrollbar>
@@ -131,19 +140,8 @@ export default function MetricsListView() {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-          loading={isLoading}
         />
       </Card>
     </Container>
-  );
-}
-
-function applyFilter(tableData, search) {
-  if (!search) return tableData;
-
-  return tableData.filter((row) =>
-    Object.values(row).some((value) =>
-      String(value).toLowerCase().includes(search.toLowerCase())
-    )
   );
 }

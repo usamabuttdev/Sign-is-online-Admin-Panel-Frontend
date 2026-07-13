@@ -18,15 +18,17 @@ import { languageApi } from "./Reducer/languages";
 import { bookingApi } from "./Reducer/bookings";
 import { transactionApi } from "./Reducer/transactions";
 import { dashboardApi } from "./Reducer/dashboard";
-import { accountsApi } from "./Reducer/accounts";
-import { chargesApi } from "./Reducer/charges";
-import { locationsApi } from "./Reducer/locations";
 import { fileApi } from "./Reducer/file";
 import { platformsApi } from "./Reducer/platforms";
-import { metricsApi } from "./Reducer/metrics";
-import { scriptsApi } from "./Reducer/scripts";
+import { accountsApi } from "./Reducer/accounts";
+import { apisApi } from "./Reducer/apis";
+import { chargesApi } from "./Reducer/charges";
 import { devicesApi } from "./Reducer/devices";
 import { historyApi } from "./Reducer/history";
+import { locationsApi } from "./Reducer/locations";
+import { metricsApi } from "./Reducer/metrics";
+import { salesApi } from "./Reducer/sales";
+import { scriptsApi } from "./Reducer/scripts";
 
 // Define the persist configuration
 const persistConfig = {
@@ -57,15 +59,17 @@ export const store = configureStore({
     [bookingApi.reducerPath]: bookingApi.reducer,
     [transactionApi.reducerPath]: transactionApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
-    [accountsApi.reducerPath]: accountsApi.reducer,
-    [chargesApi.reducerPath]: chargesApi.reducer,
-    [locationsApi.reducerPath]: locationsApi.reducer,
     [fileApi.reducerPath]: fileApi.reducer,
-    [platformsApi.reducerPath]: platformsApi.reducer,
-    [metricsApi.reducerPath]: metricsApi.reducer,
-    [scriptsApi.reducerPath]: scriptsApi.reducer,
+    [accountsApi.reducerPath]: accountsApi.reducer,
+    [apisApi.reducerPath]: apisApi.reducer,
+    [chargesApi.reducerPath]: chargesApi.reducer,
     [devicesApi.reducerPath]: devicesApi.reducer,
     [historyApi.reducerPath]: historyApi.reducer,
+    [locationsApi.reducerPath]: locationsApi.reducer,
+    [metricsApi.reducerPath]: metricsApi.reducer,
+    [platformsApi.reducerPath]: platformsApi.reducer,
+    [salesApi.reducerPath]: salesApi.reducer,
+    [scriptsApi.reducerPath]: scriptsApi.reducer,
     user: persistedUserReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -74,7 +78,7 @@ export const store = configureStore({
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/REGISTER'],
       },
     }).concat(
-      productsApi.middleware,
+      // productsApi.middleware,
       FaqsApi.middleware,
       contactApi.middleware,
       customersApi.middleware,
@@ -87,17 +91,19 @@ export const store = configureStore({
       languageApi.middleware,
       bookingApi.middleware,
       transactionApi.middleware,
-      dashboardApi.middleware,
-      accountsApi.middleware,
-      chargesApi.middleware,
-      locationsApi.middleware,
+      dashboardApi.middleware,  
       authApi.middleware, 
       fileApi.middleware,
-      platformsApi.middleware,
-      metricsApi.middleware,
-      scriptsApi.middleware,
+      accountsApi.middleware,
+      apisApi.middleware,
+      chargesApi.middleware,
       devicesApi.middleware,
       historyApi.middleware,
+      locationsApi.middleware,
+      metricsApi.middleware,
+      platformsApi.middleware,
+      salesApi.middleware,
+      scriptsApi.middleware,
     ),
 });
 

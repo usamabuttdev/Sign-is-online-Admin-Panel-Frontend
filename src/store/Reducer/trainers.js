@@ -4,35 +4,29 @@ import { createCustomFetchBaseQuery } from "../baseQuery";
 export const trainerApi = createApi({
   reducerPath: "trainers",
   baseQuery: createCustomFetchBaseQuery(),
+  tagTypes: ['Trainers'],
   endpoints: (builder) => ({
     getAllTrainers: builder.query({
       query: ({ pageno, search }) => ({
-        url: `/api/admin/trainers?pageno=${pageno}&search=${search}`,
+        url: `admin/trainers?pageno=${pageno}&search=${search}`,
         method: "GET",
         transformResponse: (res) => res,
       }),
-      providesTags: ['Trainers'], // Provides 'Trainers' tag for caching
+      providesTags: ['Trainers'],
     }),
-
     getTrainerById: builder.query({
-      query: (id) => `/trainers/${id}`,
-      providesTags: ['Trainer'], // Provides 'Trainer' tag for each individual trainer
+      query: (id) => `admin/trainers/${id}`,
+      providesTags: ['Trainers'],
     }),
-    
+    addNewTrainer: builder.mutation({
+      query: (newTrainer) => ({ url: `admin/trainers`, method: "POST", body: newTrainer }),
+      invalidatesTags: ['Trainers'],
+    }),
     updateTrainer: builder.mutation({
-      query: ({ id, updatedTrainer }) => ({
-        url: `/trainers/${id}`,
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: updatedTrainer,
-      }),
-      invalidatesTags: ['Trainers'], // Invalidates the 'Trainers' tag, triggering a refetch for all trainers
+      query: ({ id, data }) => ({ url: `admin/trainers/${id}`, method: "PUT", body: data }),
+      invalidatesTags: ['Trainers'],
     }),
   }),
 });
 
-export const {
-  useGetAllTrainersQuery,
-  useGetTrainerByIdQuery,
-  useUpdateTrainerMutation,
-} = trainerApi;
+export const { useGetAllTrainersQuery, useGetTrainerByIdQuery, useAddNewTrainerMutation, useUpdateTrainerMutation } = trainerApi;

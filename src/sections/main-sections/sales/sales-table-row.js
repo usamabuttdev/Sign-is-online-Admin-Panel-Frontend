@@ -1,8 +1,10 @@
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
-import Label from 'src/components/label';
+import React from "react";
+import PropTypes from "prop-types";
+import { TableRow, TableCell, Tooltip, IconButton } from "@mui/material";
+import Label from "src/components/label";
+import Iconify from "src/components/iconify";
 
-const SalesTableRow = ({ row, selected }) => {
+const SalesTableRow = ({ row, selected, onEdit }) => {
     return (
         <>
             <TableRow hover selected={selected}>
@@ -27,9 +29,23 @@ const SalesTableRow = ({ row, selected }) => {
                         {row.status}
                     </Label>
                 </TableCell>
+
+                <TableCell sx={{ px: 1, whiteSpace: "nowrap" }}>
+                    <Tooltip title="Edit" placement="top" arrow>
+                        <IconButton onClick={onEdit}>
+                            <Iconify icon="solar:pen-bold" />
+                        </IconButton>
+                    </Tooltip>
+                </TableCell>
             </TableRow>
         </>
     )
 }
+
+SalesTableRow.propTypes = {
+    row: PropTypes.object,
+    selected: PropTypes.bool,
+    onEdit: PropTypes.func,
+};
 
 export default SalesTableRow

@@ -10,11 +10,8 @@ import { ConfirmDialog } from "src/components/custom-dialog";
 import { useBoolean } from "src/hooks/use-boolean";
 import { useRouter } from "src/routes/hooks";
 
-export default function ChargesTableRow({ row, selected }) {
-  const { id, account_id, account, amount, method, created_at , status} = row;
-  const formattedAmount = amount != null
-    ? `$${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : '$0.00';
+export default function ChargesTableRow({ row, selected, onEdit }) {
+  const { id, account, amount, method, created_at , status} = row;
   const {full , display} = formatDate(created_at)
   const confirm = useBoolean();
   const router = useRouter();
@@ -29,12 +26,12 @@ export default function ChargesTableRow({ row, selected }) {
     <>
     <TableRow hover selected={selected}>
       <TableCell align="center">{id}</TableCell>
-      <TableCell onClick={()=> router.push(`${paths.dashboard.accounts.profile}/${account_id || id}`)} sx={{ cursor:"pointer" }}>
+      <TableCell onClick={()=> router.push(`${paths.dashboard.accounts.profile}/${id}`)} sx={{ cursor:"pointer" }}>
         <Tooltip title="View Account Profile">
           {account}
         </Tooltip>
         </TableCell>
-        <TableCell align="right">{formattedAmount}</TableCell>
+      <TableCell align="right">{amount}</TableCell>
       <TableCell>{method}</TableCell>
       <TableCell align="center">
         <Tooltip title={full}>
@@ -48,6 +45,12 @@ export default function ChargesTableRow({ row, selected }) {
       </TableCell>
 
       <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>
+        <Tooltip title="Edit" placement="top" arrow>
+          <IconButton onClick={onEdit}>
+            <Iconify icon="solar:pen-bold" />
+          </IconButton>
+        </Tooltip>
+
         <Tooltip title="Refund this charge" placement="top" arrow onClick={confirm.onTrue}>
           <span>
             <IconButton
@@ -88,4 +91,5 @@ export default function ChargesTableRow({ row, selected }) {
 ChargesTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   selected: PropTypes.bool,
+  onEdit: PropTypes.func,
 };

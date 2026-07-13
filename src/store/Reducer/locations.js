@@ -2,29 +2,49 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const locationsApi = createApi({
-  reducerPath: "locations",
-  tagTypes: ['Locations'],
-  baseQuery: createCustomFetchBaseQuery(),
-  endpoints: (builder) => ({
-    getAllLocations: builder.query({
-      query: ({ pageno, search }) => ({
-        url: `/api/admin/locations?pageno=${pageno}&search=${search}`,
-        method: "GET",
-      }),
-      providesTags: ['Locations'],
-      transformResponse: (res) => res,
+    reducerPath: "locations",
+    baseQuery: createCustomFetchBaseQuery(),
+    tagTypes: ['Locations'],
+    endpoints: (builder) => ({
+
+        getAllLocations: builder.query({
+            query: ({ pageno, search }) => ({
+                url: `api/admin/locations?pageno=${pageno}&search=${search}`,
+                method: "GET",
+                transformResponse: (res) => res,
+            }),
+            providesTags: ['Locations'],
+        }),
+
+        getLocationById: builder.query({
+            query: (id) => `api/admin/locations/${id}`,
+            providesTags: ['Locations'],
+        }),
+
+        addNewLocation: builder.mutation({
+            query: (newLocation) => ({
+                url: `api/admin/locations`,
+                method: "POST",
+                body: newLocation,
+            }),
+            invalidatesTags: ['Locations'],
+        }),
+
+        updateLocation: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `api/admin/locations/${id}`,
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: ['Locations'],
+        }),
+
     }),
-    getLocationById: builder.query({
-      query: (id) => ({
-        url: `/api/admin/locations/${id}`,
-        method: "GET",
-      }),
-      transformResponse: (res) => res,
-    }),
-  }),
 });
 
 export const {
-  useGetAllLocationsQuery,
-  useGetLocationByIdQuery,
+    useGetAllLocationsQuery,
+    useGetLocationByIdQuery,
+    useAddNewLocationMutation,
+    useUpdateLocationMutation,
 } = locationsApi;

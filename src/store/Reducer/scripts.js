@@ -2,38 +2,59 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const scriptsApi = createApi({
-  reducerPath: "scripts",
-  tagTypes: ['Scripts', 'ScriptLogs'],
-  baseQuery: createCustomFetchBaseQuery(),
-  endpoints: (builder) => ({
-    getAllScripts: builder.query({
-      query: ({ pageno, search }) => ({
-        url: `/api/admin/scripts?pageno=${pageno}&search=${search}`,
-        method: "GET",
-      }),
-      providesTags: ['Scripts'],
-      transformResponse: (res) => res,
+    reducerPath: "scripts",
+    baseQuery: createCustomFetchBaseQuery(),
+    tagTypes: ['Scripts'],
+    endpoints: (builder) => ({
+
+        getAllScripts: builder.query({
+            query: ({ pageno, search }) => ({
+                url: `api/admin/scripts?pageno=${pageno}&search=${search}`,
+                method: "GET",
+                transformResponse: (res) => res,
+            }),
+            providesTags: ['Scripts'],
+        }),
+
+        getScriptById: builder.query({
+            query: (id) => `api/admin/scripts/${id}`,
+            providesTags: ['Scripts'],
+        }),
+
+        getScriptLogs: builder.query({
+            query: ({ id, pageno }) => ({
+                url: `api/admin/scripts/${id}/logs?pageno=${pageno}`,
+                method: "GET",
+                transformResponse: (res) => res,
+            }),
+            providesTags: ['Scripts'],
+        }),
+
+        addNewScript: builder.mutation({
+            query: (newScript) => ({
+                url: `api/admin/scripts`,
+                method: "POST",
+                body: newScript,
+            }),
+            invalidatesTags: ['Scripts'],
+        }),
+
+        updateScript: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `api/admin/scripts/${id}`,
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: ['Scripts'],
+        }),
+
     }),
-    getScriptById: builder.query({
-      query: (id) => ({
-        url: `/api/admin/scripts/${id}`,
-        method: "GET",
-      }),
-      transformResponse: (res) => res,
-    }),
-    getScriptLogs: builder.query({
-      query: ({ id, pageno }) => ({
-        url: `/api/admin/scripts/${id}/logs?pageno=${pageno}`,
-        method: "GET",
-      }),
-      providesTags: ['ScriptLogs'],
-      transformResponse: (res) => res,
-    }),
-  }),
 });
 
 export const {
-  useGetAllScriptsQuery,
-  useGetScriptByIdQuery,
-  useGetScriptLogsQuery,
+    useGetAllScriptsQuery,
+    useGetScriptByIdQuery,
+    useGetScriptLogsQuery,
+    useAddNewScriptMutation,
+    useUpdateScriptMutation,
 } = scriptsApi;

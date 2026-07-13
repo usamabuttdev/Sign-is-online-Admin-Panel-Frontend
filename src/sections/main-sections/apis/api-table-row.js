@@ -1,9 +1,10 @@
-import { TableCell, TableRow, Tooltip } from "@mui/material";
+import { TableCell, TableRow, Tooltip, IconButton } from "@mui/material";
 import PropTypes from "prop-types";
+import Iconify from "src/components/iconify";
 import { fNumber } from "src/utils/format-number";
 import { formatDate } from "src/utils/format-time";
 
-export default function ApiTableRow({ row, selected }) {
+export default function ApiTableRow({ row, selected, onEdit }) {
   const { id, title, calls_24h, calls_1h, queued_count, created_at } = row;
   const {display , full} = formatDate(created_at);
 
@@ -19,20 +20,13 @@ export default function ApiTableRow({ row, selected }) {
           {display}
           </Tooltip>
       </TableCell>
-
-      {/* Action Column */}
-      {/* <TableCell sx={{ px: 1, whiteSpace: "nowrap" }}>
-        <Tooltip title="Quick Edit" placement="top" arrow>
-          <IconButton>
+      <TableCell sx={{ px: 1, whiteSpace: "nowrap" }}>
+        <Tooltip title="Edit" placement="top" arrow>
+          <IconButton onClick={onEdit}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
-        <Link style={{ color: "inherit", textDecoration: "none" }}>
-          <IconButton color="inherit">
-            <Iconify icon="solar:eye-bold" width={24} />
-          </IconButton>
-        </Link>
-      </TableCell> */}
+      </TableCell>
     </TableRow>
   );
 }
@@ -40,4 +34,5 @@ export default function ApiTableRow({ row, selected }) {
 ApiTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   selected: PropTypes.bool,
+  onEdit: PropTypes.func,
 };

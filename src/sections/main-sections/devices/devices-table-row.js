@@ -1,10 +1,12 @@
-import { TableCell, TableRow, Tooltip } from "@mui/material";
+import React from "react";
 import PropTypes from "prop-types";
+import { TableRow, TableCell, Tooltip, IconButton } from "@mui/material";
+import Iconify from "src/components/iconify";
 import { useRouter } from "src/routes/hooks";
 import { paths } from "src/routes/paths";
 import { formatDate } from "src/utils/format-time";
 
-export default function DevicesTableRow({ row, selected }) {
+export default function DevicesTableRow({ row, selected, onEdit }) {
   const { id, device_id, location, location_id, hardware_type, firmware_version, status, last_heartbeat, created_at } = row;
   const lastHb = formatDate(last_heartbeat);
   const created = formatDate(created_at);
@@ -35,6 +37,14 @@ export default function DevicesTableRow({ row, selected }) {
           {created.display}
         </Tooltip>
       </TableCell>
+
+      <TableCell sx={{ px: 1, whiteSpace: "nowrap" }}>
+        <Tooltip title="Edit" placement="top" arrow>
+          <IconButton onClick={onEdit}>
+            <Iconify icon="solar:pen-bold" />
+          </IconButton>
+        </Tooltip>
+      </TableCell>
     </TableRow>
   );
 }
@@ -42,4 +52,5 @@ export default function DevicesTableRow({ row, selected }) {
 DevicesTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   selected: PropTypes.bool,
+  onEdit: PropTypes.func,
 };

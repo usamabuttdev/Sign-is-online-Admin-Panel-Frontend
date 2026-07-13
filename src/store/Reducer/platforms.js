@@ -3,23 +3,40 @@ import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const platformsApi = createApi({
   reducerPath: "platforms",
-  tagTypes: ['Platforms'],
   baseQuery: createCustomFetchBaseQuery(),
+  tagTypes: ["Platforms", "Platform"],
   endpoints: (builder) => ({
     getAllPlatforms: builder.query({
-      query: ({ pageno, search }) => ({
-        url: `/api/admin/platforms?pageno=${pageno}&search=${search}`,
+      query: ({ pageno = 1, search = "" }) => ({
+        url: `api/admin/platforms?pageno=${pageno}&search=${search}`,
         method: "GET",
       }),
-      providesTags: ['Platforms'],
       transformResponse: (res) => res,
+      providesTags: ["Platforms"],
     }),
+
     getPlatformById: builder.query({
-      query: (id) => ({
-        url: `/api/admin/platforms/${id}`,
-        method: "GET",
-      }),
+      query: (id) => `api/admin/platforms/${id}`,
       transformResponse: (res) => res,
+      providesTags: (result, error, id) => [{ type: "Platform", id }],
+    }),
+
+    addNewPlatform: builder.mutation({
+      query: (newPlatform) => ({
+        url: `api/admin/platforms`,
+        method: "POST",
+        body: newPlatform,
+      }),
+      invalidatesTags: ["Platforms"],
+    }),
+
+    updatePlatform: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `api/admin/platforms/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Platforms", "Platform"],
     }),
   }),
 });
@@ -27,4 +44,6 @@ export const platformsApi = createApi({
 export const {
   useGetAllPlatformsQuery,
   useGetPlatformByIdQuery,
+  useAddNewPlatformMutation,
+  useUpdatePlatformMutation,
 } = platformsApi;

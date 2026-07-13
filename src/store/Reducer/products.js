@@ -3,20 +3,34 @@ import { createCustomFetchBaseQuery } from "../baseQuery";
 
 export const productsApi = createApi({
   reducerPath: "products",
-  tagTypes: ['Products'],
   baseQuery: createCustomFetchBaseQuery(),
+  tagTypes: ['Products'],
   endpoints: (builder) => ({
-    getAllProducts: builder.query({
+    getAllProduct: builder.query({
       query: ({ pageno, search }) => ({
-        url: `/api/admin/products?pageno=${pageno}&search=${search}`,
+        url: `api/admin/products?pageno=${pageno}&search=${search}`,
         method: "GET",
+        transformResponse: (res) => res,
       }),
       providesTags: ['Products'],
-      transformResponse: (res) => res,
+    }),
+    getProductById: builder.query({
+      query: (id) => `api/admin/products/${id}`,
+      providesTags: ['Products'],
+    }),
+    addNewProduct: builder.mutation({
+      query: (newProduct) => ({ url: `api/admin/products`, method: "POST", body: newProduct }),
+      invalidatesTags: ['Products'],
+    }),
+    updateProduct: builder.mutation({
+      query: ({ id, data }) => ({ url: `api/admin/products/${id}`, method: "PUT", body: data }),
+      invalidatesTags: ['Products'],
+    }),
+    deleteProduct: builder.mutation({
+      query: (id) => ({ url: `api/admin/products/${id}`, method: "DELETE" }),
+      invalidatesTags: ['Products'],
     }),
   }),
 });
 
-export const {
-  useGetAllProductsQuery,
-} = productsApi;
+export const { useGetAllProductQuery, useGetProductByIdQuery, useAddNewProductMutation, useUpdateProductMutation, useDeleteProductMutation } = productsApi;

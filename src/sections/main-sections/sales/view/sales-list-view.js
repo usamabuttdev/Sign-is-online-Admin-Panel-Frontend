@@ -18,13 +18,20 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
+  TableNoData,
   useTable,
 } from 'src/components/table';
 import { paths } from 'src/routes/paths';
+import Button from "@mui/material/Button";
+import Iconify from "src/components/iconify";
+import { useBoolean } from "src/hooks/use-boolean";
 import UserTableToolbar from '../../transactions/user-table-toolbar';
 import SalesTableRow from '../sales-table-row';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UserTableFiltersResult from 'src/sections/user/user-table-filters-result';
+import { useGetAllSalesQuery } from "src/store/Reducer/sales";
+import AddSaleForm from "../add-sale-modal";
+import EditSaleForm from "../edit-sale-modal";
 
 const TABLE_HEAD = [
   { id: 'saleId', label: 'Sale ID' },
@@ -36,6 +43,7 @@ const TABLE_HEAD = [
   { id: 'totalAmount', label: 'Total Amount' },
   { id: 'paymentMethod', label: 'Payment Method' },
   { id: 'status', label: 'Status' },
+  { id: 'action', label: 'Action', width: 88 },
 ];
 
 const defaultFilters = {
@@ -44,73 +52,7 @@ const defaultFilters = {
   status: 'all',
 };
 
-const salesList = [
-  {
-    id: 1,
-    saleId: 'S-1001',
-    dateOfSale: '2025-08-09',
-    customerName: 'John Doe',
-    productSold: 'Wireless Mouse',
-    quantity: 2,
-    pricePerUnit: '$25.00',
-    totalAmount: '$50.00',
-    paymentMethod: 'Credit Card',
-    status: 'paid',
-  },
-  {
-    id: 2,
-    saleId: 'S-1002',
-    dateOfSale: '2025-08-08',
-    customerName: 'Jane Smith',
-    productSold: 'Laptop Stand',
-    quantity: 1,
-    pricePerUnit: '$40.00',
-    totalAmount: '$40.00',
-    paymentMethod: 'PayPal',
-    status: 'pending',
-  },
-  {
-    id: 3,
-    saleId: 'S-1003',
-    dateOfSale: '2025-08-07',
-    customerName: 'Alice Johnson',
-    productSold: 'Bluetooth Speaker',
-    quantity: 3,
-    pricePerUnit: '$30.00',
-    totalAmount: '$90.00',
-    paymentMethod: 'Credit Card',
-    status: 'refunded',
-  },
-  {
-    id: 4,
-    saleId: 'S-1004',
-    dateOfSale: '2025-08-06',
-    customerName: 'Bob Brown',
-    productSold: 'USB-C Hub',
-    quantity: 1,
-    pricePerUnit: '$25.00',
-    totalAmount: '$25.00',
-    paymentMethod: 'Debit Card',
-    status: 'pending',
-  }, {
-    id: 5,
-    saleId: 'S-1005',
-    dateOfSale: '2025-08-05',
-    customerName: 'Charlie Davis',
-    productSold: 'HDMI Cable',
-    quantity: 5,
-    pricePerUnit: '$10.00',
-    totalAmount: '$50.00',
-    paymentMethod: 'Credit Card',
-    status: 'paid',
-  }
-];
-
-
-
 export default function TransactionsListView() {
-
-
   const table = useTable();
   const theme = useTheme();
   const settings = useSettingsContext();
@@ -118,6 +60,15 @@ export default function TransactionsListView() {
   const navigate = useNavigate();
 
   const [filters, setFilters] = useState(defaultFilters);
+
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedSale, setSelectedSale] = useState(null);
+
+  const { data, isLoading } = useGetAllSalesQuery();
+
+  const sales = data?.data || data || [];
+  const totalCount = sales?.length || 0;
 
   useEffect(() => {
     if (state && state.type) {
@@ -131,32 +82,31 @@ export default function TransactionsListView() {
       value: 'all',
       label: 'All',
       color: 'default',
-      count: salesList.length,
+      count: totalCount,
     },
     {
       value: 'paid',
       label: 'Paid',
       color: 'success',
-      count: salesList.filter((sale) => sale.status === 'paid').length,
+      count: sales.filter((sale) => sale.status === 'paid').length,
     },
     {
       value: 'pending',
       label: 'Pending',
       color: 'warning',
-      count: salesList.filter((sale) => sale.status === 'pending').length,
+      count: sales.filter((sale) => sale.status === 'pending').length,
     },
     {
       value: 'refunded',
       label: 'Refunded',
       color: 'error',
-      count: salesList.filter((sale) => sale.status === 'refunded').length,
+      count: sales.filter((sale) => sale.status === 'refunded').length,
     }
   ];
 
-  let total_length = salesList?.length;
-
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
+  const notFound = !isLoading && sales.length === 0 && canReset;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -168,6 +118,7 @@ export default function TransactionsListView() {
     },
     [table]
   );
+
   const handleFilterStatus = useCallback((event, newValue) => {
     handleFilters('status', newValue);
   }, []);
@@ -176,9 +127,17 @@ export default function TransactionsListView() {
     setFilters(defaultFilters);
   }, []);
 
-  let count = (table.page - 1) * table.rowsPerPage;
+  const handleEditSale = useCallback((row) => {
+    setSelectedSale(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
 
-  let isLoading = false;
+  const handleCloseEdit = useCallback(() => {
+    setSelectedSale(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
+
+  let count = (table.page - 1) * table.rowsPerPage;
 
   return (
     <>
@@ -186,7 +145,6 @@ export default function TransactionsListView() {
         <LoadingScreen />
       ) : (
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-          {/* HEADER */}
           <Box
             sx={{
               display: 'flex',
@@ -202,10 +160,19 @@ export default function TransactionsListView() {
               ]}
               sx={{ mb: 3 }}
             />
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={quickAdd.onTrue}
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              sx={{ mb: 3 }}
+            >
+              Add Sale
+            </Button>
           </Box>
 
           <Card>
-            {/* TABS */}
             <Tabs
               value={filters.status}
               onChange={handleFilterStatus}
@@ -248,7 +215,7 @@ export default function TransactionsListView() {
                 filters={filters}
                 onFilters={(name, value) => setFilters((prev) => ({ ...prev, [name]: value }))}
                 onResetFilters={handleResetFilters}
-                results={total_length}
+                results={totalCount}
                 sx={{ p: 2.5, pt: 0 }}
               />
             )}
@@ -260,12 +227,12 @@ export default function TransactionsListView() {
                     order={table.order}
                     orderBy={table.orderBy}
                     headLabel={TABLE_HEAD}
-                    rowCount={total_length}
+                    rowCount={totalCount}
                     numSelected={table.selected?.length}
                   />
 
                   <TableBody>
-                    {salesList?.map(
+                    {sales?.map(
                       (row, index) => (
                         (count = count + 1),
                         (
@@ -275,6 +242,7 @@ export default function TransactionsListView() {
                             selected={table.selected.includes(row.id)}
                             index={index + 1}
                             counter={index + 1 + table.page * table.rowsPerPage}
+                            onEdit={() => handleEditSale(row)}
                           />
                         )
                       )
@@ -282,15 +250,16 @@ export default function TransactionsListView() {
 
                     <TableEmptyRows
                       height={denseHeight}
-                      emptyRows={emptyRows(table.page, table.rowsPerPage, total_length)}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, totalCount)}
                     />
+                    {notFound && <TableNoData notFound={notFound} />}
                   </TableBody>
                 </Table>
               </Scrollbar>
             </TableContainer>
 
             <TablePaginationCustom
-              count={total_length || 1}
+              count={totalCount || 1}
               page={table.page}
               dense={table.dense}
               rowsPerPage={table.rowsPerPage}
@@ -299,6 +268,14 @@ export default function TransactionsListView() {
               onRowsPerPageChange={table.onChangeRowsPerPage}
             />
           </Card>
+
+          <AddSaleForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+          <EditSaleForm
+            row={selectedSale}
+            open={quickEdit.value}
+            onClose={handleCloseEdit}
+          />
         </Container>
       )}
     </>

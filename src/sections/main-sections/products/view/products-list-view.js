@@ -2,13 +2,15 @@ import isEqual from "lodash/isEqual";
 import { useState, useCallback } from "react";
 import Card from "@mui/material/Card";
 import Table from "@mui/material/Table";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
-import { _roles } from "src/_mock";
+import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
+import { useBoolean } from "src/hooks/use-boolean";
 import {
   useTable,
   emptyRows,
@@ -22,47 +24,62 @@ import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
-import { useGetAllProductsQuery } from "src/store/Reducer/products";
+import { useGetAllProductQuery } from "src/store/Reducer/products";
+import AddProductForm from "../add-product-modal";
+import EditProductForm from "../edit-product-modal";
 
 const TABLE_HEAD = [
-  { id: "id", label: "ID", width: 60, align: "center" },
+  { id: "id", label: "ID", width: 60 , align:"center" },
   { id: "title", label: "Title" },
-  { id: "subscription_length", label: "Subscription", align: "center" },
-  { id: "status", label: "Active", align: "center" },
-  { id: "created_at", label: "Created", align: "center" },
+  { id: "current_price", label: "Current Price" , align:"right" },
+  { id: "current_price_ends", label: "Current Price Ends"  , align:"center" },
+  { id: "next_price", label: "Next Price" , align:"right" },
+  { id: "next_price_starts", label: "Next Price Starts" ,align:"center" },
+  { id:"locations", label:"Locations" ,align:"right"},
+  { id: "action", label: "Action", width: 88 , align:"center" },
 ];
 
-const defaultFilters = { search: "", documentStatus: "" };
+const defaultFilters = { search: "" };
 
 export default function ProductsListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 10 });
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { data: apiResponse, isLoading } = useGetAllProductsQuery({
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const { data, isLoading } = useGetAllProductQuery({
     pageno: table.page + 1,
     search: filters.search,
   });
 
-  const TABLE_DATA = apiResponse?.data || [];
-  const totalCount = apiResponse?.total || 0;
+  const products = data?.data || [];
+  const totalCount = data?.total || 0;
 
   const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
-  const filteredData = applyFilter(TABLE_DATA, filters.search);
-  const notFound = !filteredData.length && canReset;
+  const notFound = !isLoading && products.length === 0 && canReset;
 
-  const handleFilters = useCallback(
-    (name, value) => {
-      table.onResetPage();
-      setFilters((prevState) => ({ ...prevState, [name]: value }));
-    },
-    [table]
-  );
+  const handleFilters = useCallback((name, value) => {
+    table.onResetPage();
+    setFilters((prevState) => ({ ...prevState, [name]: value }));
+  }, [table]);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
+  const handleEditProduct = useCallback((row) => {
+    setSelectedProduct(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedProduct(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
@@ -75,10 +92,14 @@ export default function ProductsListView() {
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
+        <Button variant="contained" color="primary" onClick={quickAdd.onTrue}
+          startIcon={<Iconify icon="mingcute:add-line" />} sx={{ mb: { xs: 3, md: 5 } }}>
+          Add Product
+        </Button>
       </Box>
 
       <Card>
-        <UserTableToolbar filters={filters} onFilters={handleFilters} roleOptions={_roles} />
+        <UserTableToolbar filters={filters} onFilters={handleFilters} />
 
         {canReset && (
           <UserTableFiltersResult
@@ -97,50 +118,48 @@ export default function ProductsListView() {
                 order={table.order}
                 orderBy={table.orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={filteredData.length}
+                rowCount={products.length}
                 numSelected={table.selected?.length}
               />
 
               <TableBody>
-                {filteredData.map((row, index) => (
+                {products.map((row, index) => (
                   <ProductsTableRow
                     key={row.id || row._id || index}
                     row={row}
                     selected={table.selected.includes(row.id)}
                     index={index + 1}
                     counter={index + 1 + table.page * table.rowsPerPage}
+                    onEdit={() => handleEditProduct(row)}
                   />
                 ))}
 
                 <TableEmptyRows
                   height={denseHeight}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, filteredData.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, products.length)}
                 />
-                {!isLoading && notFound && <TableNoData notFound={notFound} />}
+                {notFound && <TableNoData notFound={notFound} />}
               </TableBody>
             </Table>
           </Scrollbar>
         </TableContainer>
 
         <TablePaginationCustom
-          count={totalCount || 1}
+          count={totalCount}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-          loading={isLoading}
         />
       </Card>
+
+      <AddProductForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+      <EditProductForm
+        row={selectedProduct}
+        open={quickEdit.value}
+        onClose={handleCloseEdit}
+      />
     </Container>
-  );
-}
-
-function applyFilter(tableData, search) {
-  if (!search) return tableData;
-
-  return tableData.filter((row) =>
-    Object.values(row).some((value) =>
-      String(value).toLowerCase().includes(search.toLowerCase())
-    )
   );
 }

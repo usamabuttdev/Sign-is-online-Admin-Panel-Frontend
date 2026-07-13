@@ -7,14 +7,13 @@ import { useRouter } from "src/routes/hooks";
 import { paths } from "src/routes/paths";
 import Label from "src/components/label";
 
-// Helper: decide background color for last_started
 const getLastStartedBg = (run_frequency, last_started) => {
   if (!last_started) return "transparent";
   const last = new Date(last_started);
   if (isNaN(last.getTime())) return "transparent";
   const diffHours = (new Date() - last) / (1000 * 60 * 60);
   return {
-    N: diffHours * 60 < 1 ? "error" : "success", // N = Never
+    N: diffHours * 60 < 1 ? "error" : "success",
     H: diffHours < 1 ? "error" : "success",
     D: diffHours < 24 ? "error" : "success",
     W: diffHours < 169 ? "error" : "success",
@@ -23,15 +22,15 @@ const getLastStartedBg = (run_frequency, last_started) => {
   }[run_frequency] || "success";
 };
 
-export default function ScriptsTableRow({ row, selected }) {
+export default function ScriptsTableRow({ row, selected, onEdit }) {
   const {
     id,
     title,
     run_frequency,
     last_started,
     created_at,
-    status,      
-    last_checked,   
+    status,
+    last_checked,
   } = row;
 
   const { display, full } = created_at ? formatDate(created_at) : { display: "-", full: "" };
@@ -56,7 +55,6 @@ export default function ScriptsTableRow({ row, selected }) {
       <TableCell>{title}</TableCell>
       <TableCell align="center">{RUN_FREQUENCY_LABELS[run_frequency]}</TableCell>
 
-      {/* Last Started */}
       <TableCell align="center">
         <Tooltip title={last_started_full} arrow>
           <Label color={lastStartedBg} variant="soft">
@@ -65,25 +63,27 @@ export default function ScriptsTableRow({ row, selected }) {
         </Tooltip>
       </TableCell>
 
-      {/* Created */}
       <TableCell align="center">
         <Tooltip title={full} arrow>{display}</Tooltip>
       </TableCell>
 
-      {/* Status */}
       <TableCell align="center">
         <Label variant="soft" color={status === "A" ? "success" : "error"} >
           {status === "A" ? "Active" : "Failed"}
         </Label>
       </TableCell>
 
-      {/* Last Checked */}
       <TableCell align="center">
         <Tooltip title={last_checked_full} arrow>{last_checked_display}</Tooltip>
       </TableCell>
 
-      {/* Actions */}
-      <TableCell sx={{ whiteSpace: "nowrap"  }} align="center">
+      <TableCell sx={{ px: 1, whiteSpace: "nowrap" }} align="center">
+        <Tooltip title="Edit" placement="top" arrow>
+          <IconButton onClick={onEdit}>
+            <Iconify icon="solar:pen-bold" />
+          </IconButton>
+        </Tooltip>
+
         <Tooltip title="View Script Profile" arrow>
           <IconButton onClick={() => router.push(`${paths.dashboard.scripts.profile}/${id}`)}>
             <Iconify icon="solar:eye-bold" width={24} />
@@ -97,4 +97,5 @@ export default function ScriptsTableRow({ row, selected }) {
 ScriptsTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   selected: PropTypes.bool,
+  onEdit: PropTypes.func,
 };

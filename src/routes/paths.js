@@ -208,6 +208,12 @@ export const paths = {
       profile: `${ROOTS.DASHBOARD}/platforms/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/platforms/${id}/edit`,
     },
+    trainers:{
+      root: `${ROOTS.DASHBOARD}/trainers`,
+      list: `${ROOTS.DASHBOARD}/trainers/list`,
+      profile: `${ROOTS.DASHBOARD}/trainers/profile`,
+      edit: (id) => `${ROOTS.DASHBOARD}/trainers/${id}/edit`,
+    },
     products:{
       root: `${ROOTS.DASHBOARD}/products`,
       list: `${ROOTS.DASHBOARD}/products/list`,
