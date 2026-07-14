@@ -174,6 +174,7 @@ export const paths = {
     accounts:{
       root: `${ROOTS.DASHBOARD}/accounts`,
       list: `${ROOTS.DASHBOARD}/accounts/list`,
+      new: `${ROOTS.DASHBOARD}/accounts/new`,
       profile: `${ROOTS.DASHBOARD}/accounts/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/accounts/${id}/edit`,
     },
@@ -186,6 +187,7 @@ export const paths = {
     locations:{
       root: `${ROOTS.DASHBOARD}/locations`,
       list: `${ROOTS.DASHBOARD}/locations/list`,
+      new: `${ROOTS.DASHBOARD}/locations/new`,
       profile: `${ROOTS.DASHBOARD}/locations/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/locations/${id}/edit`,
     },
@@ -198,6 +200,7 @@ export const paths = {
     metrics:{
       root: `${ROOTS.DASHBOARD}/metrics`,
       list: `${ROOTS.DASHBOARD}/metrics/list`,
+      new: `${ROOTS.DASHBOARD}/metrics/new`,
       profile: `${ROOTS.DASHBOARD}/metrics/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/metrics/${id}/edit`,
     },
@@ -223,6 +226,7 @@ export const paths = {
     scripts:{
       root: `${ROOTS.DASHBOARD}/scripts`,
       list: `${ROOTS.DASHBOARD}/scripts/list`,
+      new: `${ROOTS.DASHBOARD}/scripts/new`,
       profile: `${ROOTS.DASHBOARD}/scripts/profile`,
       edit: (id) => `${ROOTS.DASHBOARD}/scripts/${id}/edit`,
     },

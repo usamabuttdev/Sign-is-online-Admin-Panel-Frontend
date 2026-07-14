@@ -60,7 +60,7 @@ export default function LocationsTableRow({ row, selected, onEdit }) {
       </TableCell>
       <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>
         <Tooltip title="Edit" placement="top" arrow>
-          <IconButton onClick={onEdit}>
+          <IconButton onClick={onEdit} aria-label="Edit location">
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>

@@ -79,7 +79,7 @@ export default function ScriptsTableRow({ row, selected, onEdit }) {
 
       <TableCell sx={{ px: 1, whiteSpace: "nowrap" }} align="center">
         <Tooltip title="Edit" placement="top" arrow>
-          <IconButton onClick={onEdit}>
+          <IconButton onClick={onEdit} aria-label="Edit script">
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>

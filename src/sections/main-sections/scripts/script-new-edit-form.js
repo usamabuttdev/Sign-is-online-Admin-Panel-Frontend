@@ -23,21 +23,23 @@ export default function ScriptNewEditForm({ currentUser }) {
 
   const NewScriptSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    run_frequency: Yup.string(),
+    description: Yup.string(),
+    server_name: Yup.string(),
+    email_address: Yup.string().email('Invalid email address'),
+    check_frequency: Yup.string(),
+    check_range: Yup.string(),
     status: Yup.string(),
-    track_counts: Yup.string(),
-    last_started: Yup.string(),
-    last_checked: Yup.string(),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
-      run_frequency: currentUser?.run_frequency || '',
-      status: currentUser?.status || '',
-      track_counts: currentUser?.track_counts || '',
-      last_started: currentUser?.last_started || '',
-      last_checked: currentUser?.last_checked || '',
+      description: currentUser?.description || '',
+      server_name: currentUser?.server_name || '',
+      email_address: currentUser?.email_address || '',
+      check_frequency: currentUser?.check_frequency || '',
+      check_range: currentUser?.check_range || '',
+      status: currentUser?.status || 'A',
     }),
     [currentUser]
   );
@@ -50,18 +52,32 @@ export default function ScriptNewEditForm({ currentUser }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, dirtyFields },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentUser) {
+        if (Object.keys(dirtyFields).length === 0) {
+          enqueueSnackbar('No changes detected!', { variant: 'warning' });
+          return;
+        }
         await updateScript({ id: currentUser.id, data }).unwrap();
+        enqueueSnackbar('Script updated successfully!');
       } else {
-        await addNewScript(data).unwrap();
+        const submitData = {
+          title: data.title,
+          description: data.description || null,
+          server_name: data.server_name || null,
+          email_address: data.email_address || null,
+          check_frequency: data.check_frequency || null,
+          check_range: data.check_range || null,
+          status: data.status || 'A',
+        };
+        await addNewScript(submitData).unwrap();
+        enqueueSnackbar('Script created successfully!');
       }
       reset();
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.scripts.root);
     } catch (error) {
       console.error(error);
@@ -84,22 +100,27 @@ export default function ScriptNewEditForm({ currentUser }) {
               }}
             >
               <RHFTextField name="title" label="Title" />
-              <RHFSelect name="run_frequency" label="Run Frequency">
+              <RHFTextField name="description" label="Description" multiline rows={3} />
+              <RHFTextField name="server_name" label="Server Name" />
+              <RHFTextField name="email_address" label="Email Address" type="email" />
+              <RHFSelect name="check_frequency" label="Check Frequency">
+                <MenuItem value="">None</MenuItem>
                 <MenuItem value="H">Hourly</MenuItem>
                 <MenuItem value="D">Daily</MenuItem>
                 <MenuItem value="W">Weekly</MenuItem>
                 <MenuItem value="M">Monthly</MenuItem>
               </RHFSelect>
+              <RHFSelect name="check_range" label="Check Range">
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="1H">1 Hour</MenuItem>
+                <MenuItem value="24H">24 Hours</MenuItem>
+                <MenuItem value="7D">7 Days</MenuItem>
+                <MenuItem value="30D">30 Days</MenuItem>
+              </RHFSelect>
               <RHFSelect name="status" label="Status">
                 <MenuItem value="A">Active</MenuItem>
                 <MenuItem value="F">Failed</MenuItem>
               </RHFSelect>
-              <RHFSelect name="track_counts" label="Track Counts">
-                <MenuItem value="Y">Yes</MenuItem>
-                <MenuItem value="N">No</MenuItem>
-              </RHFSelect>
-              <RHFTextField name="last_started" label="Last Started" />
-              <RHFTextField name="last_checked" label="Last Checked" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

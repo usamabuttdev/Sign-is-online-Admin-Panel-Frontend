@@ -43,7 +43,7 @@ export default function AccountTableRow({ row, selected, onEdit }) {
 
       <TableCell sx={{ whiteSpace: "nowrap" }} align="center">
         <Tooltip title="Edit" placement="top" arrow>
-          <IconButton onClick={onEdit}>
+          <IconButton onClick={onEdit} aria-label="Edit account">
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>

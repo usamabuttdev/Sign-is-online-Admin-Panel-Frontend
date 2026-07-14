@@ -59,7 +59,7 @@ export default function MetricsTableRow({ row, selected, onEdit }) {
         </Link>
 
         <Tooltip title="Edit" placement="top" arrow>
-          <IconButton onClick={onEdit}>
+          <IconButton onClick={onEdit} aria-label="Edit metric">
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>

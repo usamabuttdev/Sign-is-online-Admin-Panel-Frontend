@@ -65,6 +65,8 @@ const HistoryPage = lazy(() => import('src/pages/main-dashboard/history/history-
 // NEW MODULES
 const AccountsListPage = lazy(() => import('src/pages/main-dashboard/accounts/list'));
 const AccountsProfilePage = lazy(() => import('src/pages/main-dashboard/accounts/profile'));
+const AccountCreatePage = lazy(() => import('src/pages/main-dashboard/accounts/new'));
+const AccountEditPage = lazy(() => import('src/pages/main-dashboard/accounts/edit'));
 
 const APIsListPage = lazy(() => import('src/pages/main-dashboard/apis/list'));
 const APIsProfilePage = lazy(() => import('src/pages/main-dashboard/apis/profile'));
@@ -74,9 +76,13 @@ const ChargesProfilePage = lazy(() => import('src/pages/main-dashboard/charges/p
 
 const LocationListPage = lazy(() => import('src/pages/main-dashboard/locations/list'));
 const LocationProfilePage = lazy(() => import('src/pages/main-dashboard/locations/profile'));
+const LocationCreatePage = lazy(() => import('src/pages/main-dashboard/locations/new'));
+const LocationEditPage = lazy(() => import('src/pages/main-dashboard/locations/edit'));
 
-const MetricsListPage = lazy(() => import('src/pages/main-dashboard/metrics/list'));
-const MetricsProfilePage = lazy(() => import('src/pages/main-dashboard/metrics/profile'));
+const MetricsListPage = lazy(() => import('src/pages/main-dashboard/matrics/list'));
+const MetricsProfilePage = lazy(() => import('src/pages/main-dashboard/matrics/profile'));
+const MetricCreatePage = lazy(() => import('src/pages/main-dashboard/matrics/new'));
+const MetricEditPage = lazy(() => import('src/pages/main-dashboard/matrics/edit'));
 
 const PlatformsListPage = lazy(() => import('src/pages/main-dashboard/platforms/list'));
 const PlatformsProfilePage = lazy(() => import('src/pages/main-dashboard/platforms/profile'));
@@ -86,9 +92,11 @@ const ProductsProfilePage = lazy(() => import('src/pages/main-dashboard/products
 
 const ScriptsListPage = lazy(() => import('src/pages/main-dashboard/scripts/list'));
 const ScriptsProfilePage = lazy(() => import('src/pages/main-dashboard/scripts/profile'));
+const ScriptCreatePage = lazy(() => import('src/pages/main-dashboard/scripts/new'));
+const ScriptEditPage = lazy(() => import('src/pages/main-dashboard/scripts/edit'));
 
-const DevicesListPage = lazy(() => import('src/pages/main-dashboard/signs/list'));
-const DevicesProfilePage = lazy(() => import('src/pages/main-dashboard/signs/profile'));
+const SignsListPage = lazy(() => import('src/pages/main-dashboard/signs/list'));
+const SignsProfilePage = lazy(() => import('src/pages/main-dashboard/signs/profile'));
 
 const DevicesListPage = lazy(() => import('src/pages/main-dashboard/devices/list'));
 
@@ -153,7 +161,8 @@ export const dashboardRoutes = [
           { element: <AccountsListPage />, index: true },
           { path: 'profile/:id', element: <AccountsProfilePage /> },
           { path: 'list', element: <AccountsListPage /> },
-          { path: ':id/edit', element: <AccountsProfilePage /> },
+          { path: 'new', element: <AccountCreatePage /> },
+          { path: ':id/edit', element: <AccountEditPage /> },
         ],
       },
 
@@ -175,7 +184,8 @@ export const dashboardRoutes = [
           { element: <LocationListPage />, index: true },
           { path: 'profile/:id', element: <LocationProfilePage /> },
           { path: 'list', element: <LocationListPage /> },
-          { path: ':id/edit', element: <LocationProfilePage /> },
+          { path: 'new', element: <LocationCreatePage /> },
+          { path: ':id/edit', element: <LocationEditPage /> },
         ],
       },
 
@@ -197,7 +207,8 @@ export const dashboardRoutes = [
           { element: <MetricsListPage />, index: true },
           { path: 'profile/:id', element: <MetricsProfilePage /> },
           { path: 'list', element: <MetricsListPage /> },
-          { path: ':id/edit', element: <MetricsProfilePage /> },
+          { path: 'new', element: <MetricCreatePage /> },
+          { path: ':id/edit', element: <MetricEditPage /> },
         ],
       },
 
@@ -230,18 +241,19 @@ export const dashboardRoutes = [
           { element: <ScriptsListPage />, index: true },
           { path: 'profile/:id', element: <ScriptsProfilePage /> },
           { path: 'list', element: <ScriptsListPage /> },
-          { path: ':id/edit', element: <ScriptsProfilePage /> },
+          { path: 'new', element: <ScriptCreatePage /> },
+          { path: ':id/edit', element: <ScriptEditPage /> },
         ],
       },
 
-      // DEVICES
+      // SIGNS
       {
-        path: 'devices',
+        path: 'signs',
         children: [
-          { element: <DevicesListPage />, index: true },
-          { path: 'profile/:id', element: <DevicesProfilePage /> },
-          { path: 'list', element: <DevicesListPage /> },
-          { path: ':id/edit', element: <DevicesProfilePage /> },
+          { element: <SignsListPage />, index: true },
+          { path: 'profile/:id', element: <SignsProfilePage /> },
+          { path: 'list', element: <SignsListPage /> },
+          { path: ':id/edit', element: <SignsProfilePage /> },
         ],
       },
 

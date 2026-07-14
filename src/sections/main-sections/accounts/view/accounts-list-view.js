@@ -11,6 +11,7 @@ import Iconify from "src/components/iconify";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
+import { useBoolean } from "src/hooks/use-boolean";
 import {
   emptyRows,
   TableEmptyRows,
@@ -24,6 +25,8 @@ import AccountTableRow from "../account-table-row";
 import UserTableFiltersResult from '../user-table-filters-result';
 import UserTableToolbar from "../user-table-toolbar";
 import { useGetAllAccountsQuery } from "src/store/Reducer/accounts";
+import AddAccountForm from "../add-account-modal";
+import EditAccountForm from "../edit-account-modal";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 20, align: "center" },
@@ -44,6 +47,10 @@ export default function AccountsListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedAccount, setSelectedAccount] = useState(null);
 
   const { data, isLoading } = useGetAllAccountsQuery({
     pageno: table.page + 1,
@@ -72,6 +79,16 @@ export default function AccountsListView() {
     setFilters(defaultFilters);
   }, []);
 
+  const handleEditAccount = useCallback((row) => {
+    setSelectedAccount(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedAccount(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
       <Box
@@ -92,9 +109,8 @@ export default function AccountsListView() {
           }}
         />
         <Button
-          component="a"
-          href={`${paths.dashboard.accounts.root}/new`}
           variant="contained"
+          onClick={quickAdd.onTrue}
           startIcon={<Iconify icon="mingcute:add-line" />}
           sx={{ mb: { xs: 3, md: 5 } }}
         >
@@ -141,6 +157,7 @@ export default function AccountsListView() {
                     selected={table.selected.includes(row.id)}
                     index={index + 1}
                     counter={index + 1 + table.page * table.rowsPerPage}
+                    onEdit={() => handleEditAccount(row)}
                   />
                 ))}
 
@@ -162,6 +179,14 @@ export default function AccountsListView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <AddAccountForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+      <EditAccountForm
+        row={selectedAccount}
+        open={quickEdit.value}
+        onClose={handleCloseEdit}
+      />
     </Container>
   );
 }

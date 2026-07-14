@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form";
 import { useSnackbar } from "src/components/snackbar";
 import { useUpdateAccountMutation } from "src/store/Reducer/accounts";
+import { parseObservesDaylight, formatObservesDaylight } from "src/utils/observes-daylight";
 
 export default function EditAccountForm({ row, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -22,12 +23,15 @@ export default function EditAccountForm({ row, open, onClose }) {
 
   const EditAccountSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
+    timezone_id: Yup.string(),
+    observes_daylight: Yup.boolean(),
+    status: Yup.string(),
   });
 
   const defaultValues = {
     title: "",
     timezone_id: "",
-    observes_daylight: "",
+    observes_daylight: false,
     status: "A",
   };
 
@@ -44,12 +48,12 @@ export default function EditAccountForm({ row, open, onClose }) {
 
   useEffect(() => {
     if (row) {
-      reset({
-        title: row?.title || "",
-        timezone_id: row?.timezone_id || "",
-        observes_daylight: row?.observes_daylight || "",
-        status: row?.status === "A" ? "A" : "I",
-      });
+        reset({
+          title: row?.title || "",
+          timezone_id: row?.tz_title || "",
+          observes_daylight: parseObservesDaylight(row?.observes_daylight),
+          status: row?.status === "A" ? "A" : "I",
+        });
     }
   }, [row, reset]);
 
@@ -60,12 +64,21 @@ export default function EditAccountForm({ row, open, onClose }) {
     }
 
     try {
-      await updateAccount({ id: row.id, data }).unwrap();
+      await updateAccount({
+        id: row.id,
+        data: {
+          title: data.title,
+          timezone_id: data.timezone_id || null,
+          observes_daylight: formatObservesDaylight(data.observes_daylight),
+          status: data.status,
+        },
+      }).unwrap();
       enqueueSnackbar("Account updated successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -90,14 +103,17 @@ export default function EditAccountForm({ row, open, onClose }) {
             display="grid"
             gridTemplateColumns={{
               xs: "repeat(1, 1fr)",
-              sm: "repeat(1, 1fr)",
+              sm: "repeat(2, 1fr)",
             }}
           >
             <RHFTextField name="title" label="Account Title" />
 
             <RHFTextField name="timezone_id" label="Timezone ID" />
 
-            <RHFTextField name="observes_daylight" label="Observes Daylight" />
+            <RHFSelect name="observes_daylight" label="Observes Daylight">
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </RHFSelect>
 
             <RHFSelect name="status" label="Status">
               <MenuItem value="A">Active</MenuItem>

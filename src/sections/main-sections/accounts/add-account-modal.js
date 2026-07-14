@@ -9,9 +9,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import FormProvider, { RHFTextField } from "src/components/hook-form";
+import MenuItem from "@mui/material/MenuItem";
+import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form";
 import { useSnackbar } from "src/components/snackbar";
 import { useAddNewAccountMutation } from "src/store/Reducer/accounts";
+import { formatObservesDaylight } from "src/utils/observes-daylight";
 
 export default function AddAccountForm({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -20,10 +22,14 @@ export default function AddAccountForm({ open, onClose }) {
 
   const NewAccountSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
+    timezone_id: Yup.string(),
+    observes_daylight: Yup.boolean(),
   });
 
   const defaultValues = {
     title: "",
+    timezone_id: "",
+    observes_daylight: false,
   };
 
   const methods = useForm({
@@ -39,12 +45,17 @@ export default function AddAccountForm({ open, onClose }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await addNewAccount({ title: data.title }).unwrap();
+      await addNewAccount({
+        title: data.title,
+        timezone_id: data.timezone_id || null,
+      observes_daylight: formatObservesDaylight(data.observes_daylight),
+      }).unwrap();
       enqueueSnackbar("Account created successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -69,10 +80,15 @@ export default function AddAccountForm({ open, onClose }) {
             display="grid"
             gridTemplateColumns={{
               xs: "repeat(1, 1fr)",
-              sm: "repeat(1, 1fr)",
+              sm: "repeat(2, 1fr)",
             }}
           >
             <RHFTextField name="title" label="Account Title" />
+            <RHFTextField name="timezone_id" label="Timezone ID" />
+            <RHFSelect name="observes_daylight" label="Observes Daylight">
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </RHFSelect>
           </Box>
         </DialogContent>
 
@@ -86,7 +102,7 @@ export default function AddAccountForm({ open, onClose }) {
             sx={{ px: 3 }}
             color="primary"
             variant="contained"
-            loading={isLoading}
+            loading={isSubmitting}
           >
             Add
           </LoadingButton>

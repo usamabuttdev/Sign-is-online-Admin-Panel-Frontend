@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
+import { useBoolean } from "src/hooks/use-boolean";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import {
   useTable,
@@ -24,6 +25,8 @@ import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
 import { useGetAllLocationsQuery } from "src/store/Reducer/locations";
+import AddLocationForm from "../add-location-modal";
+import EditLocationForm from "../edit-location-modal";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60, align: "center" },
@@ -47,6 +50,10 @@ export default function LocationsListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const { data, isLoading } = useGetAllLocationsQuery({
     pageno: table.page + 1,
@@ -75,6 +82,16 @@ export default function LocationsListView() {
     setFilters(defaultFilters);
   }, []);
 
+  const handleEditLocation = useCallback((row) => {
+    setSelectedLocation(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedLocation(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -87,9 +104,8 @@ export default function LocationsListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
         <Button
-          component="a"
-          href={`${paths.dashboard.locations.root}/new`}
           variant="contained"
+          onClick={quickAdd.onTrue}
           startIcon={<Iconify icon="mingcute:add-line" />}
           sx={{ mb: { xs: 3, md: 5 } }}
         >
@@ -129,6 +145,7 @@ export default function LocationsListView() {
                     selected={table.selected.includes(row.id)}
                     index={index + 1}
                     counter={index + 1 + table.page * table.rowsPerPage}
+                    onEdit={() => handleEditLocation(row)}
                   />
                 ))}
 
@@ -150,6 +167,14 @@ export default function LocationsListView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <AddLocationForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+      <EditLocationForm
+        row={selectedLocation}
+        open={quickEdit.value}
+        onClose={handleCloseEdit}
+      />
     </Container>
   );
 }

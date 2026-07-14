@@ -9,6 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
+import { useBoolean } from "src/hooks/use-boolean";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import {
   useTable,
@@ -22,9 +23,10 @@ import ScriptsTableRow from "../scripts-table-row";
 import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
-import { useRouter } from "src/routes/hooks";
 import UserTableFiltersResult from "../user-table-filters-result";
 import { useGetAllScriptsQuery } from "src/store/Reducer/scripts";
+import AddScriptForm from "../add-script-modal";
+import EditScriptForm from "../edit-script-modal";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60, align: "center" },
@@ -42,8 +44,11 @@ const defaultFilters = { search: "" };
 export default function ScriptsListView() {
   const table = useTable({ defaultRowsPerPage: 10 });
   const settings = useSettingsContext();
-  const router = useRouter();
   const [filters, setFilters] = useState(defaultFilters);
+
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedScript, setSelectedScript] = useState(null);
 
   const { data, isLoading } = useGetAllScriptsQuery({
     pageno: table.page + 1,
@@ -69,12 +74,15 @@ export default function ScriptsListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const handleEditScript = useCallback(
-    (row) => {
-      router.push(paths.dashboard.scripts.edit(row.id));
-    },
-    [router]
-  );
+  const handleEditScript = useCallback((row) => {
+    setSelectedScript(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedScript(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
@@ -89,9 +97,8 @@ export default function ScriptsListView() {
         />
 
         <Button
-          component="a"
-          href={`${paths.dashboard.scripts.root}/new`}
           variant="contained"
+          onClick={quickAdd.onTrue}
           startIcon={<Iconify icon="mingcute:add-line" />}
           sx={{ mb: { xs: 3, md: 5 } }}
         >
@@ -153,6 +160,14 @@ export default function ScriptsListView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <AddScriptForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+      <EditScriptForm
+        row={selectedScript}
+        open={quickEdit.value}
+        onClose={handleCloseEdit}
+      />
     </Container>
   );
 }

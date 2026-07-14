@@ -8,11 +8,13 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
+import MenuItem from '@mui/material/MenuItem';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { useAddNewAccountMutation, useUpdateAccountMutation } from 'src/store/Reducer/accounts';
+import { parseObservesDaylight } from 'src/utils/observes-daylight';
 
 export default function AccountNewEditForm({ currentUser }) {
   const router = useRouter();
@@ -22,19 +24,17 @@ export default function AccountNewEditForm({ currentUser }) {
 
   const NewAccountSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    locations: Yup.string(),
-    signs: Yup.number(),
-    users: Yup.number(),
-    total_charged: Yup.number(),
+    timezone_id: Yup.string(),
+    observes_daylight: Yup.boolean(),
+    status: Yup.string(),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
-      locations: currentUser?.locations || '',
-      signs: currentUser?.signs || '',
-      users: currentUser?.users || '',
-      total_charged: currentUser?.total_charged || '',
+      timezone_id: currentUser?.tz_title || '',
+    observes_daylight: parseObservesDaylight(currentUser?.observes_daylight),
+      status: currentUser?.status || 'A',
     }),
     [currentUser]
   );
@@ -52,10 +52,16 @@ export default function AccountNewEditForm({ currentUser }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      const submitData = {
+        title: data.title,
+        timezone_id: data.timezone_id || null,
+        observes_daylight: data.observes_daylight ? 'Y' : 'N',
+        status: data.status || 'A',
+      };
       if (currentUser) {
-        await updateAccount({ id: currentUser.id, data }).unwrap();
+        await updateAccount({ id: currentUser.id, data: submitData }).unwrap();
       } else {
-        await addNewAccount(data).unwrap();
+        await addNewAccount(submitData).unwrap();
       }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
@@ -81,10 +87,15 @@ export default function AccountNewEditForm({ currentUser }) {
               }}
             >
               <RHFTextField name="title" label="Title" />
-              <RHFTextField name="locations" label="Locations" />
-              <RHFTextField name="signs" label="Signs" type="number" />
-              <RHFTextField name="users" label="Users" type="number" />
-              <RHFTextField name="total_charged" label="Total Charged" type="number" />
+              <RHFTextField name="timezone_id" label="Timezone ID" />
+              <RHFSelect name="observes_daylight" label="Observes Daylight">
+                <MenuItem value={true}>Yes</MenuItem>
+                <MenuItem value={false}>No</MenuItem>
+              </RHFSelect>
+              <RHFSelect name="status" label="Status">
+                <MenuItem value="A">Active</MenuItem>
+                <MenuItem value="I">Inactive</MenuItem>
+              </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

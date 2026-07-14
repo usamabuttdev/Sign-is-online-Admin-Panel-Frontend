@@ -8,10 +8,11 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
+import MenuItem from '@mui/material/MenuItem';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { useAddNewLocationMutation, useUpdateLocationMutation } from 'src/store/Reducer/locations';
 
 export default function LocationNewEditForm({ currentUser }) {
@@ -22,25 +23,23 @@ export default function LocationNewEditForm({ currentUser }) {
 
   const NewLocationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    account_id: Yup.string(),
-    auth: Yup.string(),
-    sign_exists: Yup.boolean(),
-    platforms_count: Yup.number(),
-    product: Yup.string(),
-    location: Yup.string(),
-    subscription: Yup.boolean(),
+    account_id: Yup.string().required('Account ID is required'),
+    city: Yup.string(),
+    state: Yup.string(),
+    product_id: Yup.string(),
+    authenticated: Yup.string(),
+    has_active_subscription: Yup.string(),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
       account_id: currentUser?.account_id || '',
-      auth: currentUser?.auth || '',
-      sign_exists: currentUser?.sign_exists || false,
-      platforms_count: currentUser?.platforms_count || '',
-      product: currentUser?.product || '',
-      location: currentUser?.location || '',
-      subscription: currentUser?.subscription || false,
+      city: currentUser?.city || '',
+      state: currentUser?.state || '',
+      product_id: currentUser?.product_id || '',
+      authenticated: currentUser?.authenticated || '',
+      has_active_subscription: currentUser?.has_active_subscription || '',
     }),
     [currentUser]
   );
@@ -53,18 +52,30 @@ export default function LocationNewEditForm({ currentUser }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, dirtyFields },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentUser) {
+        if (Object.keys(dirtyFields).length === 0) {
+          enqueueSnackbar('No changes detected!', { variant: 'warning' });
+          return;
+        }
         await updateLocation({ id: currentUser.id, data }).unwrap();
+        enqueueSnackbar('Location updated successfully!');
       } else {
-        await addNewLocation(data).unwrap();
+        const submitData = {
+          ...data,
+          account_id: Number(data.account_id),
+          product_id: data.product_id ? Number(data.product_id) : undefined,
+          authenticated: data.authenticated === 'Yes' ? true : data.authenticated === 'No' ? false : undefined,
+          has_active_subscription: data.has_active_subscription === 'Yes' ? true : data.has_active_subscription === 'No' ? false : undefined,
+        };
+        await addNewLocation(submitData).unwrap();
+        enqueueSnackbar('Location created successfully!');
       }
       reset();
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.locations.root);
     } catch (error) {
       console.error(error);
@@ -87,13 +98,22 @@ export default function LocationNewEditForm({ currentUser }) {
               }}
             >
               <RHFTextField name="title" label="Title" />
-              <RHFTextField name="account_id" label="Account ID" />
-              <RHFTextField name="auth" label="Auth" />
-              <RHFTextField name="platforms_count" label="Platforms Count" type="number" />
-              <RHFTextField name="product" label="Product" />
-              <RHFTextField name="location" label="Location (City, State)" />
-              <RHFSwitch name="sign_exists" label="Sign Exists" />
-              <RHFSwitch name="subscription" label="Subscription" />
+              <RHFTextField name="account_id" label="Account ID" type="number" />
+              <RHFTextField name="city" label="City" />
+              <RHFTextField name="state" label="State" />
+              <RHFTextField name="product_id" label="Product ID" type="number" />
+
+              <RHFSelect name="authenticated" label="Authenticated">
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </RHFSelect>
+
+              <RHFSelect name="has_active_subscription" label="Active Subscription">
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

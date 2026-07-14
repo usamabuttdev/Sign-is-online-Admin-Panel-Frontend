@@ -23,21 +23,23 @@ export default function MetricNewEditForm({ currentUser }) {
 
   const NewMetricSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
+    description: Yup.string(),
     frequency: Yup.string(),
     query: Yup.string(),
-    current_value: Yup.number(),
     goal: Yup.number(),
-    met_units: Yup.string(),
+    units: Yup.string(),
+    direction: Yup.string(),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
+      description: currentUser?.description || '',
       frequency: currentUser?.frequency || '',
       query: currentUser?.query || '',
-      current_value: currentUser?.current_value || '',
       goal: currentUser?.goal || '',
-      met_units: currentUser?.met_units || '',
+      units: currentUser?.units || '',
+      direction: currentUser?.direction || '',
     }),
     [currentUser]
   );
@@ -50,18 +52,32 @@ export default function MetricNewEditForm({ currentUser }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, dirtyFields },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentUser) {
+        if (Object.keys(dirtyFields).length === 0) {
+          enqueueSnackbar('No changes detected!', { variant: 'warning' });
+          return;
+        }
         await updateMetric({ id: currentUser.id, data }).unwrap();
+        enqueueSnackbar('Metric updated successfully!');
       } else {
-        await addNewMetric(data).unwrap();
+        const submitData = {
+          title: data.title,
+          description: data.description || null,
+          frequency: data.frequency || null,
+          query: data.query || null,
+          goal: data.goal ? Number(data.goal) : null,
+          units: data.units || null,
+          direction: data.direction || null,
+        };
+        await addNewMetric(submitData).unwrap();
+        enqueueSnackbar('Metric created successfully!');
       }
       reset();
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.metrics.root);
     } catch (error) {
       console.error(error);
@@ -85,15 +101,21 @@ export default function MetricNewEditForm({ currentUser }) {
             >
               <RHFTextField name="title" label="Title" />
               <RHFSelect name="frequency" label="Frequency">
+                <MenuItem value="">None</MenuItem>
                 <MenuItem value="D">Daily</MenuItem>
                 <MenuItem value="W">Weekly</MenuItem>
                 <MenuItem value="M">Monthly</MenuItem>
                 <MenuItem value="Y">Yearly</MenuItem>
               </RHFSelect>
-              <RHFTextField name="query" label="Query" />
-              <RHFTextField name="current_value" label="Current Value" type="number" />
+              <RHFTextField name="description" label="Description" />
+              <RHFTextField name="query" label="Query" multiline rows={3} />
               <RHFTextField name="goal" label="Goal" type="number" />
-              <RHFTextField name="met_units" label="Met Units" />
+              <RHFTextField name="units" label="Units" />
+              <RHFSelect name="direction" label="Direction">
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="up">Up is Good</MenuItem>
+                <MenuItem value="down">Down is Good</MenuItem>
+              </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

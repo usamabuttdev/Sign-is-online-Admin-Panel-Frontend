@@ -54,6 +54,7 @@ export default function AddChargeForm({ open, onClose }) {
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
+      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
     }
   });
 

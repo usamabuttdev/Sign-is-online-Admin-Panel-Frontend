@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
+import { useBoolean } from "src/hooks/use-boolean";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import {
   useTable,
@@ -24,6 +25,8 @@ import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
 import { useGetAllMetricsQuery } from "src/store/Reducer/metrics";
+import AddMetricForm from "../add-metric-modal";
+import EditMetricForm from "../edit-metric-modal";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60, align: "center" },
@@ -42,6 +45,10 @@ export default function MetricsListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedMetric, setSelectedMetric] = useState(null);
 
   const { data, isLoading } = useGetAllMetricsQuery({
     pageno: table.page + 1,
@@ -67,6 +74,16 @@ export default function MetricsListView() {
     setFilters(defaultFilters);
   }, []);
 
+  const handleEditMetric = useCallback((row) => {
+    setSelectedMetric(row);
+    quickEdit.onTrue();
+  }, [quickEdit]);
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedMetric(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -79,9 +96,8 @@ export default function MetricsListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
         <Button
-          component="a"
-          href={`${paths.dashboard.metrics.root}/new`}
           variant="contained"
+          onClick={quickAdd.onTrue}
           startIcon={<Iconify icon="mingcute:add-line" />}
           sx={{ mb: { xs: 3, md: 5 } }}
         >
@@ -121,6 +137,7 @@ export default function MetricsListView() {
                     selected={table.selected.includes(row.id)}
                     index={index + 1}
                     counter={index + 1 + table.page * table.rowsPerPage}
+                    onEdit={() => handleEditMetric(row)}
                   />
                 ))}
 
@@ -142,6 +159,14 @@ export default function MetricsListView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <AddMetricForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+
+      <EditMetricForm
+        row={selectedMetric}
+        open={quickEdit.value}
+        onClose={handleCloseEdit}
+      />
     </Container>
   );
 }
