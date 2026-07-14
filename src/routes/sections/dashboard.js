@@ -79,10 +79,10 @@ const LocationProfilePage = lazy(() => import('src/pages/main-dashboard/location
 const LocationCreatePage = lazy(() => import('src/pages/main-dashboard/locations/new'));
 const LocationEditPage = lazy(() => import('src/pages/main-dashboard/locations/edit'));
 
-const MetricsListPage = lazy(() => import('src/pages/main-dashboard/matrics/list'));
-const MetricsProfilePage = lazy(() => import('src/pages/main-dashboard/matrics/profile'));
-const MetricCreatePage = lazy(() => import('src/pages/main-dashboard/matrics/new'));
-const MetricEditPage = lazy(() => import('src/pages/main-dashboard/matrics/edit'));
+const MetricsListPage = lazy(() => import('src/pages/main-dashboard/metrics/list'));
+const MetricsProfilePage = lazy(() => import('src/pages/main-dashboard/metrics/profile'));
+const MetricCreatePage = lazy(() => import('src/pages/main-dashboard/metrics/new'));
+const MetricEditPage = lazy(() => import('src/pages/main-dashboard/metrics/edit'));
 
 const PlatformsListPage = lazy(() => import('src/pages/main-dashboard/platforms/list'));
 const PlatformsProfilePage = lazy(() => import('src/pages/main-dashboard/platforms/profile'));
