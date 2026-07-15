@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form";
 import { useSnackbar } from "src/components/snackbar";
 import { useUpdateLocationMutation } from "src/store/Reducer/locations";
+import { yesNoToFlag } from "src/utils/location-flags";
 
 export default function EditLocationForm({ row, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -66,7 +67,12 @@ export default function EditLocationForm({ row, open, onClose }) {
     }
 
     try {
-      await updateLocation({ id: row.id, data }).unwrap();
+      const normalizedData = {
+        ...data,
+        authenticated: yesNoToFlag(data.authenticated),
+        has_active_subscription: yesNoToFlag(data.has_active_subscription),
+      };
+      await updateLocation({ id: row.id, data: normalizedData }).unwrap();
       enqueueSnackbar("Location updated successfully!", { variant: "success" });
       reset();
       onClose();

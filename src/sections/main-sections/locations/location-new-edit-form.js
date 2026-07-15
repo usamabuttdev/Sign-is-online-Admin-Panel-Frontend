@@ -14,6 +14,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { useAddNewLocationMutation, useUpdateLocationMutation } from 'src/store/Reducer/locations';
+import { yesNoToFlag } from 'src/utils/location-flags';
 
 export default function LocationNewEditForm({ currentUser }) {
   const router = useRouter();
@@ -55,6 +56,12 @@ export default function LocationNewEditForm({ currentUser }) {
     formState: { isSubmitting, dirtyFields },
   } = methods;
 
+  const normalizeSelections = (payload) => ({
+    ...payload,
+    authenticated: yesNoToFlag(payload.authenticated),
+    has_active_subscription: yesNoToFlag(payload.has_active_subscription),
+  });
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentUser) {
@@ -62,15 +69,14 @@ export default function LocationNewEditForm({ currentUser }) {
           enqueueSnackbar('No changes detected!', { variant: 'warning' });
           return;
         }
-        await updateLocation({ id: currentUser.id, data }).unwrap();
+        await updateLocation({ id: currentUser.id, data: normalizeSelections(data) }).unwrap();
         enqueueSnackbar('Location updated successfully!');
       } else {
+        const normalizedData = normalizeSelections(data);
         const submitData = {
-          ...data,
+          ...normalizedData,
           account_id: Number(data.account_id),
           product_id: data.product_id ? Number(data.product_id) : undefined,
-          authenticated: data.authenticated === 'Yes' ? true : data.authenticated === 'No' ? false : undefined,
-          has_active_subscription: data.has_active_subscription === 'Yes' ? true : data.has_active_subscription === 'No' ? false : undefined,
         };
         await addNewLocation(submitData).unwrap();
         enqueueSnackbar('Location created successfully!');

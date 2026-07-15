@@ -13,6 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form";
 import { useSnackbar } from "src/components/snackbar";
 import { useAddNewLocationMutation } from "src/store/Reducer/locations";
+import { yesNoToFlag } from "src/utils/location-flags";
 
 export default function AddLocationForm({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -47,7 +48,14 @@ export default function AddLocationForm({ open, onClose }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await addNewLocation({ ...data, account_id: Number(data.account_id), product_id: data.product_id ? Number(data.product_id) : undefined }).unwrap();
+      const payload = {
+        ...data,
+        account_id: Number(data.account_id),
+        product_id: data.product_id ? Number(data.product_id) : undefined,
+        authenticated: yesNoToFlag(data.authenticated),
+        has_active_subscription: yesNoToFlag(data.has_active_subscription),
+      };
+      await addNewLocation(payload).unwrap();
       enqueueSnackbar("Location created successfully!", { variant: "success" });
       reset();
       onClose();
