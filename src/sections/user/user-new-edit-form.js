@@ -33,7 +33,7 @@ import FormProvider, {
 
 // ----------------------------------------------------------------------
 
-export default function UserNewEditForm({ currentUser }) {
+export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit }) {
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -57,10 +57,10 @@ export default function UserNewEditForm({ currentUser }) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      name: currentUser?.name || currentUser?.FullName || '',
       city: currentUser?.city || '',
-      role: currentUser?.role || '',
-      email: currentUser?.email || '',
+      role: currentUser?.role || currentUser?.Role || '',
+      email: currentUser?.email || currentUser?.Email || '',
       state: currentUser?.state || '',
       status: currentUser?.status || '',
       address: currentUser?.address || '',
@@ -68,8 +68,8 @@ export default function UserNewEditForm({ currentUser }) {
       zipCode: currentUser?.zipCode || '',
       company: currentUser?.company || '',
       avatarUrl: currentUser?.avatarUrl || null,
-      phoneNumber: currentUser?.phoneNumber || '',
-      isVerified: currentUser?.isVerified || true,
+      phoneNumber: currentUser?.phoneNumber || currentUser?.Phone || '',
+      isVerified: currentUser?.isVerified ?? currentUser?.isactive ?? true,
     }),
     [currentUser]
   );
@@ -84,15 +84,17 @@ export default function UserNewEditForm({ currentUser }) {
     watch,
     control,
     setValue,
-    handleSubmit,
+    handleSubmit: hookHandleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const values = watch();
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = hookHandleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (handleSubmit) {
+        await handleSubmit(data);
+      }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.user.list);
@@ -282,4 +284,5 @@ export default function UserNewEditForm({ currentUser }) {
 
 UserNewEditForm.propTypes = {
   currentUser: PropTypes.object,
+  onSubmit: PropTypes.func,
 };

@@ -5,6 +5,8 @@ import { paths } from 'src/routes/paths';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+// api
+import { useCreateUserMutation } from 'src/store/Reducer/users';
 //
 import UserNewEditForm from '../user-new-edit-form';
 
@@ -12,6 +14,17 @@ import UserNewEditForm from '../user-new-edit-form';
 
 export default function UserCreateView() {
   const settings = useSettingsContext();
+  const [createUser] = useCreateUserMutation();
+
+  const handleSubmit = async (data) => {
+    try {
+      await createUser(data).unwrap();
+      return { success: true };
+    } catch (error) {
+      console.error('Create user error:', error);
+      throw error;
+    }
+  };
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -33,7 +46,7 @@ export default function UserCreateView() {
         }}
       />
 
-      <UserNewEditForm />
+      <UserNewEditForm onSubmit={handleSubmit} />
     </Container>
   );
 }

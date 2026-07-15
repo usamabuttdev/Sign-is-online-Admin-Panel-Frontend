@@ -1,6 +1,7 @@
 import isEqual from "lodash/isEqual";
 import { useState, useCallback, useEffect, useMemo } from "react";
 import Card from "@mui/material/Card";
+import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import Container from "@mui/material/Container";
 import TableBody from "@mui/material/TableBody";
@@ -26,6 +27,8 @@ import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
 import { useGetAllusersListQuery } from "src/store/Reducer/users";
+import Iconify from "src/components/iconify";
+import { RouterLink } from "src/routes/components";
 
 const TABLE_HEAD = [
   { id: "id", label: "USR_ID", width: 100 },
@@ -94,6 +97,16 @@ export default function UsersListView() {
             { name: "Dashboard", href: paths.dashboard.root },
             { name: "Users", href: paths.dashboard.users.root },
           ]}
+          action={
+            <Button
+              component={RouterLink}
+              href={paths.adminDashboard.user.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              New User
+            </Button>
+          }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
       </Box>

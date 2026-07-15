@@ -53,6 +53,24 @@ export const usersApi = createApi({
             invalidatesTags: ['users'],
         }),
 
+        updateUser: builder.mutation({
+            query: ({ _id, data }) => ({
+                url: `/users/${_id}`,
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: ['users'],
+        }),
+
+        createUser: builder.mutation({
+            query: (data) => ({
+                url: `/users`,
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ['users'],
+        }),
+
         getusersBookings: builder.query({
             query: ({ _id, pageno }) => ({
                 url: `/admin/user-bookings/${_id}?&page=${pageno + 1}`,
@@ -119,6 +137,8 @@ export const {
     useGetusersRentalsQuery,
     useGetusersEarningsQuery,
     useUpdateUserStatusMutation,
+    useUpdateUserMutation,
+    useCreateUserMutation,
 
     useGetAllDocumentsVerificationListQuery,
     useUpdateDocumentsVerificationStatusMutation

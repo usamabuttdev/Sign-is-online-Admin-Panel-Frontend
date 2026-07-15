@@ -48,11 +48,13 @@ export default function UsersTableRow({ row, selected }) {
 
       {/* Action Column */}
       <TableCell sx={{  whiteSpace: "nowrap" , textAlign:"center" }}>
-        {/* <Tooltip title="Quick Edit" placement="top" arrow>
-          <IconButton >
-            <Iconify icon="solar:pen-bold" />
-          </IconButton>
-      </Tooltip> */}
+        <Tooltip title="Edit" placement="top" arrow>
+          <Link style={{ color: "inherit", textDecoration: "none" }} to={`${paths.adminDashboard.user.edit(id)}`}>
+            <IconButton color="inherit">
+              <Iconify icon="solar:pen-bold" />
+            </IconButton>
+          </Link>
+        </Tooltip>
       <Tooltip title={'View User Profile'}>
         <Link style={{ color: "inherit", textDecoration: "none" }} to={`${paths.dashboard.users.profile}/${id}`}>
           <IconButton color="inherit">

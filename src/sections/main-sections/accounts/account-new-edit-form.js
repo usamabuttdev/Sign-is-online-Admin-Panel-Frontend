@@ -14,7 +14,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { useAddNewAccountMutation, useUpdateAccountMutation } from 'src/store/Reducer/accounts';
-import { parseObservesDaylight } from 'src/utils/observes-daylight';
+import { parseObservesDaylight, formatObservesDaylight } from 'src/utils/observes-daylight';
 
 export default function AccountNewEditForm({ currentUser }) {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function AccountNewEditForm({ currentUser }) {
       const submitData = {
         title: data.title,
         timezone_id: data.timezone_id || null,
-        observes_daylight: data.observes_daylight ? 'Y' : 'N',
+      observes_daylight: formatObservesDaylight(data.observes_daylight),
         status: data.status || 'A',
       };
       if (currentUser) {
