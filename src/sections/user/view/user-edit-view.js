@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
 // @mui
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,7 +9,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // api
-import { useGetAllusersListQuery, useUpdateUserMutation } from 'src/store/Reducer/users';
+import { useGetUserByIdQuery, useUpdateUserMutation } from 'src/store/Reducer/users';
 //
 import UserNewEditForm from '../user-new-edit-form';
 
@@ -18,16 +17,8 @@ import UserNewEditForm from '../user-new-edit-form';
 
 export default function UserEditView({ id }) {
   const settings = useSettingsContext();
-  const [currentUser, setCurrentUser] = useState(null);
   const [updateUser] = useUpdateUserMutation();
-  const { data, isLoading, isError } = useGetAllusersListQuery({ page: 1, limit: 1000, keyword: '' });
-
-  useEffect(() => {
-    if (data?.data) {
-      const user = data.data.find((u) => u.id === id || u._id === id);
-      if (user) setCurrentUser(user);
-    }
-  }, [data, id]);
+  const { data: currentUser, isLoading } = useGetUserByIdQuery({ id });
 
   if (isLoading || !currentUser) {
     return (

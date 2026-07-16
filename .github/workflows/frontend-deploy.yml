@@ -9,14 +9,11 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy:
-    name: Deploy to EC2
-    runs-on: sign-in-frontend
+    name: Deploy to EC2 via SSH
+    runs-on: ubuntu-latest
     steps:
-      - name: Pull latest code
-        run: |
-          cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-          git fetch origin main
-          git reset --hard origin/main
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -25,40 +22,45 @@ jobs:
 
       - name: Install dependencies
         working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
-      - name: Backup existing build
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: |
-          if [ -d build ] && [ -f build/index.html ]; then
-            cp -a build build.bak
-          fi
-
-      - name: Build
+      - name: Build frontend
         working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
         run: yarn build
 
-      - name: Restore build on failure
-        if: failure()
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: |
-          if [ -d build.bak ]; then
-            rm -rf build
-            mv build.bak build
-            echo "Restored previous build after failure"
-          fi
-
-      - name: Deploy with pm2
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: |
-          pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
-          pm2 save
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cd /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
+            git fetch origin main
+            git reset --hard origin/main
+            yarn install --frozen-lockfile
+            yarn build
+            pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+            pm2 save
 
       - name: Health check
-        run: |
-          sleep 5
-          curl --fail http://localhost:3000 || (pm2 logs frontend --lines 50 --nostream && exit 1)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            sleep 5
+            curl --fail http://localhost:3000 || (pm2 logs frontend --lines 50 --nostream && exit 1)
 
       - name: Clean up backup on success
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: rm -rf build.bak
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            rm -rf /home/ec2-user/Sign-is-online-Admin-Panel-Frontend/build.bak

@@ -8,6 +8,15 @@ export const usersApi = createApi({
     endpoints: (builder) => ({
 
         // ---------------------- USERS ----------------------
+        getUserById: builder.query({
+            query: ({ id }) => ({
+                url: `/users/${id}`,
+                method: "GET",
+            }),
+            transformResponse: (res) => res.data,
+            providesTags: ['users'],
+        }),
+
         getAllusersList: builder.query({
             query: ({  page, limit , keyword , isActive  , userType}) => {
                 let url = `/admin/all-users?page=${page}&limit=${limit}`; 
@@ -131,6 +140,7 @@ export const usersApi = createApi({
 });
 
 export const {
+    useGetUserByIdQuery,
     useGetAllusersListQuery,
     useGetusersByListingQuery,
     useGetusersBookingsQuery,

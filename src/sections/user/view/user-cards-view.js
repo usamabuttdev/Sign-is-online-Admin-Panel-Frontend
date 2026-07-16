@@ -1,5 +1,6 @@
 // @mui
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
@@ -20,25 +21,27 @@ export default function UserCardsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="User Cards"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: 'Cards' },
-        ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.user.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            New User
-          </Button>
-        }
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <CustomBreadcrumbs
+          heading="User Cards"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'Cards' },
+          ]}
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
+
+        <Button
+          component={RouterLink}
+          href={paths.dashboard.user.new}
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          sx={{ mb: { xs: 3, md: 5 } }}
+        >
+          New User
+        </Button>
+      </Box>
 
       <UserCardList users={_userCards} />
     </Container>

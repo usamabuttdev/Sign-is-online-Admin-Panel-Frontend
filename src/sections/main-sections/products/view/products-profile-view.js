@@ -5,6 +5,8 @@ import { Stack } from '@mui/material';
 import { paths } from 'src/routes/paths';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
+import { useParams } from 'react-router-dom';
+import { useGetProduct } from 'src/api/product';
 // components
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
@@ -14,17 +16,22 @@ import ProductsHome from '../profile-home';
 
 export default function ProductsProfileView() {
   const settings = useSettingsContext();
+  const { id } = useParams();
 
-  const data = {
-    id: 1,
-    title: "Product A",
-    current_price: "$120",
-    current_price_ends: "2025-09-01",
-    next_price: "$150",
-    next_price_starts: "2025-09-02",
-    created_at: "2025-08-01",
-    action: "View",
-  };
+  const { product, productLoading, productError } = useGetProduct(id);
+
+  const mappedProduct = product
+    ? {
+        id: product.id,
+        title: product.name,
+        current_price: product.price ? `$${product.price}` : '$0.00',
+        current_price_ends: 'N/A',
+        next_price: product.price ? `$${(product.price * 1.25).toFixed(2)}` : '$0.00',
+        next_price_starts: 'N/A',
+        created_at: product.created_at || 'N/A',
+        action: 'View',
+      }
+    : null;
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -34,13 +41,21 @@ export default function ProductsProfileView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Products', href: paths.dashboard.products.root },
-            { name: data.title },
+            { name: mappedProduct?.title || id || 'Loading...' },
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
       </Stack>
 
-      <ProductsHome product={data} />
+      {productLoading ? (
+        <div>Loading...</div>
+      ) : productError ? (
+        <div>Error loading product</div>
+      ) : mappedProduct ? (
+        <ProductsHome product={mappedProduct} />
+      ) : (
+        <div>Product not found</div>
+      )}
     </Container>
   );
 }

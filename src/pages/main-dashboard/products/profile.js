@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import ProductsProfileView from 'src/sections/main-sections/products/view/products-profile-view';
 // sections
 // ----------------------------------------------------------------------
 
@@ -9,7 +10,7 @@ export default function ProductsProfilePage() {
         <title> Dashboard: Products Profile</title>
       </Helmet>
 
-
+      <ProductsProfileView />
     </>
   );
 }

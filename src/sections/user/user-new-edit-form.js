@@ -68,7 +68,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
       zipCode: currentUser?.zipCode || '',
       company: currentUser?.company || '',
       avatarUrl: currentUser?.avatarUrl || null,
-      phoneNumber: currentUser?.phoneNumber || currentUser?.Phone || '',
+      phoneNumber: currentUser?.phoneNumber || currentUser?.phone || currentUser?.Phone || '',
       isVerified: currentUser?.isVerified ?? currentUser?.isactive ?? true,
     }),
     [currentUser]
