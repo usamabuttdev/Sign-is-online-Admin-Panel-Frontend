@@ -20,14 +20,6 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install dependencies
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: yarn install --frozen-lockfile
-
-      - name: Build frontend
-        working-directory: /home/ec2-user/Sign-is-online-Admin-Panel-Frontend
-        run: yarn build
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
