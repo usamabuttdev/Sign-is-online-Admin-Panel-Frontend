@@ -1,12 +1,15 @@
 import { TableCell, TableRow, Tooltip, IconButton } from "@mui/material";
 import PropTypes from "prop-types";
 import Iconify from "src/components/iconify";
+import SoftDeleteButton from "src/components/soft-delete-button";
 import { fNumber } from "src/utils/format-number";
 import { formatDate } from "src/utils/format-time";
+import { useDeleteApiMutation } from "src/store/Reducer/apis";
 
 export default function ApiTableRow({ row, selected, onEdit }) {
   const { id, title, calls_24h, calls_1h, queued_count, created_at } = row;
-  const {display , full} = formatDate(created_at);
+  const { display, full } = formatDate(created_at);
+  const [deleteApi] = useDeleteApiMutation();
 
   return (
     <TableRow hover selected={selected}>
@@ -16,9 +19,9 @@ export default function ApiTableRow({ row, selected, onEdit }) {
       <TableCell align="right">{fNumber(calls_1h)}</TableCell>
       <TableCell align="right">{fNumber(queued_count)}</TableCell>
       <TableCell align="center">
-         <Tooltip title={full} arrow>
+        <Tooltip title={full} arrow>
           {display}
-          </Tooltip>
+        </Tooltip>
       </TableCell>
       <TableCell sx={{ px: 1, whiteSpace: "nowrap" }}>
         <Tooltip title="Edit" placement="top" arrow>
@@ -26,6 +29,7 @@ export default function ApiTableRow({ row, selected, onEdit }) {
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
+        <SoftDeleteButton deleteMutation={deleteApi} id={id} label={title} entityName="API" />
       </TableCell>
     </TableRow>
   );

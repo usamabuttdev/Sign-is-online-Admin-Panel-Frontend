@@ -9,7 +9,7 @@ export const salesApi = createApi({
 
         getAllSales: builder.query({
             query: () => ({
-                url: `sales`,
+                url: `/api/admin/sales`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -17,18 +17,18 @@ export const salesApi = createApi({
         }),
 
         getSaleById: builder.query({
-            query: (id) => `sales/${id}`,
+            query: (id) => `/api/admin/sales/${id}`,
             providesTags: ['Sales'],
         }),
 
         getSalesByProduct: builder.query({
-            query: (productId) => `sales/product/${productId}`,
+            query: (productId) => `/api/admin/sales/product/${productId}`,
             providesTags: ['Sales'],
         }),
 
         addNewSale: builder.mutation({
             query: (newSale) => ({
-                url: `sales`,
+                url: `/api/admin/sales`,
                 method: "POST",
                 body: newSale,
             }),
@@ -37,7 +37,7 @@ export const salesApi = createApi({
 
         updateSale: builder.mutation({
             query: ({ id, data }) => ({
-                url: `sales/${id}`,
+                url: `/api/admin/sales/${id}`,
                 method: "PUT",
                 body: data,
             }),

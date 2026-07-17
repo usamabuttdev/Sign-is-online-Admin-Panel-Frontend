@@ -2,19 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 import { TableRow, TableCell, IconButton, Tooltip, Button } from "@mui/material";
 import Iconify from "src/components/iconify";
-import { Link } from "react-router-dom";
+import SoftDeleteButton from "src/components/soft-delete-button";
 import { paths } from "src/routes/paths";
 import Label from "src/components/label";
 import { formatDate } from "src/utils/format-time";
 import { ConfirmDialog } from "src/components/custom-dialog";
 import { useBoolean } from "src/hooks/use-boolean";
 import { useRouter } from "src/routes/hooks";
+import { useDeleteChargeMutation } from "src/store/Reducer/charges";
 
 export default function ChargesTableRow({ row, selected, onEdit }) {
-  const { id, account, amount, method, created_at , status} = row;
-  const {full , display} = formatDate(created_at)
+  const { id, account, amount, method, created_at, status } = row;
+  const { full, display } = formatDate(created_at);
   const confirm = useBoolean();
   const router = useRouter();
+  const [deleteCharge] = useDeleteChargeMutation();
 
   const COLORS = {
     Attempted:"warning",
@@ -61,16 +63,23 @@ export default function ChargesTableRow({ row, selected, onEdit }) {
           </span>
         </Tooltip>
 
-        <Tooltip title="View Charge Profile" placement="top" arrow 
-            onClick={() =>router.push(`${paths?.dashboard?.charges?.profile}/${id}`, { state: { charge: row } })}
-            style={{ color: "inherit", textDecoration: "none" }}
-        >
-          <IconButton color="inherit"  onClick={() =>
-            router.push(`${paths?.dashboard?.charges?.profile}/${id}`, { state: { charge: row } })
-          }>
+        <Tooltip title="View Charge Profile" placement="top" arrow>
+          <IconButton
+            color="inherit"
+            onClick={() =>
+              router.push(`${paths?.dashboard?.charges?.profile}/${id}`, { state: { charge: row } })
+            }
+          >
             <Iconify icon="solar:eye-bold" width={24} />
           </IconButton>
         </Tooltip>
+
+        <SoftDeleteButton
+          deleteMutation={deleteCharge}
+          id={id}
+          label={account || String(id)}
+          entityName="charge"
+        />
       </TableCell>
      </TableRow>
       <ConfirmDialog

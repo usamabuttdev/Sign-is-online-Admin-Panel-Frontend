@@ -31,6 +31,7 @@ import { useLoginMutation } from '../../../store/Reducer/auth';
 import { paths } from 'src/routes/paths';
 import { Link } from '@mui/material';
 import { RouterLink } from 'src/routes/components';
+import { setSession } from 'src/auth/context/jwt/utils';
 
 // ----------------------------------------------------------------------
 
@@ -73,9 +74,11 @@ export default function JwtLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const result = await login({ email: data.email, password: data.password }).unwrap();
+      const accessToken = result.data.accessToken;
+      setSession(accessToken);
       dispatch(setUser({
         ...result.data.user,
-        token: result.data.accessToken,
+        token: accessToken,
       }));
       router.push(PATH_AFTER_LOGIN);
       reset();

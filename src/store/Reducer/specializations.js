@@ -25,7 +25,7 @@ export const specializationApi = createApi({
 
     addSpecialization: builder.mutation({
       query: (newSpecialization) => ({
-        url: `/specializations`,
+        url: `/api/admin/specializations`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newSpecialization,
@@ -35,7 +35,7 @@ export const specializationApi = createApi({
 
     updateSpecialization: builder.mutation({
       query: ({ id, updatedSpecialization }) => ({
-        url: `/specializations/${id}`,
+        url: `/api/admin/specializations/${id}`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: updatedSpecialization,
@@ -45,7 +45,7 @@ export const specializationApi = createApi({
 
     deleteSpecialization: builder.mutation({
       query: (id) => ({
-        url: `/specializations/${id}`,
+        url: `/api/admin/specializations/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ['Specializations'],

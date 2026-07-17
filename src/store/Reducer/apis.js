@@ -9,7 +9,7 @@ export const apisApi = createApi({
 
         getAllApis: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/apis?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/apis?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -17,13 +17,13 @@ export const apisApi = createApi({
         }),
 
         getApiById: builder.query({
-            query: (id) => `api/admin/apis/${id}`,
+            query: (id) => `/api/admin/apis/${id}`,
             providesTags: ['Apis'],
         }),
 
         addNewApi: builder.mutation({
             query: (newApi) => ({
-                url: `api/admin/apis`,
+                url: `/api/admin/apis`,
                 method: "POST",
                 body: newApi,
             }),
@@ -32,9 +32,17 @@ export const apisApi = createApi({
 
         updateApi: builder.mutation({
             query: ({ id, data }) => ({
-                url: `api/admin/apis/${id}`,
+                url: `/api/admin/apis/${id}`,
                 method: "PUT",
                 body: data,
+            }),
+            invalidatesTags: ['Apis'],
+        }),
+
+        deleteApi: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/apis/${id}`,
+                method: "DELETE",
             }),
             invalidatesTags: ['Apis'],
         }),
@@ -47,4 +55,5 @@ export const {
     useGetApiByIdQuery,
     useAddNewApiMutation,
     useUpdateApiMutation,
+    useDeleteApiMutation,
 } = apisApi;

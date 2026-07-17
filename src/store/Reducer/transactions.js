@@ -9,7 +9,7 @@ export const transactionApi = createApi({
       query: ({ pageno, search }) => {
         const searchParam = search ? `&search=${search}` : "";
         return {
-          url: `/transactions?pageno=${pageno}${searchParam}`,
+          url: `/api/admin/transactions?pageno=${pageno}${searchParam}`,
           method: "GET",
         };
       },

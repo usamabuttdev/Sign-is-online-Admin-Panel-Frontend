@@ -9,7 +9,7 @@ export const FaqsApi = createApi({
 
         getAllHomeFaqs: builder.query({
             query: () => ({
-                url: `/settings/faqs`,
+                url: `/api/admin/faqs`,
                 method: "GET",
                 transformResponse: (res) => ({
                     data: res.data,
@@ -21,7 +21,7 @@ export const FaqsApi = createApi({
 
         getAllFaqs: builder.query({
             query: () => ({
-                url: `/admin/faqs`,
+                url: `/api/admin/faqs`,
                 method: "GET",
                 transformResponse: (res) => ({
                     data: res.data,
@@ -33,7 +33,7 @@ export const FaqsApi = createApi({
 
         addNewFaq: builder.mutation({
             query: (newFaq) => ({
-                url: `/admin/faqs`,
+                url: `/api/admin/faqs`,
                 method: "POST",
                 body: newFaq,
             }),
@@ -42,7 +42,7 @@ export const FaqsApi = createApi({
 
         updateFaq: builder.mutation({
             query: ({ _id, data }) => ({
-                url: `/admin/faqs/${_id}`,
+                url: `/api/admin/faqs/${_id}`,
                 method: 'PUT',
                 body: data,
             }),
@@ -51,7 +51,7 @@ export const FaqsApi = createApi({
 
         deleteFaq: builder.mutation({
             query: (_id) => ({
-                url: `/admin/faqs/${_id}`,
+                url: `/api/admin/faqs/${_id}`,
                 method: "DELETE",
             }),
             invalidatesTags: ['Faqs'],

@@ -9,7 +9,7 @@ export const accountsApi = createApi({
 
         getAllAccounts: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/accounts?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/accounts?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -17,13 +17,13 @@ export const accountsApi = createApi({
         }),
 
         getAccountById: builder.query({
-            query: (id) => `api/admin/accounts/${id}`,
+            query: (id) => `/api/admin/accounts/${id}`,
             providesTags: ['Accounts'],
         }),
 
         addNewAccount: builder.mutation({
             query: (newAccount) => ({
-                url: `api/admin/accounts`,
+                url: `/api/admin/accounts`,
                 method: "POST",
                 body: newAccount,
             }),
@@ -32,9 +32,17 @@ export const accountsApi = createApi({
 
         updateAccount: builder.mutation({
             query: ({ id, data }) => ({
-                url: `api/admin/accounts/${id}`,
+                url: `/api/admin/accounts/${id}`,
                 method: "PUT",
                 body: data,
+            }),
+            invalidatesTags: ['Accounts'],
+        }),
+
+        deleteAccount: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/accounts/${id}`,
+                method: "DELETE",
             }),
             invalidatesTags: ['Accounts'],
         }),
@@ -47,4 +55,5 @@ export const {
     useGetAccountByIdQuery,
     useAddNewAccountMutation,
     useUpdateAccountMutation,
+    useDeleteAccountMutation,
 } = accountsApi;

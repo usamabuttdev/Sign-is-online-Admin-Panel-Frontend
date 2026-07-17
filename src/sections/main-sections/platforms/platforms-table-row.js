@@ -3,12 +3,15 @@ import PropTypes from "prop-types";
 import { TableRow, TableCell, Tooltip, IconButton } from "@mui/material";
 import Label from "src/components/label";
 import Iconify from "src/components/iconify";
+import SoftDeleteButton from "src/components/soft-delete-button";
 import { formatDate } from "src/utils/format-time";
 import { fNumber } from "src/utils/format-number";
+import { useDeletePlatformMutation } from "src/store/Reducer/platforms";
 
 export default function PlatformsTableRow({ row, selected, onEdit }) {
   const { id, title, available, connected_count, created_at } = row;
   const { display, full } = formatDate(created_at);
+  const [deletePlatform] = useDeletePlatformMutation();
 
   return (
     <TableRow hover selected={selected}>
@@ -32,6 +35,12 @@ export default function PlatformsTableRow({ row, selected, onEdit }) {
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
+        <SoftDeleteButton
+          deleteMutation={deletePlatform}
+          id={id}
+          label={title}
+          entityName="platform"
+        />
       </TableCell>
     </TableRow>
   );

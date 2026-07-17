@@ -8,22 +8,22 @@ export const trainerApi = createApi({
   endpoints: (builder) => ({
     getAllTrainers: builder.query({
       query: ({ pageno, search }) => ({
-        url: `admin/trainers?pageno=${pageno}&search=${search}`,
+        url: `/api/admin/trainers?pageno=${pageno}&search=${search}`,
         method: "GET",
         transformResponse: (res) => res,
       }),
       providesTags: ['Trainers'],
     }),
     getTrainerById: builder.query({
-      query: (id) => `admin/trainers/${id}`,
+      query: (id) => `/api/admin/trainers/${id}`,
       providesTags: ['Trainers'],
     }),
     addNewTrainer: builder.mutation({
-      query: (newTrainer) => ({ url: `admin/trainers`, method: "POST", body: newTrainer }),
+      query: (newTrainer) => ({ url: `/api/admin/trainers`, method: "POST", body: newTrainer }),
       invalidatesTags: ['Trainers'],
     }),
     updateTrainer: builder.mutation({
-      query: ({ id, data }) => ({ url: `admin/trainers/${id}`, method: "PUT", body: data }),
+      query: ({ id, data }) => ({ url: `/api/admin/trainers/${id}`, method: "PUT", body: data }),
       invalidatesTags: ['Trainers'],
     }),
   }),

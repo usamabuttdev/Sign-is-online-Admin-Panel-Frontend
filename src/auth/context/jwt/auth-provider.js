@@ -1,179 +1,59 @@
 import PropTypes from 'prop-types';
-import { useEffect, useReducer, useCallback, useMemo } from 'react';
-// utils
-import axios, { endpoints } from 'src/utils/axios';
-//
+import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
+import { logout as reduxLogout, selectUser } from 'src/store/slices/userSlice';
 
 // ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
+// Auth is driven by Redux (user.token). This provider only syncs axios
+// sessionStorage and exposes context for Minimal UI guards/layout.
+// Public signup/register is disabled — admins create users in the portal.
 // ----------------------------------------------------------------------
-
-const initialState = {
-  user: null,
-  loading: true,
-};
-
-const reducer = (state, action) => {
-  if (action.type === 'INITIAL') {
-    return {
-      loading: false,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === 'LOGIN') {
-    return {
-      ...state,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === 'REGISTER') {
-    return {
-      ...state,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === 'LOGOUT') {
-    return {
-      ...state,
-      user: null,
-    };
-  }
-  return state;
-};
-
-// ----------------------------------------------------------------------
-
-const STORAGE_KEY = 'accessToken';
 
 export function AuthProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  const initialize = useCallback(async () => {
-    try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
-
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
-
-        const response = await axios.get(endpoints.auth.me);
-
-        const { user } = response.data;
-
-        dispatch({
-          type: 'INITIAL',
-          payload: {
-            user: {
-              ...user,
-              accessToken,
-            },
-          },
-        });
-      } else {
-        dispatch({
-          type: 'INITIAL',
-          payload: {
-            user: null,
-          },
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      dispatch({
-        type: 'INITIAL',
-        payload: {
-          user: null,
-        },
-      });
-    }
-  }, []);
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    const token = user?.token;
+    if (token && isValidToken(token)) {
+      setSession(token);
+    } else if (!token) {
+      setSession(null);
+    }
+  }, [user?.token]);
 
-  // LOGIN
-  const login = useCallback(async (email, password) => {
-    const data = {
-      email,
-      password,
-    };
-
-    const response = await axios.post(endpoints.auth.login, data);
-
-    const { accessToken, user } = response.data;
-
-    setSession(accessToken);
-
-    dispatch({
-      type: 'LOGIN',
-      payload: {
-        user: {
-          ...user,
-          accessToken,
-        },
-      },
-    });
-  }, []);
-
-  // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
-    const data = {
-      email,
-      password,
-      firstName,
-      lastName,
-    };
-
-    const response = await axios.post(endpoints.auth.register, data);
-
-    const { accessToken, user } = response.data;
-
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
-
-    dispatch({
-      type: 'REGISTER',
-      payload: {
-        user: {
-          ...user,
-          accessToken,
-        },
-      },
-    });
-  }, []);
-
-  // LOGOUT
-  const logout = useCallback(async () => {
+  const logout = async () => {
     setSession(null);
-    dispatch({
-      type: 'LOGOUT',
-    });
-  }, []);
+    dispatch(reduxLogout());
+  };
 
-  // ----------------------------------------------------------------------
-
-  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
-
-  const status = state.loading ? 'loading' : checkAuthenticated;
+  const checkAuthenticated = user?.token ? 'authenticated' : 'unauthenticated';
 
   const memoizedValue = useMemo(
     () => ({
-      user: state.user,
+      user: user
+        ? {
+            ...user,
+            accessToken: user.token,
+            displayName: user.displayName || user.name || user.email,
+          }
+        : null,
       method: 'jwt',
-      loading: status === 'loading',
-      authenticated: status === 'authenticated',
-      unauthenticated: status === 'unauthenticated',
-      //
-      login,
-      register,
+      loading: false,
+      authenticated: checkAuthenticated === 'authenticated',
+      unauthenticated: checkAuthenticated === 'unauthenticated',
+      login: async () => {
+        throw new Error('Use the login form (RTK auth). AuthProvider.login is disabled.');
+      },
+      register: async () => {
+        throw new Error('Public registration is disabled. An admin must create accounts.');
+      },
       logout,
     }),
-    [login, logout, register, state.user, status]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, checkAuthenticated]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

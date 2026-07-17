@@ -7,7 +7,7 @@ export const dashboardApi = createApi({
   endpoints: (builder) => ({
     getDashboardData: builder.query({
       query: () => ({
-        url: `/admin/dashboard`,  // Assuming `/dashboard` is the endpoint for your dashboard data
+        url: `/api/admin/dashboard`,  // Assuming `/dashboard` is the endpoint for your dashboard data
         method: "GET",
       }),
       providesTags: ['Dashboard'], 
@@ -15,7 +15,7 @@ export const dashboardApi = createApi({
     }),
     getUserStats: builder.query({
       query: (year) => ({
-        url: `/admin/user-stats-by-region?year=${year}`, 
+        url: `/api/admin/user-stats-by-region?year=${year}`, 
         method: "GET",
       }),
       providesTags: ['Dashboard'], 

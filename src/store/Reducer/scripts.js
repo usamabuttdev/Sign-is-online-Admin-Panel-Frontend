@@ -9,7 +9,7 @@ export const scriptsApi = createApi({
 
         getAllScripts: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/scripts?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/scripts?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -17,13 +17,13 @@ export const scriptsApi = createApi({
         }),
 
         getScriptById: builder.query({
-            query: (id) => `api/admin/scripts/${id}`,
+            query: (id) => `/api/admin/scripts/${id}`,
             providesTags: ['Scripts'],
         }),
 
         getScriptLogs: builder.query({
             query: ({ id, pageno }) => ({
-                url: `api/admin/scripts/${id}/logs?pageno=${pageno}`,
+                url: `/api/admin/scripts/${id}/logs?pageno=${pageno}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -32,7 +32,7 @@ export const scriptsApi = createApi({
 
         addNewScript: builder.mutation({
             query: (newScript) => ({
-                url: `api/admin/scripts`,
+                url: `/api/admin/scripts`,
                 method: "POST",
                 body: newScript,
             }),
@@ -41,9 +41,17 @@ export const scriptsApi = createApi({
 
         updateScript: builder.mutation({
             query: ({ id, data }) => ({
-                url: `api/admin/scripts/${id}`,
+                url: `/api/admin/scripts/${id}`,
                 method: "PUT",
                 body: data,
+            }),
+            invalidatesTags: ['Scripts'],
+        }),
+
+        deleteScript: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/scripts/${id}`,
+                method: "DELETE",
             }),
             invalidatesTags: ['Scripts'],
         }),
@@ -57,4 +65,5 @@ export const {
     useGetScriptLogsQuery,
     useAddNewScriptMutation,
     useUpdateScriptMutation,
+    useDeleteScriptMutation,
 } = scriptsApi;

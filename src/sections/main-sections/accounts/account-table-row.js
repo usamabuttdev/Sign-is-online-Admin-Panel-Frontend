@@ -2,14 +2,17 @@ import { IconButton, TableCell, TableRow, Tooltip } from "@mui/material";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Iconify from "src/components/iconify";
+import SoftDeleteButton from "src/components/soft-delete-button";
 import { useRouter } from "src/routes/hooks";
 import { paths } from "src/routes/paths";
 import { formatDate } from "src/utils/format-time";
+import { useDeleteAccountMutation } from "src/store/Reducer/accounts";
 
 export default function AccountTableRow({ row, selected, onEdit }) {
   const { id, title, locations, signs, users, total_charged, created_at } = row;
   const { display, full } = formatDate(created_at);
   const router = useRouter();
+  const [deleteAccount] = useDeleteAccountMutation();
 
   return (
     <TableRow hover selected={selected}>
@@ -58,6 +61,13 @@ export default function AccountTableRow({ row, selected, onEdit }) {
             </IconButton>
           </Tooltip>
         </Link>
+
+        <SoftDeleteButton
+          deleteMutation={deleteAccount}
+          id={id}
+          label={title}
+          entityName="account"
+        />
       </TableCell>
     </TableRow>
   );

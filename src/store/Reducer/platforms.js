@@ -8,7 +8,7 @@ export const platformsApi = createApi({
   endpoints: (builder) => ({
     getAllPlatforms: builder.query({
       query: ({ pageno = 1, search = "" }) => ({
-        url: `api/admin/platforms?pageno=${pageno}&search=${search}`,
+        url: `/api/admin/platforms?pageno=${pageno}&search=${search}`,
         method: "GET",
       }),
       transformResponse: (res) => res,
@@ -16,14 +16,14 @@ export const platformsApi = createApi({
     }),
 
     getPlatformById: builder.query({
-      query: (id) => `api/admin/platforms/${id}`,
+      query: (id) => `/api/admin/platforms/${id}`,
       transformResponse: (res) => res,
       providesTags: (result, error, id) => [{ type: "Platform", id }],
     }),
 
     addNewPlatform: builder.mutation({
       query: (newPlatform) => ({
-        url: `api/admin/platforms`,
+        url: `/api/admin/platforms`,
         method: "POST",
         body: newPlatform,
       }),
@@ -32,9 +32,17 @@ export const platformsApi = createApi({
 
     updatePlatform: builder.mutation({
       query: ({ id, data }) => ({
-        url: `api/admin/platforms/${id}`,
+        url: `/api/admin/platforms/${id}`,
         method: "PUT",
         body: data,
+      }),
+      invalidatesTags: ["Platforms", "Platform"],
+    }),
+
+    deletePlatform: builder.mutation({
+      query: (id) => ({
+        url: `/api/admin/platforms/${id}`,
+        method: "DELETE",
       }),
       invalidatesTags: ["Platforms", "Platform"],
     }),
@@ -46,4 +54,5 @@ export const {
   useGetPlatformByIdQuery,
   useAddNewPlatformMutation,
   useUpdatePlatformMutation,
+  useDeletePlatformMutation,
 } = platformsApi;

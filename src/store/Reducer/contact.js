@@ -8,7 +8,7 @@ export const contactApi = createApi({
     endpoints: (builder) => ({
         getAllContactUs: builder.query({
             query: ({ status, pageno, keyword, limit }) => ({
-                url: `/admin/contact-us?${status ? `status=${status}&` : ''}page=${pageno + 1}&keyword=${keyword}&limit=${limit}`,
+                url: `/api/admin/contact-us?${status ? `status=${status}&` : ''}page=${pageno + 1}&keyword=${keyword}&limit=${limit}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -30,7 +30,7 @@ export const contactApi = createApi({
 
         updateContactUs: builder.mutation({
             query: ({ _id, data }) => ({
-                url: `/admin/contact-us/${_id}`,
+                url: `/api/admin/contact-us/${_id}`,
                 method: 'PUT',
                 body: data,
             }),
@@ -39,7 +39,7 @@ export const contactApi = createApi({
 
         deleteContactUs: builder.mutation({
             query: (_id) => ({
-                url: `/admin/contact-us/${_id}`,
+                url: `/api/admin/contact-us/${_id}`,
                 method: "DELETE",
             }),
             invalidatesTags: ['Contact'],

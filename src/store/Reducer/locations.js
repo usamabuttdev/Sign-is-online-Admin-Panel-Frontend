@@ -9,7 +9,7 @@ export const locationsApi = createApi({
 
         getAllLocations: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/locations?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/locations?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -17,13 +17,13 @@ export const locationsApi = createApi({
         }),
 
         getLocationById: builder.query({
-            query: (id) => `api/admin/locations/${id}`,
+            query: (id) => `/api/admin/locations/${id}`,
             providesTags: ['Locations'],
         }),
 
         addNewLocation: builder.mutation({
             query: (newLocation) => ({
-                url: `api/admin/locations`,
+                url: `/api/admin/locations`,
                 method: "POST",
                 body: newLocation,
             }),
@@ -32,9 +32,17 @@ export const locationsApi = createApi({
 
         updateLocation: builder.mutation({
             query: ({ id, data }) => ({
-                url: `api/admin/locations/${id}`,
+                url: `/api/admin/locations/${id}`,
                 method: "PUT",
                 body: data,
+            }),
+            invalidatesTags: ['Locations'],
+        }),
+
+        deleteLocation: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/locations/${id}`,
+                method: "DELETE",
             }),
             invalidatesTags: ['Locations'],
         }),
@@ -47,4 +55,5 @@ export const {
     useGetLocationByIdQuery,
     useAddNewLocationMutation,
     useUpdateLocationMutation,
+    useDeleteLocationMutation,
 } = locationsApi;

@@ -2,15 +2,28 @@ import React from "react";
 import PropTypes from "prop-types";
 import { TableRow, TableCell, Tooltip, IconButton } from "@mui/material";
 import Iconify from "src/components/iconify";
+import SoftDeleteButton from "src/components/soft-delete-button";
 import { useRouter } from "src/routes/hooks";
 import { paths } from "src/routes/paths";
 import { formatDate } from "src/utils/format-time";
+import { useDeleteDeviceMutation } from "src/store/Reducer/devices";
 
 export default function DevicesTableRow({ row, selected, onEdit }) {
-  const { id, device_id, location, location_id, hardware_type, firmware_version, status, last_heartbeat, created_at } = row;
+  const {
+    id,
+    device_id,
+    location,
+    location_id,
+    hardware_type,
+    firmware_version,
+    status,
+    last_heartbeat,
+    created_at,
+  } = row;
   const lastHb = formatDate(last_heartbeat);
   const created = formatDate(created_at);
   const router = useRouter();
+  const [deleteDevice] = useDeleteDeviceMutation();
 
   return (
     <TableRow hover selected={selected}>
@@ -20,7 +33,7 @@ export default function DevicesTableRow({ row, selected, onEdit }) {
         sx={{ cursor: "pointer" }}
         onClick={() => router.push(`${paths.dashboard.locations.profile}/${location_id}`)}
       >
-        <Tooltip title={"View Location Profile"} arrow>
+        <Tooltip title="View Location Profile" arrow>
           <span>{location}</span>
         </Tooltip>
       </TableCell>
@@ -44,6 +57,12 @@ export default function DevicesTableRow({ row, selected, onEdit }) {
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
+        <SoftDeleteButton
+          deleteMutation={deleteDevice}
+          id={id}
+          label={device_id}
+          entityName="device"
+        />
       </TableCell>
     </TableRow>
   );

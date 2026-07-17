@@ -1,5 +1,4 @@
 import axios from 'axios';
-// config
 import { HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
@@ -7,7 +6,16 @@ import { HOST_API } from 'src/config-global';
 const axiosInstance = axios.create({ baseURL: HOST_API });
 
 axiosInstance.interceptors.request.use((config) => {
-  const accessToken = sessionStorage.getItem('accessToken');
+  // Lazy-require store to avoid circular import with RTK reducers
+  let reduxToken;
+  try {
+    // eslint-disable-next-line global-require
+    const { store } = require('src/store/store');
+    reduxToken = store.getState()?.user?.user?.token;
+  } catch (e) {
+    reduxToken = null;
+  }
+  const accessToken = reduxToken || sessionStorage.getItem('accessToken');
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
@@ -25,9 +33,7 @@ export default axiosInstance;
 
 export const fetcher = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-
   const res = await axiosInstance.get(url, { ...config });
-
   return res.data;
 };
 
@@ -38,9 +44,8 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: '/api/auth/me',
-    login: '/api/auth/login',
-    register: '/api/auth/register',
+    me: '/auth/me',
+    login: '/auth/login',
   },
   mail: {
     list: '/api/mail/list',
@@ -54,8 +59,8 @@ export const endpoints = {
     search: '/api/post/search',
   },
   product: {
-    list: '/api/product/list',
-    details: '/api/product/details',
-    search: '/api/product/search',
+    list: '/api/admin/products',
+    details: '/api/admin/products',
+    search: '/api/admin/products',
   },
 };

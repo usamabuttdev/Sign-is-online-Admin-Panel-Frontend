@@ -9,7 +9,7 @@ export const devicesApi = createApi({
 
         getAllDevices: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/devices?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/devices?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -18,7 +18,7 @@ export const devicesApi = createApi({
 
         addNewDevice: builder.mutation({
             query: (newDevice) => ({
-                url: `api/admin/devices`,
+                url: `/api/admin/devices`,
                 method: "POST",
                 body: newDevice,
             }),
@@ -27,9 +27,17 @@ export const devicesApi = createApi({
 
         updateDevice: builder.mutation({
             query: ({ id, data }) => ({
-                url: `api/admin/devices/${id}`,
+                url: `/api/admin/devices/${id}`,
                 method: "PUT",
                 body: data,
+            }),
+            invalidatesTags: ['Devices'],
+        }),
+
+        deleteDevice: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/devices/${id}`,
+                method: "DELETE",
             }),
             invalidatesTags: ['Devices'],
         }),
@@ -41,4 +49,5 @@ export const {
     useGetAllDevicesQuery,
     useAddNewDeviceMutation,
     useUpdateDeviceMutation,
+    useDeleteDeviceMutation,
 } = devicesApi;

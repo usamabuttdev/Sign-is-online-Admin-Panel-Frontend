@@ -9,7 +9,7 @@ export const metricsApi = createApi({
 
         getAllMetrics: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/metrics?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/metrics?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -17,13 +17,13 @@ export const metricsApi = createApi({
         }),
 
         getMetricById: builder.query({
-            query: (id) => `api/admin/metrics/${id}`,
+            query: (id) => `/api/admin/metrics/${id}`,
             providesTags: ['Metrics'],
         }),
 
         getMetricValues: builder.query({
             query: ({ id, pageno }) => ({
-                url: `api/admin/metrics/${id}/values?pageno=${pageno}`,
+                url: `/api/admin/metrics/${id}/values?pageno=${pageno}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),
@@ -32,7 +32,7 @@ export const metricsApi = createApi({
 
         addNewMetric: builder.mutation({
             query: (newMetric) => ({
-                url: `api/admin/metrics`,
+                url: `/api/admin/metrics`,
                 method: "POST",
                 body: newMetric,
             }),
@@ -41,9 +41,17 @@ export const metricsApi = createApi({
 
         updateMetric: builder.mutation({
             query: ({ id, data }) => ({
-                url: `api/admin/metrics/${id}`,
+                url: `/api/admin/metrics/${id}`,
                 method: "PUT",
                 body: data,
+            }),
+            invalidatesTags: ['Metrics'],
+        }),
+
+        deleteMetric: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/metrics/${id}`,
+                method: "DELETE",
             }),
             invalidatesTags: ['Metrics'],
         }),
@@ -57,4 +65,5 @@ export const {
     useGetMetricValuesQuery,
     useAddNewMetricMutation,
     useUpdateMetricMutation,
+    useDeleteMetricMutation,
 } = metricsApi;

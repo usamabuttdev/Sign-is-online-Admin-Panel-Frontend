@@ -1,15 +1,17 @@
-import { useMemo } from 'react';
 import isEqual from "lodash/isEqual";
 import { useState, useCallback } from "react";
 import Card from "@mui/material/Card";
 import Table from "@mui/material/Table";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import { _roles } from "src/_mock";
+import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import { useSettingsContext } from "src/components/settings";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
+import { useBoolean } from "src/hooks/use-boolean";
 import {
   useTable,
   emptyRows,
@@ -18,12 +20,14 @@ import {
   TableEmptyRows,
   TableNoData,
 } from "src/components/table";
-import DevicesTableRow from "../signs-table-row";
+import SignsTableRow from "../signs-table-row";
 import UserTableToolbar from "../user-table-toolbar";
 import { Box } from "@mui/system";
 import { paths } from "src/routes/paths";
 import UserTableFiltersResult from "../user-table-filters-result";
 import { useGetAllDevicesQuery } from "src/store/Reducer/devices";
+import AddDeviceForm from "src/sections/main-sections/devices/add-device-modal";
+import EditDeviceForm from "src/sections/main-sections/devices/edit-device-modal";
 
 const TABLE_HEAD = [
   { id: "id", label: "ID", width: 60, align: "center" },
@@ -34,15 +38,18 @@ const TABLE_HEAD = [
   { id: "status", label: "Status", align: "center" },
   { id: "last_heartbeat", label: "Last Heartbeat", align: "center" },
   { id: "created_at", label: "Created", align: "center" },
-  { id: "action", label: "Action", width: 88, align: "center" },
+  { id: "action", label: "Action", width: 120, align: "center" },
 ];
 
 const defaultFilters = { search: "" };
 
-export default function DevicesListView() {
-  const table = useTable();
+export default function SignsListView() {
+  const table = useTable({ defaultRowsPerPage: 10 });
   const settings = useSettingsContext();
   const [filters, setFilters] = useState(defaultFilters);
+  const quickAdd = useBoolean();
+  const quickEdit = useBoolean();
+  const [selectedDevice, setSelectedDevice] = useState(null);
 
   const { data: apiResponse, isLoading } = useGetAllDevicesQuery({
     pageno: table.page + 1,
@@ -69,19 +76,39 @@ export default function DevicesListView() {
     setFilters(defaultFilters);
   }, []);
 
-  let count = (table.page - 1) * table.rowsPerPage;
+  const handleEdit = useCallback(
+    (row) => {
+      setSelectedDevice(row);
+      quickEdit.onTrue();
+    },
+    [quickEdit]
+  );
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedDevice(null);
+    quickEdit.onFalse();
+  }, [quickEdit]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : "xl"}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <CustomBreadcrumbs
-          heading="Devices"
+          heading="Signs"
           links={[
             { name: "Dashboard", href: paths.dashboard.root },
-            { name: "Devices", href: paths.dashboard.signs.root },
+            { name: "Signs", href: paths.dashboard.signs.root },
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={quickAdd.onTrue}
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          sx={{ mb: { xs: 3, md: 5 } }}
+        >
+          Add Sign
+        </Button>
       </Box>
 
       <Card>
@@ -110,16 +137,12 @@ export default function DevicesListView() {
 
               <TableBody>
                 {filteredData.map((row, index) => (
-                  (count = count + 1),
-                  (
-                    <DevicesTableRow
-                      key={row.id || row._id || index}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      index={index + 1}
-                      counter={index + 1 + table.page * table.rowsPerPage}
-                    />
-                  )
+                  <SignsTableRow
+                    key={row.id || row._id || index}
+                    row={row}
+                    selected={table.selected.includes(row.id)}
+                    onEdit={() => handleEdit(row)}
+                  />
                 ))}
 
                 <TableEmptyRows
@@ -133,7 +156,7 @@ export default function DevicesListView() {
         </TableContainer>
 
         <TablePaginationCustom
-          count={totalCount || 1}
+          count={totalCount || 0}
           page={table.page}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
@@ -141,6 +164,9 @@ export default function DevicesListView() {
           loading={isLoading}
         />
       </Card>
+
+      <AddDeviceForm open={quickAdd.value} onClose={quickAdd.onFalse} />
+      <EditDeviceForm row={selectedDevice} open={quickEdit.value} onClose={handleCloseEdit} />
     </Container>
   );
 }
@@ -148,8 +174,6 @@ export default function DevicesListView() {
 function applyFilter(tableData, search) {
   if (!search) return tableData;
   return tableData.filter((row) =>
-    Object.values(row).some((value) =>
-      String(value).toLowerCase().includes(search.toLowerCase())
-    )
+    Object.values(row).some((value) => String(value).toLowerCase().includes(search.toLowerCase()))
   );
 }

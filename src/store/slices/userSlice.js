@@ -1,20 +1,24 @@
-// redux/userSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const userSlice = createSlice({
-  name: 'user', // The name of the slice
-  initialState: {user:null}, // The initial state of the slice
+  name: 'user',
+  initialState: { user: null },
   reducers: {
-    
     setUser: (state, action) => {
-      let user={...action.payload};
-      user.displayName=`${user?.firstName} ${user?.lastName}`
-      state.user=user;
-    }, // Action to set the user in the state
+      const user = { ...action.payload };
+      user.displayName =
+        user?.displayName ||
+        user?.name ||
+        [user?.firstName, user?.lastName].filter(Boolean).join(' ') ||
+        user?.email ||
+        '';
+      state.user = user;
+    },
     logout: (state) => {
       localStorage.clear();
-     state.user=null
-    }, // Action to clear the user from the state
+      sessionStorage.removeItem('accessToken');
+      state.user = null;
+    },
   },
 });
 

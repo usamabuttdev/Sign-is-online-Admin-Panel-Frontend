@@ -2,15 +2,18 @@ import React from "react";
 import PropTypes from "prop-types";
 import { TableRow, TableCell, IconButton, Tooltip } from "@mui/material";
 import Iconify from "src/components/iconify";
+import SoftDeleteButton from "src/components/soft-delete-button";
 import { Link } from "react-router-dom";
 import { paths } from "src/routes/paths";
 import { formatDate } from "src/utils/format-time";
 import { fNumber } from "src/utils/format-number";
 import Label from "src/components/label";
+import { useDeleteMetricMutation } from "src/store/Reducer/metrics";
 
 export default function MetricsTableRow({ row, selected, onEdit }) {
   const { id, title, current_value, goal, percent_of_goal, created_at, frequency, met_units } = row;
-  const { display, full } = formatDate(created_at);
+  const { display } = formatDate(created_at);
+  const [deleteMetric] = useDeleteMetricMutation();
 
   const getPercentBgColor = (percent) => {
     if (percent >= 100) return "success";
@@ -19,9 +22,9 @@ export default function MetricsTableRow({ row, selected, onEdit }) {
     return "error";
   };
 
-  const formatWithUnits = (value, met_units) => {
-    if (met_units === "$") return `$${fNumber(value)}`;
-    if (met_units) return `${fNumber(value)}${met_units}`;
+  const formatWithUnits = (value, units) => {
+    if (units === "$") return `$${fNumber(value)}`;
+    if (units) return `${fNumber(value)}${units}`;
     return fNumber(value);
   };
 
@@ -30,22 +33,14 @@ export default function MetricsTableRow({ row, selected, onEdit }) {
       <TableCell align="center">{id}</TableCell>
       <TableCell>{title}</TableCell>
       <TableCell align="center">{frequency === "D" ? "This Month" : "Last Month"}</TableCell>
-      <TableCell align="right">
-        {formatWithUnits(current_value, met_units)}
-      </TableCell>
-      <TableCell align="right">
-        {formatWithUnits(goal, met_units)}
-      </TableCell>
+      <TableCell align="right">{formatWithUnits(current_value, met_units)}</TableCell>
+      <TableCell align="right">{formatWithUnits(goal, met_units)}</TableCell>
       <TableCell align="center">
         <Label variant="soft" color={getPercentBgColor(percent_of_goal)}>
           {percent_of_goal}%
         </Label>
       </TableCell>
-
-      <TableCell align="center">
-        {display}
-      </TableCell>
-
+      <TableCell align="center">{display}</TableCell>
       <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>
         <Link
           style={{ color: "inherit", textDecoration: "none" }}
@@ -57,12 +52,17 @@ export default function MetricsTableRow({ row, selected, onEdit }) {
             </IconButton>
           </Tooltip>
         </Link>
-
         <Tooltip title="Edit" placement="top" arrow>
           <IconButton onClick={onEdit} aria-label="Edit metric">
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
+        <SoftDeleteButton
+          deleteMutation={deleteMetric}
+          id={id}
+          label={title}
+          entityName="metric"
+        />
       </TableCell>
     </TableRow>
   );

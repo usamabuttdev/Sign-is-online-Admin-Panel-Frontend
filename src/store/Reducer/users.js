@@ -10,7 +10,7 @@ export const usersApi = createApi({
         // ---------------------- USERS ----------------------
         getUserById: builder.query({
             query: ({ id }) => ({
-                url: `/users/${id}`,
+                url: `/api/admin/users/${id}`,
                 method: "GET",
             }),
             transformResponse: (res) => res.data,
@@ -19,7 +19,7 @@ export const usersApi = createApi({
 
         getAllusersList: builder.query({
             query: ({  page, limit , keyword , isActive  , userType}) => {
-                let url = `/admin/all-users?page=${page}&limit=${limit}`; 
+                let url = `/api/admin/all-users?page=${page}&limit=${limit}`; 
                 if (keyword) {
                   url += `&keyword=${keyword}`;
                 }
@@ -44,7 +44,7 @@ export const usersApi = createApi({
 
         getusersByListing: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `/admin/listings-by-user/${_id}?&page=${pageno + 1}`,
+                url: `/api/admin/listings-by-user/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -55,7 +55,7 @@ export const usersApi = createApi({
 
         updateUserStatus: builder.mutation({
             query: ({ _id, data }) => ({
-                url: `/admin/users/${_id}/account-state`,
+                url: `/api/admin/users/${_id}/account-state`,
                 method: "PATCH",
                 body: data,
             }),
@@ -64,7 +64,7 @@ export const usersApi = createApi({
 
         updateUser: builder.mutation({
             query: ({ _id, data }) => ({
-                url: `/users/${_id}`,
+                url: `/api/admin/users/${_id}`,
                 method: "PUT",
                 body: data,
             }),
@@ -73,16 +73,24 @@ export const usersApi = createApi({
 
         createUser: builder.mutation({
             query: (data) => ({
-                url: `/users`,
+                url: `/api/admin/users`,
                 method: "POST",
                 body: data,
             }),
             invalidatesTags: ['users'],
         }),
 
+        deleteUser: builder.mutation({
+            query: (id) => ({
+                url: `/api/admin/users/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ['users'],
+        }),
+
         getusersBookings: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `/admin/user-bookings/${_id}?&page=${pageno + 1}`,
+                url: `/api/admin/user-bookings/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -93,7 +101,7 @@ export const usersApi = createApi({
 
         getusersRentals: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `/admin/user-rentals/${_id}?&page=${pageno + 1}`,
+                url: `/api/admin/user-rentals/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -104,7 +112,7 @@ export const usersApi = createApi({
 
         getusersEarnings: builder.query({
             query: ({ _id, pageno }) => ({
-                url: `/admin/user-earnings/${_id}?&page=${pageno + 1}`,
+                url: `/api/admin/user-earnings/${_id}?&page=${pageno + 1}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -117,7 +125,7 @@ export const usersApi = createApi({
 
         getAllDocumentsVerificationList: builder.query({
             query: ({ status, pageno, keyword }) => ({
-                url: `/admin/documents-verification?status=${status}&page=${pageno + 1}&keyword=${keyword}`,
+                url: `/api/admin/documents-verification?status=${status}&page=${pageno + 1}&keyword=${keyword}`,
                 method: "GET",
             }),
             transformResponse: (res) => ({
@@ -130,7 +138,7 @@ export const usersApi = createApi({
 
         updateDocumentsVerificationStatus: builder.mutation({
             query: ({ _id, data }) => ({
-                url: `/admin/documents/${_id}/status`,
+                url: `/api/admin/documents/${_id}/status`,
                 method: "PATCH",
                 body: data,
             }),
@@ -149,6 +157,7 @@ export const {
     useUpdateUserStatusMutation,
     useUpdateUserMutation,
     useCreateUserMutation,
+    useDeleteUserMutation,
 
     useGetAllDocumentsVerificationListQuery,
     useUpdateDocumentsVerificationStatusMutation

@@ -24,7 +24,7 @@ export const languageApi = createApi({
 
     addLanguage: builder.mutation({
       query: (newLanguage) => ({
-        url: `/languages`,
+        url: `/api/admin/languages`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newLanguage,
@@ -34,7 +34,7 @@ export const languageApi = createApi({
 
     updateLanguage: builder.mutation({
       query: ({ id, updatedLanguage }) => ({
-        url: `/languages/${id}`,
+        url: `/api/admin/languages/${id}`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: updatedLanguage,
@@ -44,7 +44,7 @@ export const languageApi = createApi({
 
     deleteLanguage: builder.mutation({
       query: (id) => ({
-        url: `/languages/${id}`,
+        url: `/api/admin/languages/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ['Languages'],

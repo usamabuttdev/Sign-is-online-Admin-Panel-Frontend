@@ -1,53 +1,28 @@
 import PropTypes from 'prop-types';
 import { useEffect, useCallback, useState } from 'react';
 // routes
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { useSelector } from 'react-redux';
-
-//
-import { useAuthContext } from '../hooks';
 import { useMockedUser } from 'src/hooks/use-mocked-user';
-
-
-// ----------------------------------------------------------------------
-
-const loginPaths = {
-  jwt: paths.auth.jwt.login,
-  auth0: paths.auth.auth0.login,
-  amplify: paths.auth.amplify.login,
-  firebase: paths.auth.firebase.login,
-};
 
 // ----------------------------------------------------------------------
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
-  const {user}=useMockedUser(); 
-  const {method } = useAuthContext();
+  const { user } = useMockedUser();
   const [checked, setChecked] = useState(false);
-  // const check = useCallback(() => {
-  //   if (!user?.token) {
-  //     router.replace('/');
-  //   } else {
-  //     setChecked(true);
-  //   }
-  // }, [user, method, router]);
 
-   const check = useCallback(() => {
-    if (!user) {
-      const href = `${'/login'}`;
-      router.replace(href);
+  const check = useCallback(() => {
+    if (!user?.token) {
+      router.replace('/login');
+      setChecked(false);
     } else {
       setChecked(true);
     }
-  }, [user, method, router]);
-
-
+  }, [user?.token, router]);
 
   useEffect(() => {
     check();
-  }, []);
+  }, [check]);
 
   if (!checked) {
     return null;

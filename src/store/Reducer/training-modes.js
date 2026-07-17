@@ -25,7 +25,7 @@ export const trainingModeApi = createApi({
 
     addTrainingMode: builder.mutation({
       query: (newTrainingMode) => ({
-        url: `/training-modes`,
+        url: `/api/admin/training-modes`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newTrainingMode,
@@ -35,7 +35,7 @@ export const trainingModeApi = createApi({
 
     updateTrainingMode: builder.mutation({
       query: ({ id, updatedTrainingMode }) => ({
-        url: `/training-modes/${id}`,
+        url: `/api/admin/training-modes/${id}`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: updatedTrainingMode,
@@ -45,7 +45,7 @@ export const trainingModeApi = createApi({
 
     deleteTrainingMode: builder.mutation({
       query: (id) => ({
-        url: `/training-modes/${id}`,
+        url: `/api/admin/training-modes/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ['TrainingModes'],

@@ -9,7 +9,7 @@ export const historyApi = createApi({
 
         getAllHistory: builder.query({
             query: ({ pageno, search }) => ({
-                url: `api/admin/history?pageno=${pageno}&search=${search}`,
+                url: `/api/admin/history?pageno=${pageno}&search=${search}`,
                 method: "GET",
                 transformResponse: (res) => res,
             }),

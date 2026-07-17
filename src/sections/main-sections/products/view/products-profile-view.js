@@ -6,7 +6,7 @@ import { paths } from 'src/routes/paths';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
 import { useParams } from 'react-router-dom';
-import { useGetProduct } from 'src/api/product';
+import { useGetProductByIdQuery } from 'src/store/Reducer/products';
 // components
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
@@ -18,15 +18,21 @@ export default function ProductsProfileView() {
   const settings = useSettingsContext();
   const { id } = useParams();
 
-  const { product, productLoading, productError } = useGetProduct(id);
+  const { data: product, isLoading: productLoading, error: productError } = useGetProductByIdQuery(id, {
+    skip: !id,
+  });
 
   const mappedProduct = product
     ? {
         id: product.id,
-        title: product.name,
-        current_price: product.price ? `$${product.price}` : '$0.00',
+        title: product.title,
+        subscription_length: product.subscription_length,
+        status: product.status,
+        current_price: product.subscription_length
+          ? `${product.subscription_length} days`
+          : 'N/A',
         current_price_ends: 'N/A',
-        next_price: product.price ? `$${(product.price * 1.25).toFixed(2)}` : '$0.00',
+        next_price: 'N/A',
         next_price_starts: 'N/A',
         created_at: product.created_at || 'N/A',
         action: 'View',

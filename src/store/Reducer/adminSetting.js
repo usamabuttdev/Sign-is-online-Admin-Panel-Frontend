@@ -9,7 +9,7 @@ export const adminSettingsApi = createApi({
 
         getPrivacyPolicy: builder.query({
             query: () => ({
-                url: `/settings/privacy-policy`,
+                url: `/api/admin/content/privacy-policy`,
                 method: "GET",
             }),
             transformResponse: (res) => res.data,
@@ -18,7 +18,7 @@ export const adminSettingsApi = createApi({
 
         getAboutUs: builder.query({
             query: () => ({
-                url: `/settings/about-us`,
+                url: `/api/admin/content/about-us`,
                 method: "GET",
                 transformResponse: (res) => res.data,
             }),
@@ -27,7 +27,7 @@ export const adminSettingsApi = createApi({
 
         getTermsConditions: builder.query({
             query: () => ({
-                url: `/settings/terms-conditions`,
+                url: `/api/admin/content/terms-conditions`,
                 method: "GET",
             }),
             transformResponse: (res) => res.data,
@@ -35,10 +35,11 @@ export const adminSettingsApi = createApi({
         }),
 
         updateSetting: builder.mutation({
-            query: ({ _id, data }) => ({
-                url: `/settings/update/${_id}`,
+            // Legacy — prefer updateContent with a title slug
+            query: ({ title, html, data }) => ({
+                url: `/api/admin/content/${title || data?.title || 'about-us'}`,
                 method: 'PUT',
-                body: data,
+                body: { html: html || data?.html || data?.content },
             }),
             invalidatesTags: ['adminSettings'],
         }),

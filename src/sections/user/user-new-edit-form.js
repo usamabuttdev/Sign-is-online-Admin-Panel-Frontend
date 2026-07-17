@@ -97,7 +97,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
       }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.user.list);
+      router.push(paths.dashboard.users.root);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
