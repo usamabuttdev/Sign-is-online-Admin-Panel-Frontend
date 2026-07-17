@@ -10,9 +10,9 @@ import Label from "src/components/label";
 import { useDeleteScriptMutation } from "src/store/Reducer/scripts";
 
 const getLastStartedBg = (run_frequency, last_started) => {
-  if (!last_started) return "transparent";
+  if (!last_started) return "default";
   const last = new Date(last_started);
-  if (isNaN(last.getTime())) return "transparent";
+  if (isNaN(last.getTime())) return "default";
   const diffHours = (new Date() - last) / (1000 * 60 * 60);
   return {
     N: diffHours * 60 < 1 ? "error" : "success",
@@ -20,8 +20,10 @@ const getLastStartedBg = (run_frequency, last_started) => {
     D: diffHours < 24 ? "error" : "success",
     W: diffHours < 169 ? "error" : "success",
     M: diffHours < 745 ? "error" : "success",
+    Y: diffHours < 8761 ? "error" : "success",
     A: diffHours < 8761 ? "error" : "success",
-  }[run_frequency] || "success";
+    Q: diffHours < 2200 ? "error" : "success",
+  }[run_frequency] || "default";
 };
 
 export default function ScriptsTableRow({ row, selected, onEdit }) {
@@ -48,11 +50,13 @@ export default function ScriptsTableRow({ row, selected, onEdit }) {
   const [deleteScript] = useDeleteScriptMutation();
 
   const RUN_FREQUENCY_LABELS = {
-    N: "Now",
+    N: "Continuous",
     H: "Hourly",
     D: "Daily",
     W: "Weekly",
     M: "Monthly",
+    Q: "Quarterly",
+    Y: "Yearly",
     A: "Annually",
   };
 
@@ -60,7 +64,7 @@ export default function ScriptsTableRow({ row, selected, onEdit }) {
     <TableRow hover selected={selected}>
       <TableCell align="center">{id}</TableCell>
       <TableCell>{title}</TableCell>
-      <TableCell align="center">{RUN_FREQUENCY_LABELS[run_frequency]}</TableCell>
+      <TableCell align="center">{RUN_FREQUENCY_LABELS[run_frequency] || run_frequency || "—"}</TableCell>
 
       <TableCell align="center">
         <Tooltip title={last_started_full} arrow>

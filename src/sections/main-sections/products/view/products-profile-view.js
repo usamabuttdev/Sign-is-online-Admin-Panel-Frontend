@@ -28,12 +28,11 @@ export default function ProductsProfileView() {
         title: product.title,
         subscription_length: product.subscription_length,
         status: product.status,
-        current_price: product.subscription_length
-          ? `${product.subscription_length} days`
-          : 'N/A',
-        current_price_ends: 'N/A',
-        next_price: 'N/A',
-        next_price_starts: 'N/A',
+        current_price: product.current_price ?? 'N/A',
+        current_price_ends: product.current_price_ends || 'N/A',
+        next_price: product.next_price ?? 'N/A',
+        next_price_starts: product.next_price_starts || 'N/A',
+        locations: product.locations ?? 0,
         created_at: product.created_at || 'N/A',
         action: 'View',
       }

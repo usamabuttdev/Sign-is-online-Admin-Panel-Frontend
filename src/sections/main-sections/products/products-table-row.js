@@ -22,7 +22,7 @@ import { useDeleteProductMutation } from "src/store/Reducer/products";
 import { useSnackbar } from "src/components/snackbar";
 
 export default function ProductsTableRow({ row, selected, onEdit }) {
-  const { id, title, current_price, current_price_ends, next_price, next_price_starts, locations, subscription_length } = row;
+  const { id, title, current_price, current_price_ends, next_price, next_price_starts, locations } = row;
   const priceEnds = formatDate(current_price_ends);
   const nextStarts = formatDate(next_price_starts);
   const router = useRouter();
@@ -45,7 +45,9 @@ export default function ProductsTableRow({ row, selected, onEdit }) {
       <TableRow hover selected={selected}>
         <TableCell align="center">{id}</TableCell>
         <TableCell>{title}</TableCell>
-        <TableCell align="right">{current_price ?? subscription_length ?? "—"}</TableCell>
+        <TableCell align="right">
+          {current_price != null && current_price !== "" ? fNumber(current_price) : "—"}
+        </TableCell>
         <TableCell align="center">
           <Tooltip title={priceEnds.full} arrow>
             <span>{priceEnds.display}</span>

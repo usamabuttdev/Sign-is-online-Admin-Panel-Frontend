@@ -14,15 +14,18 @@ import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form"
 import { useSnackbar } from "src/components/snackbar";
 import { useAddNewAccountMutation } from "src/store/Reducer/accounts";
 import { formatObservesDaylight } from "src/utils/observes-daylight";
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/slices/userSlice";
 
 export default function AddAccountForm({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
+  const currentUser = useSelector(selectUser);
 
   const [addNewAccount, { isLoading }] = useAddNewAccountMutation();
 
   const NewAccountSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
-    timezone_id: Yup.string(),
+    timezone_id: Yup.string().required("Timezone ID is required"),
     observes_daylight: Yup.boolean(),
   });
 
@@ -45,10 +48,15 @@ export default function AddAccountForm({ open, onClose }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      if (!currentUser?.id) {
+        enqueueSnackbar("Session missing user id. Please log in again.", { variant: "error" });
+        return;
+      }
       await addNewAccount({
         title: data.title,
-        timezone_id: data.timezone_id || null,
-      observes_daylight: formatObservesDaylight(data.observes_daylight),
+        timezone_id: Number(data.timezone_id),
+        observes_daylight: formatObservesDaylight(data.observes_daylight),
+        created_by: currentUser.id,
       }).unwrap();
       enqueueSnackbar("Account created successfully!", { variant: "success" });
       reset();

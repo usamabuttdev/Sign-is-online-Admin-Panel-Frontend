@@ -10,7 +10,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import FormProvider, { RHFTextField, RHFCheckbox } from "src/components/hook-form";
+import MenuItem from "@mui/material/MenuItem";
+import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from "src/components/hook-form";
 import { useSnackbar } from "src/components/snackbar";
 import { useUpdateScriptMutation } from "src/store/Reducer/scripts";
 
@@ -21,17 +22,26 @@ export default function EditScriptForm({ row, open, onClose }) {
 
   const EditScriptSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
+    description: Yup.string(),
+    run_frequency: Yup.string(),
+    server_name: Yup.string(),
+    email_address: Yup.string().email("Invalid email").nullable(),
+    check_frequency: Yup.number().typeError("Must be a number").nullable(),
+    check_range: Yup.number().typeError("Must be a number").nullable(),
+    track_counts: Yup.boolean(),
+    status: Yup.string().oneOf(["A", "I"]),
   });
 
   const defaultValues = {
     title: "",
     description: "",
-    run_frequency: "",
+    run_frequency: "D",
     server_name: "",
     email_address: "",
     check_frequency: "",
     check_range: "",
     track_counts: false,
+    status: "A",
   };
 
   const methods = useForm({
@@ -42,7 +52,7 @@ export default function EditScriptForm({ row, open, onClose }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting, dirtyFields },
+    formState: { dirtyFields },
   } = methods;
 
   useEffect(() => {
@@ -50,12 +60,13 @@ export default function EditScriptForm({ row, open, onClose }) {
       reset({
         title: row?.title || "",
         description: row?.description || "",
-        run_frequency: row?.run_frequency || "",
+        run_frequency: row?.run_frequency || "D",
         server_name: row?.server_name || "",
         email_address: row?.email_address || "",
-        check_frequency: row?.check_frequency || "",
-        check_range: row?.check_range || "",
-        track_counts: row?.track_counts === "Y" || false,
+        check_frequency: row?.check_frequency ?? "",
+        check_range: row?.check_range ?? "",
+        track_counts: row?.track_counts === "Y" || row?.track_counts === "1",
+        status: row?.status === "I" ? "I" : "A",
       });
     }
   }, [row, reset]);
@@ -67,13 +78,30 @@ export default function EditScriptForm({ row, open, onClose }) {
     }
 
     try {
-      await updateScript({ id: row.id, data }).unwrap();
+      await updateScript({
+        id: row.id,
+        data: {
+          title: data.title,
+          description: data.description || null,
+          run_frequency: data.run_frequency || null,
+          server_name: data.server_name || null,
+          email_address: data.email_address || null,
+          check_frequency:
+            data.check_frequency === "" || data.check_frequency == null
+              ? null
+              : Number(data.check_frequency),
+          check_range:
+            data.check_range === "" || data.check_range == null ? null : Number(data.check_range),
+          track_counts: data.track_counts ? "Y" : "N",
+          status: data.status,
+        },
+      }).unwrap();
       enqueueSnackbar("Script updated successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
-      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -103,12 +131,24 @@ export default function EditScriptForm({ row, open, onClose }) {
           >
             <RHFTextField name="title" label="Script Title" />
             <RHFTextField name="description" label="Description" />
-            <RHFTextField name="run_frequency" label="Run Frequency" />
+            <RHFSelect name="run_frequency" label="Run Frequency">
+              <MenuItem value="D">Daily</MenuItem>
+              <MenuItem value="W">Weekly</MenuItem>
+              <MenuItem value="M">Monthly</MenuItem>
+              <MenuItem value="H">Hourly</MenuItem>
+              <MenuItem value="N">Continuous</MenuItem>
+              <MenuItem value="Q">Quarterly</MenuItem>
+              <MenuItem value="Y">Yearly</MenuItem>
+            </RHFSelect>
             <RHFTextField name="server_name" label="Server Name" />
             <RHFTextField name="email_address" label="Email Address" />
-            <RHFTextField name="check_frequency" label="Check Frequency" />
-            <RHFTextField name="check_range" label="Check Range" />
+            <RHFTextField name="check_frequency" label="Check Frequency (minutes)" type="number" />
+            <RHFTextField name="check_range" label="Check Range (minutes)" type="number" />
             <RHFCheckbox name="track_counts" label="Track Counts" />
+            <RHFSelect name="status" label="Status">
+              <MenuItem value="A">Active</MenuItem>
+              <MenuItem value="I">Inactive</MenuItem>
+            </RHFSelect>
           </Box>
         </DialogContent>
 

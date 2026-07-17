@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFSelect, RHFCheckbox } from 'src/components/hook-form';
 import { useAddNewScriptMutation, useUpdateScriptMutation } from 'src/store/Reducer/scripts';
 
 export default function ScriptNewEditForm({ currentUser }) {
@@ -24,22 +24,26 @@ export default function ScriptNewEditForm({ currentUser }) {
   const NewScriptSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string(),
+    run_frequency: Yup.string(),
     server_name: Yup.string(),
-    email_address: Yup.string().email('Invalid email address'),
-    check_frequency: Yup.string(),
-    check_range: Yup.string(),
-    status: Yup.string(),
+    email_address: Yup.string().email('Invalid email address').nullable(),
+    check_frequency: Yup.number().typeError('Must be a number').nullable(),
+    check_range: Yup.number().typeError('Must be a number').nullable(),
+    track_counts: Yup.boolean(),
+    status: Yup.string().oneOf(['A', 'I']),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
       description: currentUser?.description || '',
+      run_frequency: currentUser?.run_frequency || 'D',
       server_name: currentUser?.server_name || '',
       email_address: currentUser?.email_address || '',
-      check_frequency: currentUser?.check_frequency || '',
-      check_range: currentUser?.check_range || '',
-      status: currentUser?.status || 'A',
+      check_frequency: currentUser?.check_frequency ?? '',
+      check_range: currentUser?.check_range ?? '',
+      track_counts: currentUser?.track_counts === 'Y' || currentUser?.track_counts === '1',
+      status: currentUser?.status === 'I' ? 'I' : 'A',
     }),
     [currentUser]
   );
@@ -55,6 +59,19 @@ export default function ScriptNewEditForm({ currentUser }) {
     formState: { isSubmitting, dirtyFields },
   } = methods;
 
+  const buildPayload = (data) => ({
+    title: data.title,
+    description: data.description || null,
+    run_frequency: data.run_frequency || null,
+    server_name: data.server_name || null,
+    email_address: data.email_address || null,
+    check_frequency:
+      data.check_frequency === '' || data.check_frequency == null ? null : Number(data.check_frequency),
+    check_range: data.check_range === '' || data.check_range == null ? null : Number(data.check_range),
+    track_counts: data.track_counts ? 'Y' : 'N',
+    status: data.status || 'A',
+  });
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentUser) {
@@ -62,19 +79,10 @@ export default function ScriptNewEditForm({ currentUser }) {
           enqueueSnackbar('No changes detected!', { variant: 'warning' });
           return;
         }
-        await updateScript({ id: currentUser.id, data }).unwrap();
+        await updateScript({ id: currentUser.id, data: buildPayload(data) }).unwrap();
         enqueueSnackbar('Script updated successfully!');
       } else {
-        const submitData = {
-          title: data.title,
-          description: data.description || null,
-          server_name: data.server_name || null,
-          email_address: data.email_address || null,
-          check_frequency: data.check_frequency || null,
-          check_range: data.check_range || null,
-          status: data.status || 'A',
-        };
-        await addNewScript(submitData).unwrap();
+        await addNewScript(buildPayload(data)).unwrap();
         enqueueSnackbar('Script created successfully!');
       }
       reset();
@@ -101,26 +109,26 @@ export default function ScriptNewEditForm({ currentUser }) {
             >
               <RHFTextField name="title" label="Title" />
               <RHFTextField name="description" label="Description" multiline rows={3} />
-              <RHFTextField name="server_name" label="Server Name" />
-              <RHFTextField name="email_address" label="Email Address" type="email" />
-              <RHFSelect name="check_frequency" label="Check Frequency">
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="H">Hourly</MenuItem>
+              <RHFSelect name="run_frequency" label="Run Frequency">
                 <MenuItem value="D">Daily</MenuItem>
                 <MenuItem value="W">Weekly</MenuItem>
                 <MenuItem value="M">Monthly</MenuItem>
+                <MenuItem value="H">Hourly</MenuItem>
+                <MenuItem value="N">Continuous</MenuItem>
+                <MenuItem value="Q">Quarterly</MenuItem>
+                <MenuItem value="Y">Yearly</MenuItem>
               </RHFSelect>
-              <RHFSelect name="check_range" label="Check Range">
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="1H">1 Hour</MenuItem>
-                <MenuItem value="24H">24 Hours</MenuItem>
-                <MenuItem value="7D">7 Days</MenuItem>
-                <MenuItem value="30D">30 Days</MenuItem>
-              </RHFSelect>
-              <RHFSelect name="status" label="Status">
-                <MenuItem value="A">Active</MenuItem>
-                <MenuItem value="F">Failed</MenuItem>
-              </RHFSelect>
+              <RHFTextField name="server_name" label="Server Name" />
+              <RHFTextField name="email_address" label="Email Address" type="email" />
+              <RHFTextField name="check_frequency" label="Check Frequency (minutes)" type="number" />
+              <RHFTextField name="check_range" label="Check Range (minutes)" type="number" />
+              <RHFCheckbox name="track_counts" label="Track Counts" />
+              {currentUser ? (
+                <RHFSelect name="status" label="Status">
+                  <MenuItem value="A">Active</MenuItem>
+                  <MenuItem value="I">Inactive</MenuItem>
+                </RHFSelect>
+              ) : null}
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

@@ -35,7 +35,7 @@ export const StyledLabel = styled(Box)(({ theme, ownerState }) => {
   };
 
   const colorStyle = {
-    ...(ownerState.color !== 'default' && {
+    ...(ownerState.color !== 'default' && theme.palette[ownerState.color] && {
       // FILLED
       ...(filledVariant && {
         color: theme.palette[ownerState.color].contrastText,

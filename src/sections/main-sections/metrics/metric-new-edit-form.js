@@ -24,22 +24,25 @@ export default function MetricNewEditForm({ currentUser }) {
   const NewMetricSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string(),
-    frequency: Yup.string(),
+    frequency: Yup.string().required('Run frequency is required'),
     query: Yup.string(),
-    goal: Yup.number(),
-    units: Yup.string(),
-    direction: Yup.string(),
+    goal: Yup.number().typeError('Goal must be a number').required('Goal is required'),
+    units: Yup.string().max(10, 'Units max 10 characters'),
+    direction: Yup.string().oneOf(['H', 'L']).required('Direction is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
       description: currentUser?.description || '',
-      frequency: currentUser?.frequency || '',
+      frequency: currentUser?.frequency || 'W',
       query: currentUser?.query || '',
-      goal: currentUser?.goal || '',
-      units: currentUser?.units || '',
-      direction: currentUser?.direction || '',
+      goal: currentUser?.goal ?? '',
+      units: currentUser?.units ?? currentUser?.met_units ?? '',
+      direction:
+        currentUser?.direction === 'L' || currentUser?.direction === 'down'
+          ? 'L'
+          : 'H',
     }),
     [currentUser]
   );
@@ -62,19 +65,29 @@ export default function MetricNewEditForm({ currentUser }) {
           enqueueSnackbar('No changes detected!', { variant: 'warning' });
           return;
         }
-        await updateMetric({ id: currentUser.id, data }).unwrap();
+        await updateMetric({
+          id: currentUser.id,
+          data: {
+            title: data.title,
+            description: data.description || null,
+            frequency: data.frequency,
+            query: data.query || null,
+            goal: Number(data.goal),
+            units: data.units || null,
+            direction: data.direction,
+          },
+        }).unwrap();
         enqueueSnackbar('Metric updated successfully!');
       } else {
-        const submitData = {
+        await addNewMetric({
           title: data.title,
           description: data.description || null,
-          frequency: data.frequency || null,
+          frequency: data.frequency,
           query: data.query || null,
-          goal: data.goal ? Number(data.goal) : null,
+          goal: Number(data.goal),
           units: data.units || null,
-          direction: data.direction || null,
-        };
-        await addNewMetric(submitData).unwrap();
+          direction: data.direction,
+        }).unwrap();
         enqueueSnackbar('Metric created successfully!');
       }
       reset();
@@ -101,10 +114,10 @@ export default function MetricNewEditForm({ currentUser }) {
             >
               <RHFTextField name="title" label="Title" />
               <RHFSelect name="frequency" label="Frequency">
-                <MenuItem value="">None</MenuItem>
                 <MenuItem value="D">Daily</MenuItem>
                 <MenuItem value="W">Weekly</MenuItem>
                 <MenuItem value="M">Monthly</MenuItem>
+                <MenuItem value="Q">Quarterly</MenuItem>
                 <MenuItem value="Y">Yearly</MenuItem>
               </RHFSelect>
               <RHFTextField name="description" label="Description" />
@@ -112,9 +125,8 @@ export default function MetricNewEditForm({ currentUser }) {
               <RHFTextField name="goal" label="Goal" type="number" />
               <RHFTextField name="units" label="Units" />
               <RHFSelect name="direction" label="Direction">
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="up">Up is Good</MenuItem>
-                <MenuItem value="down">Down is Good</MenuItem>
+                <MenuItem value="H">Up</MenuItem>
+                <MenuItem value="L">Down</MenuItem>
               </RHFSelect>
             </Box>
 

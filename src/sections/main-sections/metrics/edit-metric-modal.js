@@ -15,6 +15,14 @@ import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form"
 import { useSnackbar } from "src/components/snackbar";
 import { useUpdateMetricMutation } from "src/store/Reducer/metrics";
 
+function mapDirection(value) {
+  if (value === "H" || value === "L") return value;
+  const raw = String(value || "").trim().toLowerCase();
+  if (raw === "up" || raw === "higher") return "H";
+  if (raw === "down" || raw === "lower") return "L";
+  return "H";
+}
+
 export default function EditMetricForm({ row, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -22,16 +30,23 @@ export default function EditMetricForm({ row, open, onClose }) {
 
   const EditMetricSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
+    description: Yup.string(),
+    query: Yup.string(),
+    frequency: Yup.string().required("Run frequency is required"),
+    goal: Yup.number().typeError("Goal must be a number").required("Goal is required"),
+    units: Yup.string().max(10, "Units max 10 characters"),
+    direction: Yup.string().oneOf(["H", "L"]).required("Direction is required"),
+    status: Yup.string(),
   });
 
   const defaultValues = {
     title: "",
     description: "",
     query: "",
-    frequency: "",
+    frequency: "W",
     goal: "",
     units: "",
-    direction: "",
+    direction: "H",
     status: "A",
   };
 
@@ -43,7 +58,7 @@ export default function EditMetricForm({ row, open, onClose }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting, dirtyFields },
+    formState: { dirtyFields },
   } = methods;
 
   useEffect(() => {
@@ -52,11 +67,11 @@ export default function EditMetricForm({ row, open, onClose }) {
         title: row?.title || "",
         description: row?.description || "",
         query: row?.query || "",
-        frequency: row?.frequency || "",
-        goal: row?.goal || "",
-        units: row?.units || "",
-        direction: row?.direction || "",
-        status: row?.status || "A",
+        frequency: row?.frequency || "W",
+        goal: row?.goal ?? "",
+        units: row?.units ?? row?.met_units ?? "",
+        direction: mapDirection(row?.direction),
+        status: row?.status === "I" ? "I" : "A",
       });
     }
   }, [row, reset]);
@@ -68,13 +83,25 @@ export default function EditMetricForm({ row, open, onClose }) {
     }
 
     try {
-      await updateMetric({ id: row.id, data }).unwrap();
+      await updateMetric({
+        id: row.id,
+        data: {
+          title: data.title,
+          description: data.description || null,
+          query: data.query || null,
+          frequency: data.frequency,
+          goal: Number(data.goal),
+          units: data.units || null,
+          direction: data.direction,
+          status: data.status,
+        },
+      }).unwrap();
       enqueueSnackbar("Metric updated successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
-      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -113,6 +140,7 @@ export default function EditMetricForm({ row, open, onClose }) {
               <MenuItem value="W">Weekly</MenuItem>
               <MenuItem value="M">Monthly</MenuItem>
               <MenuItem value="Q">Quarterly</MenuItem>
+              <MenuItem value="Y">Yearly</MenuItem>
             </RHFSelect>
 
             <RHFTextField name="goal" label="Goal" type="number" />
@@ -120,8 +148,8 @@ export default function EditMetricForm({ row, open, onClose }) {
             <RHFTextField name="units" label="Units" />
 
             <RHFSelect name="direction" label="Direction">
-              <MenuItem value="up">Up</MenuItem>
-              <MenuItem value="down">Down</MenuItem>
+              <MenuItem value="H">Up</MenuItem>
+              <MenuItem value="L">Down</MenuItem>
             </RHFSelect>
 
             <RHFSelect name="status" label="Status">

@@ -21,11 +21,14 @@ export default function EditPlatformForm({ row, open, onClose }) {
   const [updatePlatform, { isLoading: isUpdating }] = useUpdatePlatformMutation();
 
   const EditPlatformSchema = Yup.object().shape({
-    title: Yup.string().required("Title is required"),
+    title: Yup.string().max(40, "Max 40 characters").required("Title is required"),
+    available: Yup.string().oneOf(["Y", "N"]).required("Available is required"),
+    status: Yup.string().oneOf(["A", "I"]),
   });
 
   const defaultValues = {
     title: "",
+    available: "Y",
     status: "A",
   };
 
@@ -37,14 +40,22 @@ export default function EditPlatformForm({ row, open, onClose }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting, dirtyFields },
+    formState: { dirtyFields },
   } = methods;
 
   useEffect(() => {
     if (row) {
+      const availableFlag =
+        row?.available_flag === "Y" ||
+        row?.available_flag === "N"
+          ? row.available_flag
+          : row?.available === "Yes" || row?.available === "Y"
+            ? "Y"
+            : "N";
       reset({
         title: row?.title || "",
-        status: row?.available === "Yes" ? "A" : "I",
+        available: availableFlag,
+        status: row?.status === "I" ? "I" : "A",
       });
     }
   }, [row, reset]);
@@ -56,13 +67,20 @@ export default function EditPlatformForm({ row, open, onClose }) {
     }
 
     try {
-      await updatePlatform({ id: row.id, data }).unwrap();
+      await updatePlatform({
+        id: row.id,
+        data: {
+          title: data.title,
+          available: data.available,
+          status: data.status,
+        },
+      }).unwrap();
       enqueueSnackbar("Platform updated successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
-      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -91,6 +109,11 @@ export default function EditPlatformForm({ row, open, onClose }) {
             }}
           >
             <RHFTextField name="title" label="Platform Title" />
+
+            <RHFSelect name="available" label="Available">
+              <MenuItem value="Y">Yes</MenuItem>
+              <MenuItem value="N">No</MenuItem>
+            </RHFSelect>
 
             <RHFSelect name="status" label="Status">
               <MenuItem value="A">Active</MenuItem>

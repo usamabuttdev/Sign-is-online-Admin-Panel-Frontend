@@ -9,7 +9,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import FormProvider, { RHFTextField } from "src/components/hook-form";
+import MenuItem from "@mui/material/MenuItem";
+import FormProvider, { RHFTextField, RHFSelect } from "src/components/hook-form";
 import { useSnackbar } from "src/components/snackbar";
 import { useAddNewPlatformMutation } from "src/store/Reducer/platforms";
 
@@ -19,11 +20,13 @@ export default function AddPlatformForm({ open, onClose }) {
   const [addNewPlatform, { isLoading }] = useAddNewPlatformMutation();
 
   const NewPlatformSchema = Yup.object().shape({
-    title: Yup.string().required("Title is required"),
+    title: Yup.string().max(40, "Max 40 characters").required("Title is required"),
+    available: Yup.string().oneOf(["Y", "N"]).required("Available is required"),
   });
 
   const defaultValues = {
     title: "",
+    available: "Y",
   };
 
   const methods = useForm({
@@ -31,21 +34,20 @@ export default function AddPlatformForm({ open, onClose }) {
     defaultValues,
   });
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await addNewPlatform({ title: data.title }).unwrap();
+      await addNewPlatform({
+        title: data.title,
+        available: data.available,
+      }).unwrap();
       enqueueSnackbar("Platform created successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
-      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -74,6 +76,10 @@ export default function AddPlatformForm({ open, onClose }) {
             }}
           >
             <RHFTextField name="title" label="Platform Title" />
+            <RHFSelect name="available" label="Available">
+              <MenuItem value="Y">Yes</MenuItem>
+              <MenuItem value="N">No</MenuItem>
+            </RHFSelect>
           </Box>
         </DialogContent>
 

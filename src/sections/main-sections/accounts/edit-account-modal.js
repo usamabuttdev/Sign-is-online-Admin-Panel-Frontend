@@ -23,7 +23,7 @@ export default function EditAccountForm({ row, open, onClose }) {
 
   const EditAccountSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
-    timezone_id: Yup.string(),
+    timezone_id: Yup.string().required("Timezone ID is required"),
     observes_daylight: Yup.boolean(),
     status: Yup.string(),
   });
@@ -50,7 +50,10 @@ export default function EditAccountForm({ row, open, onClose }) {
     if (row) {
         reset({
           title: row?.title || "",
-          timezone_id: row?.tz_title || "",
+          timezone_id:
+            row?.timezone_id != null && row?.timezone_id !== ""
+              ? String(row.timezone_id)
+              : "",
           observes_daylight: parseObservesDaylight(row?.observes_daylight),
           status: row?.status === "A" ? "A" : "I",
         });
@@ -68,7 +71,7 @@ export default function EditAccountForm({ row, open, onClose }) {
         id: row.id,
         data: {
           title: data.title,
-          timezone_id: data.timezone_id || null,
+          timezone_id: Number(data.timezone_id),
           observes_daylight: formatObservesDaylight(data.observes_daylight),
           status: data.status,
         },

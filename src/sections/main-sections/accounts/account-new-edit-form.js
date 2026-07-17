@@ -15,16 +15,19 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { useAddNewAccountMutation, useUpdateAccountMutation } from 'src/store/Reducer/accounts';
 import { parseObservesDaylight, formatObservesDaylight } from 'src/utils/observes-daylight';
+import { useSelector } from 'react-redux';
+import { selectUser } from 'src/store/slices/userSlice';
 
 export default function AccountNewEditForm({ currentUser }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const loggedInUser = useSelector(selectUser);
   const [addNewAccount] = useAddNewAccountMutation();
   const [updateAccount] = useUpdateAccountMutation();
 
   const NewAccountSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    timezone_id: Yup.string(),
+    timezone_id: Yup.string().required('Timezone ID is required'),
     observes_daylight: Yup.boolean(),
     status: Yup.string(),
   });
@@ -32,8 +35,11 @@ export default function AccountNewEditForm({ currentUser }) {
   const defaultValues = useMemo(
     () => ({
       title: currentUser?.title || '',
-      timezone_id: currentUser?.tz_title || '',
-    observes_daylight: parseObservesDaylight(currentUser?.observes_daylight),
+      timezone_id:
+        currentUser?.timezone_id != null && currentUser?.timezone_id !== ''
+          ? String(currentUser.timezone_id)
+          : '',
+      observes_daylight: parseObservesDaylight(currentUser?.observes_daylight),
       status: currentUser?.status || 'A',
     }),
     [currentUser]
@@ -54,14 +60,18 @@ export default function AccountNewEditForm({ currentUser }) {
     try {
       const submitData = {
         title: data.title,
-        timezone_id: data.timezone_id || null,
-      observes_daylight: formatObservesDaylight(data.observes_daylight),
+        timezone_id: Number(data.timezone_id),
+        observes_daylight: formatObservesDaylight(data.observes_daylight),
         status: data.status || 'A',
       };
       if (currentUser) {
         await updateAccount({ id: currentUser.id, data: submitData }).unwrap();
       } else {
-        await addNewAccount(submitData).unwrap();
+        if (!loggedInUser?.id) {
+          enqueueSnackbar('Session missing user id. Please log in again.', { variant: 'error' });
+          return;
+        }
+        await addNewAccount({ ...submitData, created_by: loggedInUser.id }).unwrap();
       }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');

@@ -21,16 +21,22 @@ export default function AddMetricForm({ open, onClose }) {
 
   const NewMetricSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
+    description: Yup.string(),
+    query: Yup.string(),
+    frequency: Yup.string().required("Run frequency is required"),
+    goal: Yup.number().typeError("Goal must be a number").required("Goal is required"),
+    units: Yup.string().max(10, "Units max 10 characters"),
+    direction: Yup.string().oneOf(["H", "L"]).required("Direction is required"),
   });
 
   const defaultValues = {
     title: "",
     description: "",
     query: "",
-    frequency: "",
+    frequency: "W",
     goal: "",
     units: "",
-    direction: "",
+    direction: "H",
   };
 
   const methods = useForm({
@@ -41,18 +47,25 @@ export default function AddMetricForm({ open, onClose }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await addNewMetric(data).unwrap();
+      await addNewMetric({
+        title: data.title,
+        description: data.description || null,
+        query: data.query || null,
+        frequency: data.frequency,
+        goal: Number(data.goal),
+        units: data.units || null,
+        direction: data.direction,
+      }).unwrap();
       enqueueSnackbar("Metric created successfully!", { variant: "success" });
       reset();
       onClose();
     } catch (error) {
       console.error("Unexpected Error:", error);
-      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
+      enqueueSnackbar(error?.data?.message || "An error occurred", { variant: "error" });
     }
   });
 
@@ -91,6 +104,7 @@ export default function AddMetricForm({ open, onClose }) {
               <MenuItem value="W">Weekly</MenuItem>
               <MenuItem value="M">Monthly</MenuItem>
               <MenuItem value="Q">Quarterly</MenuItem>
+              <MenuItem value="Y">Yearly</MenuItem>
             </RHFSelect>
 
             <RHFTextField name="goal" label="Goal" type="number" />
@@ -98,8 +112,8 @@ export default function AddMetricForm({ open, onClose }) {
             <RHFTextField name="units" label="Units" />
 
             <RHFSelect name="direction" label="Direction">
-              <MenuItem value="up">Up</MenuItem>
-              <MenuItem value="down">Down</MenuItem>
+              <MenuItem value="H">Up</MenuItem>
+              <MenuItem value="L">Down</MenuItem>
             </RHFSelect>
           </Box>
         </DialogContent>
