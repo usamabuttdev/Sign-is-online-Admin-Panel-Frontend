@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -13,65 +12,56 @@ import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
-// utils
-import { fData } from 'src/utils/format-number';
-// routes
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-// assets
-import { countries } from 'src/assets/data';
-// components
 import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFSwitch,
-  RHFTextField,
-  RHFUploadAvatar,
-  RHFAutocomplete,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { useDeleteUserMutation } from 'src/store/Reducer/users';
+import { useSelector } from 'react-redux';
+import { selectUser } from 'src/store/slices/userSlice';
 
-// ----------------------------------------------------------------------
-
-export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit }) {
+/**
+ * Users MSSQL columns that exist:
+ * USR_ID, FullName, Email, Phone, Role, PasswordHash, IsActive, CreatedAt,
+ * (+ UserID guid default, USR_ADVISORY_COUNCIL)
+ * Address/company/avatar/email-verified are NOT stored — removed from this form.
+ */
+export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitProp }) {
   const router = useRouter();
-
   const { enqueueSnackbar } = useSnackbar();
+  const loggedInUser = useSelector(selectUser);
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
+    phoneNumber: Yup.string().nullable(),
     role: Yup.string().required('Role is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    avatarUrl: Yup.mixed().nullable().required('Avatar is required'),
-    // not required
-    status: Yup.string(),
-    isVerified: Yup.boolean(),
+    status: Yup.string().oneOf(['active', 'banned']),
   });
+
+  const isActiveValue = currentUser?.isactive ?? currentUser?.IsActive ?? currentUser?.isActive;
+  const defaultStatus =
+    isActiveValue === false || isActiveValue === 0 || isActiveValue === 'false'
+      ? 'banned'
+      : 'active';
 
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || currentUser?.FullName || '',
-      city: currentUser?.city || '',
-      role: currentUser?.role || currentUser?.Role || '',
       email: currentUser?.email || currentUser?.Email || '',
-      state: currentUser?.state || '',
-      status: currentUser?.status || '',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      zipCode: currentUser?.zipCode || '',
-      company: currentUser?.company || '',
-      avatarUrl: currentUser?.avatarUrl || null,
       phoneNumber: currentUser?.phoneNumber || currentUser?.phone || currentUser?.Phone || '',
-      isVerified: currentUser?.isVerified ?? currentUser?.isactive ?? true,
+      role: currentUser?.role || currentUser?.Role || 'user',
+      status: currentUser?.status || defaultStatus,
     }),
-    [currentUser]
+    [currentUser, defaultStatus]
   );
 
   const methods = useForm({
@@ -83,82 +73,69 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
     reset,
     watch,
     control,
-    setValue,
     handleSubmit: hookHandleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const values = watch();
 
+  const buildApiPayload = (data) => ({
+    name: data.name,
+    email: data.email,
+    phone: data.phoneNumber || null,
+    phoneNumber: data.phoneNumber || null,
+    role: data.role || 'user',
+    isActive: data.status !== 'banned',
+  });
+
   const onSubmit = hookHandleSubmit(async (data) => {
     try {
-      if (handleSubmit) {
-        await handleSubmit(data);
+      if (handleSubmitProp) {
+        await handleSubmitProp(buildApiPayload(data));
       }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.users.root);
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
     }
   });
 
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
+  const handleSoftDelete = async () => {
+    try {
+      await deleteUser(currentUser.id).unwrap();
+      enqueueSnackbar('User soft-deleted', { variant: 'success' });
+      setConfirmDeleteOpen(false);
+      router.push(paths.dashboard.users.root);
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message || 'Failed to delete user', { variant: 'error' });
+    }
+  };
 
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
-      if (file) {
-        setValue('avatarUrl', newFile, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
+  const canDelete =
+    currentUser?.id != null &&
+    loggedInUser?.id != null &&
+    String(loggedInUser.id) !== String(currentUser.id);
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
+          <Card sx={{ pt: 5, pb: 5, px: 3 }}>
             {currentUser && (
               <Label
-                color={
-                  (values.status === 'active' && 'success') ||
-                  (values.status === 'banned' && 'error') ||
-                  'warning'
-                }
+                color={values.status === 'banned' ? 'error' : 'success'}
                 sx={{ position: 'absolute', top: 24, right: 24 }}
               >
-                {values.status}
+                {values.status === 'banned' ? 'banned' : 'active'}
               </Label>
             )}
 
-            <Box sx={{ mb: 5 }}>
-              <RHFUploadAvatar
-                name="avatarUrl"
-                maxSize={3145728}
-                onDrop={handleDrop}
-                helperText={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 3,
-                      mx: 'auto',
-                      display: 'block',
-                      textAlign: 'center',
-                      color: 'text.disabled',
-                    }}
-                  >
-                    Allowed *.jpeg, *.jpg, *.png, *.gif
-                    <br /> max size of {fData(3145728)}
-                  </Typography>
-                }
-              />
-            </Box>
+            {/* <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+              Users store name, email, phone, role, and active status only. Address, company, and
+              avatar fields are not in the database.
+            </Typography> */}
 
             {currentUser && (
               <FormControlLabel
@@ -170,7 +147,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
                     render={({ field }) => (
                       <Switch
                         {...field}
-                        checked={field.value !== 'active'}
+                        checked={field.value === 'banned'}
                         onChange={(event) =>
                           field.onChange(event.target.checked ? 'banned' : 'active')
                         }
@@ -184,7 +161,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
                       Banned
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Apply disable account
+                      Soft-disable account
                     </Typography>
                   </>
                 }
@@ -192,25 +169,9 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
               />
             )}
 
-            <RHFSwitch
-              name="isVerified"
-              labelPlacement="start"
-              label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Email Verified
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Disabling this will automatically send the user a verification email
-                  </Typography>
-                </>
-              }
-              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            />
-
-            {currentUser && (
+            {currentUser && canDelete && (
               <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error">
+                <Button variant="soft" color="error" onClick={() => setConfirmDeleteOpen(true)}>
                   Delete User
                 </Button>
               </Stack>
@@ -232,41 +193,6 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
-
-              <RHFAutocomplete
-                name="country"
-                label="Country"
-                options={countries.map((country) => country.label)}
-                getOptionLabel={(option) => option}
-                isOptionEqualToValue={(option, value) => option === value}
-                renderOption={(props, option) => {
-                  const { code, label, phone } = countries.filter(
-                    (country) => country.label === option
-                  )[0];
-
-                  if (!label) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={label}>
-                      <Iconify
-                        key={label}
-                        icon={`circle-flags:${code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {label} ({code}) +{phone}
-                    </li>
-                  );
-                }}
-              />
-
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="address" label="Address" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
-              <RHFTextField name="company" label="Company" />
               <RHFTextField name="role" label="Role" />
             </Box>
 
@@ -278,6 +204,27 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmit })
           </Card>
         </Grid>
       </Grid>
+
+      <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
+        <DialogTitle>Delete user?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Soft-delete &quot;{values.name || values.email}&quot;? They will be hidden from the
+            active list.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteOpen(false)}>Cancel</Button>
+          <LoadingButton
+            color="error"
+            variant="contained"
+            loading={isDeleting}
+            onClick={handleSoftDelete}
+          >
+            Delete
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
     </FormProvider>
   );
 }
