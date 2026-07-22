@@ -32,7 +32,14 @@ export default function UserEditView({ id }) {
 
   const handleSubmit = async (data) => {
     try {
-      await updateUser({ _id: id, data }).unwrap();
+      const payload = {
+        name: data.name,
+        email: data.email,
+        phone: data.phoneNumber,
+        role: data.role,
+        isActive: data.status === 'banned' ? 0 : (data.isVerified === false ? 0 : 1),
+      };
+      await updateUser({ _id: id, data: payload }).unwrap();
       return { success: true };
     } catch (error) {
       console.error('Update user error:', error);

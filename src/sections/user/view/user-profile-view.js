@@ -82,6 +82,7 @@ export default function UserProfileView() {
   }
 
   const userDetail = {
+    id: user.id,
     fullName: user.name,
     email: user.email,
     phone: user.phone,
@@ -105,6 +106,7 @@ export default function UserProfileView() {
 
       <Card sx={{ mb: 2 }}>
         <ProfileCover
+          userId={user.id}
           role={userDetail.role}
           coverUrl={userDetail.coverUrl}
           photoURL={userDetail.photoURL}

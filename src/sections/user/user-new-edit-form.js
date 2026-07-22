@@ -44,7 +44,15 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     phoneNumber: Yup.string().nullable(),
     role: Yup.string().required('Role is required'),
+    address: Yup.string(),
+    country: Yup.string(),
+    company: Yup.string(),
+    state: Yup.string(),
+    city: Yup.string(),
+    zipCode: Yup.string(),
+    avatarUrl: Yup.mixed().nullable(),
     status: Yup.string().oneOf(['active', 'banned']),
+    isVerified: Yup.boolean(),
   });
 
   const isActiveValue = currentUser?.isactive ?? currentUser?.IsActive ?? currentUser?.isActive;
@@ -95,7 +103,9 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
       }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.users.root);
+      if (!currentUser) {
+        router.push(paths.dashboard.users.root);
+      }
     } catch (error) {
       console.error(error);
       enqueueSnackbar(error?.data?.message || 'An error occurred', { variant: 'error' });
