@@ -69,6 +69,20 @@ export const usersApi = createApi({
                 body: data,
             }),
             invalidatesTags: ['users'],
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: response } = await queryFulfilled;
+                    const updatedUser = response?.data;
+                    if (updatedUser) {
+                        dispatch(
+                            usersApi.util.updateQueryData('getUserById', { id: arg._id }, (draft) => {
+                                Object.assign(draft, updatedUser);
+                            })
+                        );
+                    }
+                } catch {
+                }
+            },
         }),
 
         createUser: builder.mutation({

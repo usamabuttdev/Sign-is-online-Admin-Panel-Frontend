@@ -101,7 +101,9 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
       if (handleSubmitProp) {
         await handleSubmitProp(buildApiPayload(data));
       }
-      reset();
+      if (!currentUser) {
+        reset();
+      }
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       if (!currentUser) {
         router.push(paths.dashboard.users.root);
