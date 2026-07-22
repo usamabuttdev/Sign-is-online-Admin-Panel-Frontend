@@ -39,8 +39,8 @@ export default function UserEditView({ id }) {
         role: data.role,
         isActive: data.status === 'banned' ? 0 : (data.isVerified === false ? 0 : 1),
       };
-      await updateUser({ _id: id, data: payload }).unwrap();
-      return { success: true };
+      const result = await updateUser({ _id: id, data: payload }).unwrap();
+      return { success: true, data: result?.data };
     } catch (error) {
       console.error('Update user error:', error);
       throw error;

@@ -98,10 +98,20 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
 
   const onSubmit = hookHandleSubmit(async (data) => {
     try {
+      let updatedData = null;
       if (handleSubmitProp) {
-        await handleSubmitProp(buildApiPayload(data));
+        const result = await handleSubmitProp(buildApiPayload(data));
+        updatedData = result?.data;
       }
-      if (!currentUser) {
+      if (currentUser && updatedData) {
+        reset({
+          name: updatedData.name || updatedData.FullName || '',
+          email: updatedData.email || updatedData.Email || '',
+          phoneNumber: updatedData.phoneNumber || updatedData.phone || updatedData.Phone || '',
+          role: updatedData.role || updatedData.Role || 'user',
+          status: updatedData.isactive || updatedData.isActive ? 'active' : 'banned',
+        });
+      } else if (!currentUser) {
         reset();
       }
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
