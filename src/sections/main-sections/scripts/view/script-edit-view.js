@@ -8,7 +8,8 @@ import ScriptNewEditForm from '../script-new-edit-form';
 
 export default function ScriptEditView({ id }) {
   const settings = useSettingsContext();
-  const { data: currentUser } = useGetScriptByIdQuery(id);
+  const { data: apiData } = useGetScriptByIdQuery(id);
+  const currentScript = apiData?.data || null;
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -23,14 +24,14 @@ export default function ScriptEditView({ id }) {
             name: 'Scripts',
             href: paths.dashboard.scripts.root,
           },
-          { name: currentUser?.title },
+          { name: currentScript?.title },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <ScriptNewEditForm currentUser={currentUser} />
+      <ScriptNewEditForm currentUser={currentScript} />
     </Container>
   );
 }
