@@ -63,6 +63,8 @@ export default function UsersTableRow({ row, selected }) {
         </ClickAwayListener>
       </TableCell>
 
+      <TableCellTooltip align="center">{row.dob ? formatDate(row.dob).display : "—"}</TableCellTooltip>
+
       <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>
         <Tooltip title="Edit" placement="top" arrow>
           <Link

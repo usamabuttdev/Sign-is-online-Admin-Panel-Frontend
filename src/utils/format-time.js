@@ -36,3 +36,12 @@ export const formatDate = (dateString) => {
     full: format(date, "MMMM d, yyyy, hh:mm a"),   // what you see on hover
   };
 };
+
+// Normalize a Date (or date string) into a 'yyyy-MM-dd' string for DATE columns.
+// Returns null when the value is empty/invalid so the API stores NULL.
+export function fISODate(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return null;
+  return format(d, 'yyyy-MM-dd');
+}

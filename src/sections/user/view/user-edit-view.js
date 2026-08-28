@@ -12,6 +12,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useGetUserByIdQuery, useUpdateUserMutation } from 'src/store/Reducer/users';
 //
 import UserNewEditForm from '../user-new-edit-form';
+import { fISODate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ export default function UserEditView({ id }) {
         phone: data.phoneNumber,
         role: data.role,
         isActive: data.status === 'banned' ? 0 : (data.isVerified === false ? 0 : 1),
+        dob: fISODate(data.dob),
       };
       const result = await updateUser({ _id: id, data: payload }).unwrap();
       return { success: true, data: result?.data };

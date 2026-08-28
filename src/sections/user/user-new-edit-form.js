@@ -22,9 +22,11 @@ import { useRouter } from 'src/routes/hooks';
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import RHFDate from 'src/components/hook-form/rhf-date';
 import { useDeleteUserMutation } from 'src/store/Reducer/users';
 import { useSelector } from 'react-redux';
 import { selectUser } from 'src/store/slices/userSlice';
+import { fISODate } from 'src/utils/format-time';
 
 /**
  * Users MSSQL columns that exist:
@@ -53,6 +55,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
     avatarUrl: Yup.mixed().nullable(),
     status: Yup.string().oneOf(['active', 'banned']),
     isVerified: Yup.boolean(),
+    dob: Yup.mixed().nullable(),
   });
 
   const isActiveValue = currentUser?.isactive ?? currentUser?.IsActive ?? currentUser?.isActive;
@@ -68,6 +71,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
       phoneNumber: currentUser?.phoneNumber || currentUser?.phone || currentUser?.Phone || '',
       role: currentUser?.role || currentUser?.Role || 'user',
       status: currentUser?.status || defaultStatus,
+      dob: currentUser?.dob ? new Date(currentUser.dob) : null,
     }),
     [currentUser, defaultStatus]
   );
@@ -94,6 +98,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
     phoneNumber: data.phoneNumber || null,
     role: data.role || 'user',
     isActive: data.status !== 'banned',
+    dob: fISODate(data.dob),
   });
 
   const onSubmit = hookHandleSubmit(async (data) => {
@@ -110,6 +115,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
           phoneNumber: updatedData.phoneNumber || updatedData.phone || updatedData.Phone || '',
           role: updatedData.role || updatedData.Role || 'user',
           status: updatedData.isactive || updatedData.isActive ? 'active' : 'banned',
+          dob: updatedData.dob ? new Date(updatedData.dob) : null,
         });
       } else if (!currentUser) {
         reset();
@@ -216,6 +222,7 @@ export default function UserNewEditForm({ currentUser, onSubmit: handleSubmitPro
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
               <RHFTextField name="role" label="Role" />
+              <RHFDate name="dob" label="Date of Birth" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
